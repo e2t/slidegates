@@ -10,13 +10,12 @@ build_exe_options = {
     'include_files': ['lang', '../dry/lang'],
 }
 
+NAME = 'slidegates'
 DESCRIPTION = 'Расчет щитовых затворов'
 
 base = None
 if sys.platform == 'win32':
     base = 'Win32GUI'
-
-NAME = os.path.basename(os.path.abspath(os.curdir))
 
 setup(name=NAME.title(),
       version=__version__,
