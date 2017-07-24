@@ -1,0 +1,230 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: sotta\n"
+"PO-Revision-Date: 2016-08-16 18:30+0300\n"
+"Last-Translator: Eduard E. Tikhenko <eduard@tikhenko.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ru_RU\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+# затвор щитовой - slidegate
+msgid "SG{l_type}{l_drive} {frame_w}x{frame_h}({gate_h})"
+msgstr "ЗЩ{l_type}{l_drive} {frame_w}x{frame_h}({gate_h})"
+
+msgid "Pressure head {head} m H2O"
+msgstr "Гидростатический напор {head} м вод. ст."
+
+# letter_type: поверхностный - surface
+msgid "S"
+msgstr "П"
+
+# letter_type: глубинный - depth
+msgid "D"
+msgstr "Г"
+
+# letter_type: поверхностный регулируемый - surface overflow
+msgid "SOR"
+msgstr "ПР"
+
+# letter_type: глубинный переливной - depth overflow
+msgid "DOR"
+msgstr "ГП"
+
+# letter_drive: электропривод - electric
+msgid "E"
+msgstr "Э"
+
+# letter_drive: ручной - manual
+msgid "M"
+msgstr "Р"
+
+msgid "Weight of stainless steel {mass} kg"
+msgstr "Масса нерж. стали {mass} кг"
+
+msgid " * frame {mass} kg, thickness {thickness} mm"
+msgstr " * рама {mass} кг, толщина {thickness} мм"
+
+msgid " * gate {mass} kg, thickness {thickness} mm"
+msgstr " * щит {mass} кг, толщина {thickness} мм"
+
+msgid " * screw {mass} kg"
+msgstr " * винт {mass} кг"
+
+msgid " * rack {mass} kg{number}"
+msgstr " * колонка {mass} кг{number}"
+
+msgid "Actuator AUMA {auma_name}{aumatic}"
+msgstr "Мотор-редуктор AUMA {auma_name}{aumatic}"
+
+msgid "rotational speed {speed:g} rpm"
+msgstr "скорость вращения {speed:g} об/мин"
+
+msgid "Sheet {thickness:g} mm AISI 304 — {mass:.1f} kg"
+msgstr "Лист {thickness:g} мм AISI 304 — {mass:.1f} кг"
+
+msgid "Screw {screw}{circle} AISI 304 — {length:.1f} m{number}"
+msgstr "Винт {screw}{circle} AISI 304 — {length:.1f} м{number}"
+
+msgid " — calibrated rod {diam}"
+msgstr " — калиброванный пруток {diam}"
+
+msgid "electric power {power} kW"
+msgstr "электрическая мощность {power} кВт"
+
+msgid "flange {flange}"
+msgstr "фланец {flange}"
+
+msgid "plug sleeve {sleeve}"
+msgstr "вставная втулка {sleeve}"
+
+msgid "short-time duty {mode}"
+msgstr "кратковременный режим {mode}"
+
+msgid "torque {min_torque}-{max_torque} Nm"
+msgstr "крутящий момент {min_torque}-{max_torque} Нм"
+
+msgid "weight {mass} kg"
+msgstr "масса {mass} кг"
+
+msgid "torque {open_torque} Nm for opening, {close_torque} Nm for closing"
+msgstr "крутящий момент на открытие {open_torque} Нм, на закрытие {close_torque} Нм"
+
+msgid "full opening through {time} min and {revs} rev"
+msgstr "полное открытие через {time} мин и {revs} оборотов"
+
+msgid "Right angle gearbox {name}{number}"
+msgstr "Угловой редуктор {name}{number}"
+
+msgid "Right angle gearbox {name} {param} (with end cap)"
+msgstr "Угловой редуктор {name} {param} (с торцевой заглушкой)"
+
+msgid "Torque in every screw {torque} Nm"
+msgstr "Крутящий момент на каждом винте {torque} Нм"
+
+msgid "Torque in screw {torque} Nm"
+msgstr "Крутящий момент на винте {torque} Нм"
+
+msgid "Free torque in screw {torque} Nm"
+msgstr "Свободный крутящий момент на винте {torque} Нм"
+
+msgid "Free torque in every screw {torque} Nm"
+msgstr "Свободный крутящий момент на каждом винте {torque} Нм"
+
+msgid "max torque {torque} Nm"
+msgstr "максимальный крутящий момент {torque} Нм"
+
+msgid "ratio {ratio}:1"
+msgstr "передаточное отношение {ratio}:1"
+
+msgid " * one from two with a mounting flange {flange} for the actuator"
+msgstr " * один из двух с монтажным фланцем {flange} для привода"
+
+msgid "Screw - {screw}{number}, factor of safity {fos}"
+msgstr "Винт - {screw}{number}, запас прочности {fos}"
+
+msgid "Axial force in screw {force} N"
+msgstr "Осевая сила на винте {force} Н"
+
+msgid "Axial force in every screw {force} N"
+msgstr "Осевая сила на каждом винте {force} Н"
+
+msgid "Minimum diameter of the nut axis {diam} mm"
+msgstr "Минимальный диаметр осей гайки {diam} мм"
+
+msgid "Wedges {wedge} ({material}) - {pairs} pairs{all}"
+msgstr "Клинья {wedge} ({material}) - {pairs} пары{all}"
+
+msgid " ({bolt} for the {number} pairs)"
+msgstr " ({bolt} для {number} пар)"
+
+msgid "Force on gate - {force} N"
+msgstr "Нагрузка на щите - {force} Н"
+
+msgid "The frame {depth} x {shelf} mm, s = {thick} mm"
+msgstr "Рама {depth} x {shelf} мм, s = {thick} мм"
+
+msgid "Frame without crossbar for screw"
+msgstr "Рама без перекладины для винта"
+
+msgid "Frame with crossbar for screw"
+msgstr "Рама с перекладиной для винта"
+
+msgid "The gate {width} x {depth} x {shelf} mm, s = {thick} mm"
+msgstr "Щит {width} x {depth} x {shelf} мм, s = {thick} мм"
+
+msgid "Edges of the gate {height}, s = {thick} mm: horizontal {horiz}{vert}"
+msgstr "Ребра щита {height}, s = {thick} мм: горизонтальных {horiz}{vert}"
+
+msgid ", vertical {vert}"
+msgstr ", вертикальных {vert}"
+
+msgid "Profile of the cover {depth} x {shelf} mm, s = {thick} mm"
+msgstr "Профиль кожуха {depth} x {shelf} мм, s = {thick} мм"
+
+msgid "left-hand closing (counter-clockwise)"
+msgstr "левостороннее закрытие (против часовой стрелки)"
+
+msgid "right-hand closing (clockwise)"
+msgstr "правостороннее закрытие (по часовой стрелке)"
+
+msgid "polyamide"
+msgstr "полиамид"
+
+msgid "bronze"
+msgstr "бронза"
+
+msgid "the reverse marking open/close on the handwheel"
+msgstr "обратная маркировка откр./закр. на штурвале"
+
+msgid " * the general parameters:"
+msgstr " * общие параметры:"
+
+msgid " * the parameters of the motor:"
+msgstr " * параметры электродвигателя:"
+
+msgid " * the parameters of the cable:"
+msgstr " * параметры кабеля:"
+
+msgid " * the parameters of the control:"
+msgstr " * параметры блока управления:"
+
+msgid "voltage 380 V / 50 Hz / 3ph"
+msgstr "напряжение питания 380 В / 50 Гц / 3ф"
+
+msgid "general execution"
+msgstr "общепромышленное исполнение"
+
+msgid "protection IP 68, KS"
+msgstr "защита оболочки IP 68, KS"
+
+msgid "switches (limit, intermediate, torque) — single"
+msgstr "выключатели (концевые, промежуточные, моментные) — одиночные"
+
+msgid "operation indicator of drive — yes"
+msgstr "индикатор работы привода — да"
+
+msgid "mechanical position indicator — no"
+msgstr "механический указатель положения — нет"
+
+msgid "stem protection tube — no"
+msgstr "защитная труба для выдвижного штока — нет"
+
+msgid "remote position indicator — no"
+msgstr "дистанционный указатель положения — нет"
+
+msgid "kit cable glands — yes"
+msgstr "комплект кабельных вводов — да"
+
+msgid "cable type — unarmoured"
+msgstr "тип кабеля — небронированный"
+
+msgid "outer cable diameter — standard"
+msgstr "наружный диаметр кабеля — стандарт"
+
+msgid "control — {name_or_no}"
+msgstr "блок управления — {name_or_no}"
+
+msgid "no"
+msgstr "нет"
