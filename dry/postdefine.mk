@@ -18,7 +18,7 @@ else
 	$(PYTHON3) -m py_compile $(SOURCES)
 	$(PEP257) $(SOURCES)
 	$(VULTURE) $^
-#	$(PYLINT) $(SOURCES)
+	$(PYLINT) $(SOURCES)
 endif
 
 gui.py: gui.ui
