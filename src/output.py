@@ -1,4 +1,3 @@
-import os
 import sys
 from slg import SlgKind, Drive
 from slidegate import Slidegate
@@ -252,11 +251,10 @@ def output_result(slg: Slidegate, lang: str) -> str:
             thick=round(slg.frame_s * 1e3, 1)))
 
         add(_('The gate {width} x {depth} x {shelf} mm, '
-              's = {thick} mm').format(
-            depth=round(slg.gate_depth * 1e3),
-            shelf=round(slg.gate_shelf * 1e3),
-            width=round(slg.gate_width * 1e3),
-            thick=round(slg.gate_s * 1e3, 1)))
+              's = {thick} mm').format(depth=round(slg.gate_depth * 1e3),
+                                       shelf=round(slg.gate_shelf * 1e3),
+                                       width=round(slg.gate_width * 1e3),
+                                       thick=round(slg.gate_s * 1e3, 1)))
 
         if slg.gate_vert_edges_number:
             vert = _(', vertical {vert}').format(

@@ -199,13 +199,10 @@ def _bolt_by_minor_diam(minor_diam: float, minimal_bolt: float,
 
 
 def _wedge_by_bolt(bolt: MetricScrew) -> Wedge:
-    if bolt:
-        try:
-            result = next(filter(lambda i:
-                                 i.bolt.major_diam >= bolt.major_diam, WEDGES))
-        except StopIteration:
-            result = WEDGES[-1]
-    else:
+    try:
+        result = next(filter(lambda i:
+                             i.bolt.major_diam >= bolt.major_diam, WEDGES))
+    except StopIteration:
         result = WEDGES[-1]
     return result
 

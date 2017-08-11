@@ -1,4 +1,3 @@
-import sys
 from math import pi
 from typing import Tuple, NamedTuple
 from math_func import area_ring_of_diam, ceilto, roundu, area_circle_of_diam

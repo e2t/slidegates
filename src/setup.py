@@ -1,6 +1,5 @@
 # coding: utf-8
 import sys
-import os
 from cx_Freeze import setup, Executable
 from version import __version__
 
