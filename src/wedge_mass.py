@@ -41,10 +41,11 @@ def _thick_gate(wid: float, gate: float, bolt_wedge: Screw,
     return result
 
 
-def _thick_frame(wid: float, frame: float, thick_gate: float) -> float:
-    if wid <= 3.0 and frame <= 3.0:
+def _thick_frame(wid: float, frame: float, thick_gate: float,
+                 gate: float) -> float:
+    if wid <= 1.25 and gate <= 1.25 and frame <= 3.0:
         result = 4e-3
-    elif wid <= 6.0 and frame <= 6.0:
+    elif wid <= 2.5 and gate <= 2.5 and frame <= 6.0:
         result = 5e-3
     else:
         result = 6e-3
@@ -195,7 +196,8 @@ def _profiles(slg: Slidegate) -> None:
     slg.gate_s = _thick_gate(
         slg.frame_width, slg.gate_height, slg.wedge.bolt, slg.hydr_head)
     slg.gate_s_edge = _thick_edge(slg.gate_s, slg.hydr_head)
-    slg.frame_s = _thick_frame(slg.frame_width, slg.frame_height, slg.gate_s)
+    slg.frame_s = _thick_frame(slg.frame_width, slg.frame_height, slg.gate_s,
+                               slg.gate_height)
     slg.cover_s = _thick_cover_gate(slg.gate_s)
 
     dist_compress = 13e-3

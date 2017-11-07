@@ -1,7 +1,7 @@
 import os
 import sys
 import gettext
-from math import pi
+import math
 from typing import Callable
 
 
@@ -57,4 +57,20 @@ def to_mpa(pascals: float) -> float:
 
 # Площадь круга
 def compute_area_circle(diameter: float) -> float:
-    return pi * diameter**2 / 4
+    return math.pi * diameter**2 / 4
+
+
+# Проверка четности числа
+def is_even(number: int) -> bool:
+    return number % 2 == 0
+
+
+# Ближайшее четное
+def nearest_even(number: float) -> int:
+    rounded_number = round(number)
+    if is_even(rounded_number):
+        result = rounded_number
+    else:
+        result = (rounded_number +
+                  int(math.copysign(1, number - rounded_number)))
+    return result

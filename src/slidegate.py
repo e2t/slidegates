@@ -64,8 +64,8 @@ def _sealing_compress_force(kind: SlgKind, frame_width: float,
         horiz_sides = 2
     else:
         horiz_sides = 1
-    return (2 * gate_height + horiz_sides * frame_width) * \
-        SPECIFIC_SEALING_COMPRESS_FORCE
+    return ((2 * gate_height + horiz_sides * frame_width) *
+            SPECIFIC_SEALING_COMPRESS_FORCE)
 
 
 def _screw_length(have_nodes_in_frame: bool, gate_height: float,
@@ -84,8 +84,8 @@ def _min_axial_force(gate_force: float, wedges_angle: float,
 
 
 def _real_axial_force(torque: float, screw: Screw) -> float:
-    return torque / \
-        tan((SCREW_FRIC_ANGLE + screw.thread_angle) * screw.pitch_diam / 2)
+    return (torque / tan(
+        (SCREW_FRIC_ANGLE + screw.thread_angle) * screw.pitch_diam / 2))
 
 
 def _way(gate_height: float, frame_height: float,

@@ -72,18 +72,6 @@ def output_result(slg: Slidegate, lang: str) -> str:
         if slg.screw.major_diam not in PURCHASED_SCREWS else '',
         length=slg.way + 0.2))
 
-    # add(_(' * frame {mass} kg, thickness {thickness} mm').format(
-        # mass=round(slg.frame_mass, 1), thickness=round(slg.frame_s * 1e3, 1)))
-
-    # add(_(' * gate {mass} kg, thickness {thickness} mm').format(
-        # mass=round(slg.gate_mass, 1), thickness=round(slg.gate_s * 1e3, 1)))
-
-    # add(_(' * screw {mass} kg').format(mass=round(slg.screw_mass, 1)))
-
-    # if slg.have_rack:
-        # add(_(' * rack {mass} kg{number}').format(
-            # mass=round(slg.rack_mass, 1), number=screws_number))
-
     add_empty_line()
 
     if slg.reducer_is_tramec:
@@ -106,7 +94,8 @@ def output_result(slg: Slidegate, lang: str) -> str:
     else:
         if slg.drive == Drive.electric:
             if slg.motor_control is not None:
-                aumatic = ' / {0}'.format(slg.auma.control_names[slg.motor_control])
+                aumatic = ' / {0}'.format(
+                    slg.auma.control_names[slg.motor_control])
             else:
                 aumatic = ''
 
@@ -200,8 +189,8 @@ def output_result(slg: Slidegate, lang: str) -> str:
             add(_('weight {mass} kg').format(mass=slg.reducer.mass))
 
             if slg.drive == Drive.electric:
-                add(_(' * one from two with a mounting flange {flange} for the '
-                      'actuator').format(flange=slg.auma.flange))
+                add(_(' * one from two with a mounting flange {flange} '
+                      'for the actuator').format(flange=slg.auma.flange))
 
             add_empty_line()
 
@@ -221,7 +210,8 @@ def output_result(slg: Slidegate, lang: str) -> str:
 
     add(torque_screw.format(torque=round(slg.torque_in_one_screw)))
 
-    add(_(free_torque_screw.format(torque=round(slg.free_torque_in_one_screw))))
+    add(_(free_torque_screw.format(
+        torque=round(slg.free_torque_in_one_screw))))
 
     add_empty_line()
 

@@ -20,3 +20,15 @@ msgstr "Слишком большая величина"
 
 msgid "Error"
 msgstr "Ошибка"
+
+msgid "Input a value greater than or equal to {0}"
+msgstr "Введите значение больше или равное {0}"
+
+msgid "Input a value greater than {0}"
+msgstr "Введите значение больше {0}"
+
+msgid "Input a value less than or equal to {0}"
+msgstr "Введите значение меньше или равное {0}"
+
+msgid "Input a value less than {0}"
+msgstr "Введите значение меньше {0}"

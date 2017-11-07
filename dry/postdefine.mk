@@ -3,7 +3,7 @@
 
 check: $(SOURCES)
 ifdef FILE
-	$(info Analyze this file...)
+	$(info Analyzing this file...)
 	$(MYPY) '$(FILE)'
 	$(PEP8) '$(FILE)'
 	$(FLAKE8) '$(FILE)'
@@ -11,7 +11,7 @@ ifdef FILE
 	$(PEP257) '$(FILE)'
 	$(PYLINT) '$(FILE)'
 else
-	$(info Analyze all files...)
+	$(info Analyzing the all files...)
 	$(MYPY) $(SOURCES)
 	$(PEP8) $(SOURCES)
 	$(FLAKE8) $(SOURCES)

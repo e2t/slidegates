@@ -1,27 +1,24 @@
 # coding: utf-8
 import sys
 from cx_Freeze import setup, Executable
-from version import __version__
-
+import manifest
 sys.path.append('..')
-build_exe_options = {
+
+BUILD_EXE_OPTIONS = {
     'packages': ['dry.core', 'dry.qt'],
     'include_files': ['lang', '../dry/lang'],
 }
-
-NAME = 'slidegates'
-DESCRIPTION = 'Расчет щитовых затворов'
-
-base = None
 if sys.platform == 'win32':
-    base = 'Win32GUI'
+    BASE = 'Win32GUI'
+else:
+    BASE = None
 
-setup(name=NAME.title(),
-      version=__version__,
-      description = DESCRIPTION,
-      options={'build_exe': build_exe_options},
+setup(name=manifest.NAME.title(),
+      version=manifest.VERSION,
+      description=manifest.DESCRIPTION,
+      options={'build_exe': BUILD_EXE_OPTIONS},
       executables=[Executable(
-          'main.py', base=base, icon='favicon.ico',
-          targetName='{0}.exe'.format(NAME),
-          shortcutName=DESCRIPTION,
+          'main.py', base=BASE, icon='favicon.ico',
+          targetName='{0}.exe'.format(manifest.NAME),
+          shortcutName=manifest.DESCRIPTION,
           shortcutDir='DesktopFolder')])

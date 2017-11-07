@@ -3,84 +3,71 @@ import sys
 from math import pi
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QTextCursor
-from PyQt5.QtCore import Qt
+sys.path.append('..')
 import gui
+from auma import AUMA_SA, AUMA_GK, AUMA_SAR
+from manifest import VERSION, DESCRIPTION
 from output import output_result
 from slg import SlgKind, Drive, Install, MotorControl, DEFAULT_PITCH
-from slidegate import Slidegate
-from version import __version__
 from slg3 import mass_calculation
-from auma import AUMA_SA, AUMA_GK, AUMA_SAR
-sys.path.append('..')
-from dry.qt import get_number, msgbox
+from slidegate import Slidegate
+from dry.qt import msgbox, BaseMainWindow, get_float_number
 from dry.core import Error
 
 
-class MainWindow(QtWidgets.QDialog, gui.Ui_Dialog):
-    def __init__(self, parent=None):
-        super(MainWindow, self).__init__(
-            parent, flags=Qt.WindowMinimizeButtonHint |
-            Qt.WindowCloseButtonHint)
-        self.setupUi(self)
-        self.setWindowTitle('{0} (v{1})'.format(self.windowTitle(),
-                                                __version__))
-        self._set_fixed_minimal_size()
+class MainWindow(BaseMainWindow, gui.Ui_Dialog):
+    def __init__(self) -> None:
+        self.motors = AUMA_SA, AUMA_SAR
+        self.slg = None
+        BaseMainWindow.__init__(self, DESCRIPTION, VERSION)
 
-        self.motors = (AUMA_SA, AUMA_SAR)
+    def init_widgets(self) -> None:
         for motors in self.motors:
             for i in motors:
                 self.cmb_auma.addItems('{0}  {1:g} об/мин'.format(
                     j.name, j.speed * 60) for j in i)
-
         self.cmb_reducer.addItems(i.name for i in AUMA_GK)
 
-        self._connect_actions()
-        self.slg = None
+    def connect_actions(self) -> None:
+        self.btn_run.clicked.connect(self.run)
+        self.rad_kind_deep.toggled.connect(self.toggle_hydr_head)
+        self.rad_kind_flow.toggled.connect(self.toggle_flow)
+        self.rad_kind_flow.toggled.connect(self.toggle_screw_pullout)
+        self.rad_lang_ru.toggled.connect(self.output_results)
+        self.rad_lang_en.toggled.connect(self.output_results)
 
-    def _set_fixed_minimal_size(self):
-        self.layout().setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
-        self.setFixedSize(self.geometry().width(), self.geometry().height())
-
-    def _connect_actions(self):
-        self.btn_run.clicked.connect(self._run)
-        self.rad_kind_deep.toggled.connect(self._toggle_hydr_head)
-        self.rad_kind_flow.toggled.connect(self._toggle_flow)
-        self.rad_kind_flow.toggled.connect(self._toggle_screw_pullout)
-        self.rad_lang_ru.toggled.connect(self._output_results)
-        self.rad_lang_en.toggled.connect(self._output_results)
-
-    def _toggle_hydr_head(self):
+    def toggle_hydr_head(self) -> None:
         is_need_head = self.rad_kind_deep.isChecked()
         self.lab_hydr_head.setEnabled(is_need_head)
         self.edt_hydr_head.setEnabled(is_need_head)
 
-    def _toggle_flow(self):
+    def toggle_flow(self) -> None:
         self.grp_flow.setEnabled(self.rad_kind_flow.isChecked())
 
-    def _toggle_screw_pullout(self):
+    def toggle_screw_pullout(self) -> None:
         self.chk_is_screw_pullout.setEnabled(
             not self.rad_kind_flow.isChecked())
 
-    def _run(self):
+    def run(self) -> None:
         prev = self.slg
         try:
-            self._calc()
+            self.calc()
         except Error as err:
             self.slg = prev
             self.txt_result.clear()
             msgbox(str(err))
         else:
-            self._output_results()
+            self.output_results()
 
-    def _calc(self):
-        frame_width = get_number(self.edt_frame_width, (0, False), None)
+    def calc(self) -> None:
+        frame_width = get_float_number(self.edt_frame_width, (0, False), None)
 
         frame_height = None
         if self.edt_frame_height.text():
-            frame_height = get_number(
+            frame_height = get_float_number(
                 self.edt_frame_height, (0, False), None)
 
-        gate_height = get_number(self.edt_gate_height, (0, False), None)
+        gate_height = get_float_number(self.edt_gate_height, (0, False), None)
 
         install = Install(self.cmb_install.currentIndex())
 
@@ -88,31 +75,31 @@ class MainWindow(QtWidgets.QDialog, gui.Ui_Dialog):
 
         screw_diam = None
         if self.edt_screw.text():
-            screw_diam = get_number(
+            screw_diam = get_float_number(
                 self.edt_screw, (DEFAULT_PITCH * 1e3, False), None) / 1e3
 
         way = None
         if self.edt_way.text():
-            way = get_number(self.edt_way, (0, False), None)
+            way = get_float_number(self.edt_way, (0, False), None)
 
         have_rack = self.grp_rack.isChecked()
 
         beth_frame_top_and_gate_top = None
         if self.grp_rack.isChecked():
             beth_frame_top_and_gate_top = \
-                get_number(self.edt_rack_dist, (0, False), None)
+                get_float_number(self.edt_rack_dist, (0, False), None)
 
         have_fixed_gate = None
         if self.rad_kind_deep.isChecked():
             kind = SlgKind.deep
-            hydr_head = get_number(self.edt_hydr_head, (0, False), None)
+            hydr_head = get_float_number(self.edt_hydr_head, (0, False), None)
         else:
             hydr_head = gate_height
             if self.rad_kind_flow.isChecked():
                 kind = SlgKind.flow
                 have_fixed_gate = self.chk_fixed_gate.isChecked()
                 beth_frame_top_and_gate_top = \
-                    get_number(self.edt_flow_dist, (0, False), None)
+                    get_float_number(self.edt_flow_dist, (0, False), None)
             else:
                 kind = SlgKind.surf
 
@@ -131,7 +118,7 @@ class MainWindow(QtWidgets.QDialog, gui.Ui_Dialog):
         is_screw_pullout = self.rad_kind_flow.isChecked() or \
             self.chk_is_screw_pullout.isChecked()
 
-        liquid_density = get_number(self.edt_density, (0, False), None)
+        liquid_density = get_float_number(self.edt_density, (0, False), None)
 
         motor_control = None
         if self.grp_motor_control.isChecked():
@@ -188,7 +175,7 @@ class MainWindow(QtWidgets.QDialog, gui.Ui_Dialog):
         )
         mass_calculation(self.slg)
 
-    def _output_results(self):
+    def output_results(self) -> None:
         if self.slg:
             self.txt_result.clear()
             if self.rad_lang_ru.isChecked():
@@ -201,7 +188,7 @@ class MainWindow(QtWidgets.QDialog, gui.Ui_Dialog):
             self.txt_result.setTextCursor(cursor)
 
 
-def main(classname):
+def main(classname: type) -> None:
     app = QtWidgets.QApplication(sys.argv)
     form = classname()
     form.show()
