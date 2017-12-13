@@ -34,7 +34,7 @@ class Screw:
 
 
 class TrapezoidalScrew(Screw):
-    def __init__(self, diam: float, pitch: float=DEFAULT_PITCH) -> None:
+    def __init__(self, diam: float, pitch: float = DEFAULT_PITCH) -> None:
         super().__init__(diam, diam - pitch / 2, diam - pitch, pitch)
 
     def __str__(self) -> str:

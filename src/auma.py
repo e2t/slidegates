@@ -94,24 +94,24 @@ FLANGE_F40 = 'F40'
 FLANGE_F48 = 'F48'
 
 
-def _rps(rpm: float) -> float:
+def rps(rpm: float) -> float:
     return rpm / 60
 
 
-RPS_4 = _rps(4)
-RPS_5_6 = _rps(5.6)
-RPS_8 = _rps(8)
-RPS_11 = _rps(11)
-RPS_16 = _rps(16)
-RPS_22 = _rps(22)
-RPS_32 = _rps(32)
-RPS_45 = _rps(45)
-RPS_63 = _rps(63)
-RPS_90 = _rps(90)
-RPS_125 = _rps(125)
-RPS_180 = _rps(180)
+RPS_4 = rps(4)
+RPS_5_6 = rps(5.6)
+RPS_8 = rps(8)
+RPS_11 = rps(11)
+RPS_16 = rps(16)
+RPS_22 = rps(22)
+RPS_32 = rps(32)
+RPS_45 = rps(45)
+RPS_63 = rps(63)
+RPS_90 = rps(90)
+RPS_125 = rps(125)
+RPS_180 = rps(180)
 
-AUMA_SA = (
+AUMA_SA: Tuple[Tuple[Auma, ...], ...] = (
     (
         Auma(name=NAME_SA_07_2, speed=RPS_4, powers=(0.02e3, 0.01e3),
              min_torque=10, max_torques=(30, 20), flange=FLANGE_F07,
@@ -574,7 +574,7 @@ AUMA_SA = (
              control_names=(NAME_AM_02_1, NAME_AC_01_1)))
 )
 
-AUMA_SAR = (
+AUMA_SAR: Tuple[Tuple[Auma, ...], ...] = (
     (
         Auma(name=NAME_SAR_07_2, speed=RPS_4, powers=(0.02e3, 0.01e3),
              min_torque=15, max_torques=(30, 20), flange=FLANGE_F07,

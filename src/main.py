@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 from math import pi
+from typing import Optional
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QTextCursor
 sys.path.append('..')
@@ -18,7 +19,7 @@ from dry.core import Error
 class MainWindow(BaseMainWindow, gui.Ui_Dialog):
     def __init__(self) -> None:
         self.motors = AUMA_SA, AUMA_SAR
-        self.slg = None
+        self.slg: Optional[Slidegate] = None
         BaseMainWindow.__init__(self, DESCRIPTION, VERSION)
 
     def init_widgets(self) -> None:
@@ -89,7 +90,7 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
             beth_frame_top_and_gate_top = \
                 get_float_number(self.edt_rack_dist, (0, False), None)
 
-        have_fixed_gate = None
+        have_fixed_gate = False
         if self.rad_kind_deep.isChecked():
             kind = SlgKind.deep
             hydr_head = get_float_number(self.edt_hydr_head, (0, False), None)
