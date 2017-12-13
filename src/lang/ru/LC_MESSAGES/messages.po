@@ -58,35 +58,41 @@ msgstr " * колонка {mass} кг{number}"
 msgid "Actuator AUMA {auma_name}{aumatic}"
 msgstr "Мотор-редуктор AUMA {auma_name}{aumatic}"
 
-msgid "rotational speed {speed:g} rpm"
+msgid "output speed {speed:g} rpm"
 msgstr "скорость вращения {speed:g} об/мин"
 
 msgid "Sheet {thickness:g} mm AISI 304 — {mass:.1f} kg"
 msgstr "Лист {thickness:g} мм AISI 304 — {mass:.1f} кг"
 
-msgid "Screw {screw}{circle} AISI 304 — {length:.1f} m{number}"
-msgstr "Винт {screw}{circle} AISI 304 — {length:.1f} м{number}"
+msgid "{screw} {thread}{circle} AISI 304 — {length:.1f} m{number}"
+msgstr "{screw} {thread}{circle} AISI 304 — {length:.1f} м{number}"
 
-msgid " — calibrated rod {diam}"
-msgstr " — калиброванный пруток {diam}"
+msgid "Right-hand screw"
+msgstr "Винт с правой резьбой"
+
+msgid "Left-hand screw"
+msgstr "Винт с левой резьбой"
+
+msgid " (calibrated rod {diam:g})"
+msgstr " (круг калибров. {diam:g})"
 
 msgid "electric power {power} kW"
 msgstr "электрическая мощность {power} кВт"
 
-msgid "flange {flange}"
+msgid "flange type {flange}"
 msgstr "фланец {flange}"
 
-msgid "plug sleeve {sleeve}"
+msgid "valve attachment {sleeve}"
 msgstr "вставная втулка {sleeve}"
 
-msgid "short-time duty {mode}"
+msgid "type of duty {mode}"
 msgstr "кратковременный режим {mode}"
 
 msgid "torque {min_torque}-{max_torque} Nm"
 msgstr "крутящий момент {min_torque}-{max_torque} Нм"
 
-msgid "weight {mass} kg"
-msgstr "масса {mass} кг"
+msgid "weight not less than {mass} kg"
+msgstr "масса не менее {mass} кг"
 
 msgid "torque {open_torque} Nm for opening, {close_torque} Nm for closing"
 msgstr "крутящий момент на открытие {open_torque} Нм, на закрытие {close_torque} Нм"
@@ -94,11 +100,11 @@ msgstr "крутящий момент на открытие {open_torque} Нм, 
 msgid "full opening through {time} min and {revs} rev"
 msgstr "полное открытие через {time} мин и {revs} оборотов"
 
-msgid "Right angle gearbox {name}{number}"
-msgstr "Угловой редуктор {name}{number}"
+msgid "Right angle gearbox {name}"
+msgstr "Угловой редуктор {name}"
 
-msgid "Right angle gearbox {name} {param} (with end cap)"
-msgstr "Угловой редуктор {name} {param} (с торцевой заглушкой)"
+msgid "Right angle gearbox {name} {param}"
+msgstr "Угловой редуктор {name} {param}"
 
 msgid "Torque in every screw {torque} Nm"
 msgstr "Крутящий момент на каждом винте {torque} Нм"
@@ -118,8 +124,8 @@ msgstr "максимальный крутящий момент {torque} Нм"
 msgid "ratio {ratio}:1"
 msgstr "передаточное отношение {ratio}:1"
 
-msgid " * one from two with a mounting flange {flange} for the actuator"
-msgstr " * один из двух с монтажным фланцем {flange} для привода"
+msgid "mounting flange {flange} for the actuator"
+msgstr "с монтажным фланцем {flange} для привода"
 
 msgid "Screw - {screw}{number}, factor of safity {fos}"
 msgstr "Винт - {screw}{number}, запас прочности {fos}"
@@ -193,37 +199,43 @@ msgstr " * параметры блока управления:"
 msgid "voltage 380 V / 50 Hz / 3ph"
 msgstr "напряжение питания 380 В / 50 Гц / 3ф"
 
-msgid "general execution"
+msgid "general industrial design"
 msgstr "общепромышленное исполнение"
 
-msgid "protection IP 68, KS"
-msgstr "защита оболочки IP 68, KS"
+msgid "enclosure protection — IP 68"
+msgstr "степень защиты оболочки — IP 68"
 
-msgid "switches (limit, intermediate, torque) — single"
-msgstr "выключатели (концевые, промежуточные, моментные) — одиночные"
+msgid "corrosion protection — KS"
+msgstr "антикоррозионная защита оболочки — KS"
 
-msgid "operation indicator of drive — yes"
+msgid "limit switches — single"
+msgstr "концевые выключатели — одиночные"
+
+msgid "torque switches — single"
+msgstr "моментные выключатели — одиночные"
+
+msgid "blinker transmitter — yes"
 msgstr "индикатор работы привода — да"
 
-msgid "mechanical position indicator — no"
+msgid "mechanical position indication — no"
 msgstr "механический указатель положения — нет"
 
 msgid "stem protection tube — no"
 msgstr "защитная труба для выдвижного штока — нет"
 
-msgid "remote position indicator — no"
+msgid "electronic position transmitter — no"
 msgstr "дистанционный указатель положения — нет"
 
-msgid "kit cable glands — yes"
+msgid "cable glands — yes"
 msgstr "комплект кабельных вводов — да"
 
 msgid "cable type — unarmoured"
 msgstr "тип кабеля — небронированный"
 
-msgid "outer cable diameter — standard"
+msgid "outside cable diameter — standard"
 msgstr "наружный диаметр кабеля — стандарт"
 
-msgid "control — {name_or_no}"
+msgid "actuator controls — {name_or_no}"
 msgstr "блок управления — {name_or_no}"
 
 msgid "no"

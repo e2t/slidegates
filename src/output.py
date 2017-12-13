@@ -29,6 +29,90 @@ def output_result(slg: Slidegate, lang: str) -> str:
     def add_empty_line() -> None:
         lines.append('')
 
+    def add_actuator() -> None:
+        if slg.motor_control is not None:
+            aumatic = ' / {0}'.format(
+                slg.auma.control_names[slg.motor_control])
+        else:
+            aumatic = ''
+
+        add(_('Actuator AUMA {auma_name}{aumatic}').format(
+            auma_name=slg.auma.name, aumatic=aumatic))
+        add(_(" * the general parameters:"))
+        add(_('output speed {speed:g} rpm').format(
+            speed=rpm(slg.auma.speed)))
+        add(_('electric power {power} kW').format(
+            power=slg.auma.powers[slg.mode] / 1e3))
+        add(_('torque {min_torque}-{max_torque} Nm').format(
+            min_torque=slg.auma.min_torque,
+            max_torque=slg.auma.max_torques[slg.mode]))
+        add(_('flange type {flange}').format(flange=slg.auma.flange))
+        add(_('valve attachment {sleeve}').format(sleeve=slg.sleeve_sa))
+        add(_('type of duty {mode}').format(
+            mode=slg.auma.mode_names[slg.mode]))
+        if slg.is_left_hand_closing:
+            add(_('left-hand closing (counter-clockwise)'))
+        else:
+            add(_('right-hand closing (clockwise)'))
+            add(_('the reverse marking open/close on the handwheel'))
+        add(_('torque {open_torque} Nm for opening, '
+              '{close_torque} Nm for closing').format(
+                  open_torque=round(slg.torque_in_drive),
+                  close_torque=round(slg.close_torque_in_drive)))
+        add(_('full opening through {time} min and {revs} rev').format(
+            time=round(slg.open_time / 60, 1), revs=round(slg.revs, 1)))
+        add(_('weight not less than {mass} kg').format(mass=slg.auma.mass))
+
+        add(_(' * the parameters of the motor:'))
+        add(_('voltage 380 V / 50 Hz / 3ph'))
+        add(_('general industrial design'))
+        add(_('enclosure protection — IP 68'))
+        add(_('corrosion protection — KS'))
+        add(_('limit switches — single'))
+        add(_('torque switches — single'))
+        add(_('blinker transmitter — yes'))
+        add(_('mechanical position indication — no'))
+        add(_('stem protection tube — no'))
+        add(_('electronic position transmitter — no'))
+
+        add(_(' * the parameters of the cable:'))
+        add(_('cable glands — yes'))
+        add(_('cable type — unarmoured'))
+        add(_('outside cable diameter — standard'))
+
+        add(_(' * the parameters of the control:'))
+        add(_('actuator controls — {name_or_no}').format(
+            name_or_no=_('no') if slg.motor_control is None else
+            slg.auma.control_names[slg.motor_control]))
+        add_empty_line()
+
+    def add_reducer_gk(has_flange_for_actuator: bool) -> None:
+        add(_('Right angle gearbox {name}').format(
+            name=slg.reducer.name, number=screws_number))
+        add(_(" * the general parameters:"))
+        add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
+        add(_('max torque {torque} Nm').format(
+            torque=slg.reducer.max_torque))
+        add(_('flange type {flange}').format(flange=slg.reducer.flange))
+        add(_('valve attachment {sleeve}').format(sleeve=slg.sleeve_gk))
+        if has_flange_for_actuator:
+            add(_('mounting flange {flange} for the actuator').format(
+                flange=slg.auma.flange))
+        add(_('weight not less than {mass} kg').format(mass=slg.reducer.mass))
+        add_empty_line()
+
+    def add_reducer_tramec() -> None:
+        add(_('Right angle gearbox {name} {param}').format(
+            name=slg.reducer.name, param='C1 F B7 FLS'))
+        add(_('Right angle gearbox {name} {param}').format(
+            name=slg.reducer.name, param='C1 E B7 FLS SEA'))
+        add(_(" * the general parameters:"))
+        add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
+        add(_('max torque {torque} Nm').format(
+            torque=slg.reducer.max_torque))
+        add(_('weight not less than {mass} kg').format(mass=slg.reducer.mass))
+        add_empty_line()
+
     if slg.kind == SlgKind.deep:
         letter_type = _('D')
     elif slg.kind == SlgKind.surf:
@@ -65,134 +149,32 @@ def output_result(slg: Slidegate, lang: str) -> str:
     def diam_rod(major_diam: float) -> float:
         return ceilto(major_diam + 0.003, 0.005)
 
-    add(_('Screw {screw}{circle} AISI 304 — {length:.1f} m{number}').format(
-        screw=slg.screw, number=screws_number,
-        circle=_(' — calibrated rod {diam}').format(
-            diam=diam_rod(slg.screw.major_diam) * 1e3)
-        if slg.screw.major_diam not in PURCHASED_SCREWS else '',
-        length=slg.way + 0.2))
+    def add_screw(screw_type: str, number: str) -> None:
+        add(_('{screw} {thread}{circle} AISI 304 — '
+              '{length:.1f} m{number}').format(
+                  screw=_(screw_type), thread=slg.screw, number=number,
+                  circle=_(' (calibrated rod {diam:g})').format(
+                      diam=diam_rod(slg.screw.major_diam) * 1e3)
+                  if slg.screw.major_diam < 0.05 else '',
+                  length=slg.way + 0.3))
+
+    if slg.screws_number > 1 and not slg.reducer_is_tramec:
+        add_screw('Right-hand screw', '')
+        add_screw('Left-hand screw', '')
+    else:
+        add_screw('Right-hand screw', screws_number)
 
     add_empty_line()
 
     if slg.reducer_is_tramec:
-        add(_('Right angle gearbox {name} {param} (with end cap)').format(
-            name=slg.reducer.name, param='C1 F B7 FLS'))
-        add(_('Right angle gearbox {name} {param} (with end cap)').format(
-            name=slg.reducer.name, param='C1 E B7 FLS SEA'))
-
-        add(_(" * the general parameters:"))
-
-        add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
-
-        add(_('max torque {torque} Nm').format(
-            torque=slg.reducer.max_torque))
-
-        add(_('weight {mass} kg').format(mass=slg.reducer.mass))
-
-        add_empty_line()
-
+        add_reducer_tramec()
     else:
         if slg.drive == Drive.electric:
-            if slg.motor_control is not None:
-                aumatic = ' / {0}'.format(
-                    slg.auma.control_names[slg.motor_control])
-            else:
-                aumatic = ''
-
-            add(_('Actuator AUMA {auma_name}{aumatic}').format(
-                auma_name=slg.auma.name, aumatic=aumatic))
-
-            add(_(" * the general parameters:"))
-
-            add(_('rotational speed {speed:g} rpm').format(
-                speed=rpm(slg.auma.speed)))
-
-            add(_('electric power {power} kW').format(
-                power=slg.auma.powers[slg.mode] / 1e3))
-
-            add(_('torque {min_torque}-{max_torque} Nm').format(
-                min_torque=slg.auma.min_torque,
-                max_torque=slg.auma.max_torques[slg.mode]))
-
-            add(_('flange {flange}').format(flange=slg.auma.flange))
-
-            add(_('plug sleeve {sleeve}').format(sleeve=slg.sleeve_sa))
-
-            add(_('short-time duty {mode}').format(
-                mode=slg.auma.mode_names[slg.mode]))
-
-            if slg.is_left_hand_closing:
-                add(_('left-hand closing (counter-clockwise)'))
-            else:
-                add(_('right-hand closing (clockwise)'))
-                add(_('the reverse marking open/close on the handwheel'))
-
-            add(_('torque {open_torque} Nm for opening, '
-                  '{close_torque} Nm for closing').format(
-                      open_torque=round(slg.torque_in_drive),
-                      close_torque=round(slg.close_torque_in_drive)))
-
-            add(_('full opening through {time} min and {revs} rev').format(
-                time=round(slg.open_time / 60, 1), revs=round(slg.revs, 1)))
-
-            add(_('weight {mass} kg').format(mass=slg.auma.mass))
-
-            add(_(' * the parameters of the motor:'))
-
-            add(_('voltage 380 V / 50 Hz / 3ph'))
-
-            add(_('general execution'))
-
-            add(_('protection IP 68, KS'))
-
-            add(_('switches (limit, intermediate, torque) — single'))
-
-            add(_('operation indicator of drive — yes'))
-
-            add(_('mechanical position indicator — no'))
-
-            add(_('stem protection tube — no'))
-
-            add(_('remote position indicator — no'))
-
-            add(_(' * the parameters of the cable:'))
-
-            add(_('kit cable glands — yes'))
-
-            add(_('cable type — unarmoured'))
-
-            add(_('outer cable diameter — standard'))
-
-            add(_(' * the parameters of the control:'))
-
-            add(_('control — {name_or_no}').format(
-                name_or_no=_('no') if slg.motor_control is None else
-                slg.auma.control_names[slg.motor_control]))
-
-            add_empty_line()
-
+            add_actuator()
         if slg.have_reducer:
-            add(_('Right angle gearbox {name}{number}').format(
-                name=slg.reducer.name, number=screws_number))
-
-            add(_(" * the general parameters:"))
-
-            add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
-
-            add(_('max torque {torque} Nm').format(
-                torque=slg.reducer.max_torque))
-
-            add(_('flange {flange}').format(flange=slg.reducer.flange))
-
-            add(_('plug sleeve {sleeve}').format(sleeve=slg.sleeve_gk))
-
-            add(_('weight {mass} kg').format(mass=slg.reducer.mass))
-
+            add_reducer_gk(False)
             if slg.drive == Drive.electric:
-                add(_(' * one from two with a mounting flange {flange} '
-                      'for the actuator').format(flange=slg.auma.flange))
-
-            add_empty_line()
+                add_reducer_gk(True)
 
     add(_('Screw - {screw}{number}, factor of safity {fos}').format(
         screw=slg.screw, number=screws_number, fos=round(slg.screw_fos, 1)))
