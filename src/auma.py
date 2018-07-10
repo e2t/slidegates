@@ -1,18 +1,6 @@
-"""Модуль данных о приводах AUMA."""
+"""Data of the AUMA production."""
 from enum import IntEnum, unique
 from typing import NamedTuple, Tuple, Optional
-
-# AUMA MATIC - AM
-# 07.2-10.2  - AM 01.1
-# 14.2-48.1  - AM 02.1
-# It commands OPEN, STOP, CLOSE, shows the errors and signals about the end
-# position.
-
-# AUMATIC   - AC
-# 07.2-16.2 - AC 01.2
-# 25.1-40.1 - AC 01.1
-# It performs the all functions of AUMA MATIC and transmits the additional
-# information: working hours, temperature, vibration.
 
 
 @unique
@@ -117,10 +105,12 @@ AUMA_SA: Tuple[Tuple[Auma, ...], ...] = (
              min_torque=10, max_torques=(30, 20), flange=FLANGE_F07,
              mass=19, selflock=True, mode_names=SA_MODE_NAMES,
              control_names=(NAME_AM_01_1, NAME_AC_01_2)),
+
         Auma(name=NAME_SA_07_2, speed=RPS_5_6, powers=(0.02e3, 0.01e3),
              min_torque=10, max_torques=(30, 20), flange=FLANGE_F07,
              mass=19, selflock=True, mode_names=SA_MODE_NAMES,
              control_names=(NAME_AM_01_1, NAME_AC_01_2)),
+
         Auma(name=NAME_SA_07_2, speed=RPS_8, powers=(0.04e3, 0.03e3),
              min_torque=10, max_torques=(30, 20), flange=FLANGE_F07,
              mass=19, selflock=True, mode_names=SA_MODE_NAMES,

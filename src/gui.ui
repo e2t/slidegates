@@ -81,7 +81,7 @@
             <item>
              <widget class="QRadioButton" name="rad_drive_reducer">
               <property name="text">
-               <string>Ручной привод</string>
+               <string>Ручной редуктор</string>
               </property>
              </widget>
             </item>

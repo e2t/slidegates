@@ -20,6 +20,18 @@ class Install(IntEnum):
     concrete, channel, wall, flange, twoflange = range(5)
 
 
+# AUMA MATIC - AM
+# 07.2-10.2  - AM 01.1
+# 14.2-48.1  - AM 02.1
+# It commands OPEN, STOP, CLOSE, shows the errors and signals about the end
+# position.
+
+# AUMATIC   - AC
+# 07.2-16.2 - AC 01.2
+# 25.1-40.1 - AC 01.1
+# It performs the all functions of AUMA MATIC and transmits the additional
+# information: working hours, temperature, vibration.
+
 @unique
 class MotorControl(IntEnum):
     simple, extended = range(2)

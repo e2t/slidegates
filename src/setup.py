@@ -1,17 +1,16 @@
 # coding: utf-8
 import sys
 from cx_Freeze import setup, Executable
-sys.path.append('..')
+sys.path.append(f'{sys.path[0]}/..')
 import manifest
+
 
 BUILD_EXE_OPTIONS = {
     'packages': ['dry.core', 'dry.qt'],
-    'include_files': ['lang', '../dry/lang'],
+    'include_files': ['lang', '../dry/lang']
 }
-if sys.platform == 'win32':
-    BASE = 'Win32GUI'
-else:
-    BASE = None
+
+BASE = 'Win32GUI'
 
 SHORTCUT_TABLE = [
     ('DesktopShortcut',                  # Shortcut

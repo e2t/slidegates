@@ -4,7 +4,7 @@ from math import pi
 from typing import Optional
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QTextCursor
-sys.path.append('..')
+sys.path.append(f'{sys.path[0]}/..')
 import gui
 from auma import AUMA_SA, AUMA_GK, AUMA_SAR
 from manifest import VERSION, DESCRIPTION
@@ -123,6 +123,7 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
 
         motor_control = None
         if self.grp_motor_control.isChecked():
+
             if self.rad_simple_control.isChecked():
                 motor_control = MotorControl.simple
             else:

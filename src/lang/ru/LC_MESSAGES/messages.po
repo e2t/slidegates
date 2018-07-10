@@ -91,14 +91,14 @@ msgstr "кратковременный режим {mode}"
 msgid "torque {min_torque}-{max_torque} Nm"
 msgstr "крутящий момент {min_torque}-{max_torque} Нм"
 
-msgid "weight not less than {mass} kg"
-msgstr "масса не менее {mass} кг"
+msgid "weight {mass} kg"
+msgstr "масса {mass} кг"
 
 msgid "torque {open_torque} Nm for opening, {close_torque} Nm for closing"
 msgstr "крутящий момент на открытие {open_torque} Нм, на закрытие {close_torque} Нм"
 
-msgid "full opening through {time} min and {revs} rev"
-msgstr "полное открытие через {time} мин и {revs} оборотов"
+msgid "full opening through {time_min} min ({time_sec} sec) and {revs} rev"
+msgstr "полное открытие через {time_min} мин ({time_sec} сек) и {revs} оборотов"
 
 msgid "Right angle gearbox {name}"
 msgstr "Угловой редуктор {name}"
@@ -211,6 +211,9 @@ msgstr "антикоррозионная защита оболочки — KS"
 msgid "limit switches — single"
 msgstr "концевые выключатели — одиночные"
 
+msgid "intermediate position switches — no"
+msgstr "промежуточные выключатели — нет"
+
 msgid "torque switches — single"
 msgstr "моментные выключатели — одиночные"
 
@@ -240,3 +243,6 @@ msgstr "блок управления — {name_or_no}"
 
 msgid "no"
 msgstr "нет"
+
+msgid "temperature range {min_temp} °C to {max_temp} °C"
+msgstr "температурный диапазон {min_temp} °C до {max_temp} °C"

@@ -1,9 +1,8 @@
 import sys
 from slg import SlgKind, Drive
 from slidegate import Slidegate
-from screw import PURCHASED_SCREWS
 from math_func import ceilto
-sys.path.append('..')
+sys.path.append(f'{sys.path[0]}/..')
 from dry.core import get_translate, get_dir_current_file
 
 
@@ -59,9 +58,14 @@ def output_result(slg: Slidegate, lang: str) -> str:
               '{close_torque} Nm for closing').format(
                   open_torque=round(slg.torque_in_drive),
                   close_torque=round(slg.close_torque_in_drive)))
-        add(_('full opening through {time} min and {revs} rev').format(
-            time=round(slg.open_time / 60, 1), revs=round(slg.revs, 1)))
-        add(_('weight not less than {mass} kg').format(mass=slg.auma.mass))
+        add(_('full opening through {time_min} min ({time_sec} sec) and '
+              '{revs} rev').format(time_min=round(slg.open_time / 60, 1),
+                                   time_sec=round(slg.open_time),
+                                   revs=round(slg.revs)))
+        add(_('temperature range {min_temp} °C to {max_temp} °C').format(
+            min_temp=slg.auma_temp_range[0],
+            max_temp=slg.auma_temp_range[1]))
+        add(_('weight {mass} kg').format(mass=slg.auma.mass))
 
         add(_(' * the parameters of the motor:'))
         add(_('voltage 380 V / 50 Hz / 3ph'))
@@ -69,6 +73,7 @@ def output_result(slg: Slidegate, lang: str) -> str:
         add(_('enclosure protection — IP 68'))
         add(_('corrosion protection — KS'))
         add(_('limit switches — single'))
+        add(_('intermediate position switches — no'))
         add(_('torque switches — single'))
         add(_('blinker transmitter — yes'))
         add(_('mechanical position indication — no'))
@@ -98,7 +103,7 @@ def output_result(slg: Slidegate, lang: str) -> str:
         if has_flange_for_actuator:
             add(_('mounting flange {flange} for the actuator').format(
                 flange=slg.auma.flange))
-        add(_('weight not less than {mass} kg').format(mass=slg.reducer.mass))
+        add(_('weight {mass} kg').format(mass=slg.reducer.mass))
         add_empty_line()
 
     def add_reducer_tramec() -> None:
@@ -110,7 +115,7 @@ def output_result(slg: Slidegate, lang: str) -> str:
         add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
         add(_('max torque {torque} Nm').format(
             torque=slg.reducer.max_torque))
-        add(_('weight not less than {mass} kg').format(mass=slg.reducer.mass))
+        add(_('weight {mass} kg').format(mass=slg.reducer.mass))
         add_empty_line()
 
     if slg.kind == SlgKind.deep:

@@ -10,7 +10,7 @@ from auma import AUMA_SA, AUMA_SAR, MIN_OPEN_TIME, AUMA_GK, MotorMode, Auma, \
 from slg import SlgKind, Drive, LIMIT_SHEAR_STRESS, Install, MotorControl, \
     THICKNESS
 from wedge import WEDGES, Wedge
-sys.path.append('..')
+sys.path.append(f'{sys.path[0]}/..')
 from dry.core import Error
 
 
@@ -138,6 +138,22 @@ def _auma(required_torque: float, required_speed: float, job_mode: MotorMode,
     else:
         raise AumaError()
     return result
+
+
+def auma_temperature_range(auma: Auma, motor_control: Optional[MotorControl]) \
+        -> Tuple[float, float]:
+    if auma.name[:3] == 'SAR':
+        if motor_control is None:
+            return (-40, +60)
+        elif motor_control == MotorControl.simple:  # AM
+            return (-40, +60)
+        return (-25, +60)  # AC
+    else:  # SA
+        if motor_control is None:
+            return (-40, +80)
+        elif motor_control == MotorControl.simple:  # AM
+            return (-40, +70)
+        return (-25, +70)  # AC
 
 
 def _check_screw(axial_force: float, screw_length: float) -> Screw:
@@ -367,15 +383,18 @@ class Slidegate():
                     raise Error('Failed with calculation auma')
             else:
                 self.auma = auma
-                self.mode = MotorMode.normal  # FIX
+                self.mode = MotorMode.normal  # FIXME
             self.open_time = self.revs / self.auma.speed
             self.sleeve_sa = _sleeve_sa(self.screws_number,
                                         self.is_screw_pullout)
             self.torque_in_drive = max(
                 self.auma.min_torque + DELTA_OPEN * self.screws_number,
                 min_torque_in_drive)
+            self.auma_temp_range: Optional[Tuple[float, float]] = \
+                auma_temperature_range(self.auma, self.motor_control)
         else:
             self.torque_in_drive = min_torque_in_drive
+            self.auma_temp_range = None
 
         self.close_torque_in_drive = \
             self.torque_in_drive - DELTA_OPEN * self.screws_number

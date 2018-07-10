@@ -101,5 +101,6 @@ ENV/
 .mypy_cache/
 
 #My
-.vscode/
 build-msi.bat
+*.docx
+*.geany

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.9
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -323,7 +323,7 @@ class Ui_Dialog(object):
         self.rad_kind_flow.setText(_translate("Dialog", "Переливной"))
         self.groupBox_2.setTitle(_translate("Dialog", "Управление"))
         self.rad_drive_electric.setText(_translate("Dialog", "Электропривод"))
-        self.rad_drive_reducer.setText(_translate("Dialog", "Ручной привод"))
+        self.rad_drive_reducer.setText(_translate("Dialog", "Ручной редуктор"))
         self.rad_drive_manual.setText(_translate("Dialog", "Маховик"))
         self.grp_motor_control.setTitle(_translate("Dialog", "Блок управления"))
         self.rad_simple_control.setToolTip(_translate("Dialog", "Управляет командами ОТКРЫТЬ, СТОП, ЗАКРЫТЬ, отображает ошибки, возникающие во время работы, сигнализирует о достижении конечного положения."))
