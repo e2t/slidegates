@@ -34,10 +34,8 @@ def _wedges_pairs_number(hydr_head: float, frame_width: float,
                          gate_height: float) -> int:
 
     if hydr_head >= 4.0 and (frame_width >= 1.9 or gate_height >= 1.9):
-        result = 3
-    else:
-        result = 2
-    return result
+        return 3
+    return 2
 
 
 def _optimal_frame_height(gate_height: float) -> float:
@@ -72,10 +70,8 @@ def _screw_length(have_nodes_in_frame: bool, gate_height: float,
                   frame_height: float) -> float:
     nut_height = 0.1  # 100 mm
     if have_nodes_in_frame:
-        result = gate_height + nut_height + 0.05
-    else:
-        result = frame_height - gate_height + nut_height
-    return result
+        return gate_height + nut_height + 0.05
+    return frame_height - gate_height + nut_height
 
 
 def _min_axial_force(gate_force: float, wedges_angle: float,
@@ -91,10 +87,8 @@ def _real_axial_force(torque: float, screw: Screw) -> float:
 def _way(gate_height: float, frame_height: float,
          optimal_frame_height: float) -> float:
     if frame_height >= optimal_frame_height:
-        result = gate_height
-    else:
-        result = frame_height - TOP_BALK_HEIGHT - gate_height
-    return result
+        return gate_height
+    return frame_height - TOP_BALK_HEIGHT - gate_height
 
 
 def _screw(min_rod: float) -> Screw:

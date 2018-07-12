@@ -5,10 +5,8 @@ from slidegate import Slidegate, SlgKind
 
 def _mass_rack(have_rack: bool) -> float:
     if have_rack:
-        result = 25
-    else:
-        result = 0
-    return result
+        return 25
+    return 0
 
 
 def mass_calculation(slg: Slidegate) -> None:

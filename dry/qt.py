@@ -15,10 +15,8 @@ TextWidget = Union[QtWidgets.QLineEdit, QtWidgets.QComboBox]
 
 def get_lineedit(widget: TextWidget) -> QtWidgets.QLineEdit:
     if isinstance(widget, QtWidgets.QLineEdit):
-        result = widget
-    else:
-        result = widget.lineEdit()
-    return result
+        return widget
+    return widget.lineEdit()
 
 
 class GetNumber(Generic[AnyNumber]):

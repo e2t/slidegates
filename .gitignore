@@ -104,3 +104,5 @@ ENV/
 build-msi.bat
 *.docx
 *.geany
+*.o
+*.a

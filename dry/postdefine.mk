@@ -1,30 +1,45 @@
+ifeq ($(OS), Windows_NT)
+DLL = $(DLLNAME).dll
+else
+DLL = $(DLLNAME).so
+endif
+
+mostlyclean:
+	$(RM) $(OBJECTS)
+
+clean: mostlyclean
+
 %.mo: %.po
 	msgfmt --check --check-accelerators=_ -o $@ $^
 
-check: $(SOURCES)
-ifdef FILE
-	$(info Analyzing this file...)
-	$(MYPY) '$(FILE)'
-	$(PEP8) '$(FILE)'
-	$(FLAKE8) '$(FILE)'
-	$(PYTHON3) -m py_compile '$(FILE)'
-	$(PEP257) '$(FILE)'
-	$(PYLINT) '$(FILE)'
-else
-	$(info Analyzing the all files...)
-	$(MYPY) $(SOURCES)
-	$(PEP8) $(SOURCES)
-	$(FLAKE8) $(SOURCES)
-	$(PYTHON3) -m py_compile $(SOURCES)
-	$(PEP257) $(SOURCES)
+fastcheck: $(ARGS)
+	$(MYPY) $^ || true
+	$(PEP8) $^ || true
+
+check: $(ARGS)
+	make ARGS=$^ fastcheck
+	$(PYLINT) $^ || true
+	$(FLAKE8) $^ || true
+	$(PEP257) $^ || true
+
+checkall: $(SOURCES_PY)
+	for i in $^ ; do make -s ARGS=$$i check ; done
 	$(VULTURE) $^
-	$(PYLINT) $(SOURCES)
-endif
 
 gui.py: gui.ui
 	pyuic5 -o $@ $^
 
-run:
+def: $(OBJECTS)
+	make -C $(DRY)
+	$(LINK.o) -o $(DLL) $(OBJECTS) $(LDLIBS) -Wl,--output-def,$(DLLNAME).def,--out-implib,lib$(DLLNAME)dll.a
+
+dll: $(DLL)
+
+$(DLL): $(OBJECTS)
+	make -C $(DRY)
+	$(LINK.o) -o $@ $^ $(LDLIBS) $(DLLNAME).def -Wl,--out-implib,lib$(DLLNAME)_dll.a
+
+run: all
 ifeq (, $(wildcard $(TEST)))
 	$(PYTHON3) main.py
 else

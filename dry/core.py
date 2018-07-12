@@ -19,10 +19,8 @@ class InputException(Error):
 
 def get_dir_current_file(filename: str) -> str:
     if getattr(sys, 'frozen', False):
-        result = os.path.dirname(sys.executable)
-    else:
-        result = os.path.dirname(filename)
-    return result
+        filename = sys.executable
+    return os.path.dirname(filename)
 
 
 def get_translate(
@@ -55,6 +53,11 @@ def to_mpa(pascals: float) -> float:
     return pascals / 1e6
 
 
+# кгс -> СИ
+def to_n(kgf: float) -> float:
+    return kgf * GRAV_ACCELERATION
+
+
 # Площадь круга
 def compute_area_circle(diameter: float) -> float:
     return math.pi * diameter**2 / 4
@@ -69,8 +72,7 @@ def is_even(number: int) -> bool:
 def nearest_even(number: float) -> int:
     rounded_number = round(number)
     if is_even(rounded_number):
-        result = rounded_number
+        to_even = 0
     else:
-        result = (rounded_number +
-                  int(math.copysign(1, number - rounded_number)))
-    return result
+        to_even = int(math.copysign(1, number - rounded_number))
+    return rounded_number + to_even
