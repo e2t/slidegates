@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 import sys
 from math import pi
 from typing import Optional
@@ -12,8 +12,8 @@ from output import output_result
 from slg import SlgKind, Drive, Install, MotorControl, DEFAULT_PITCH
 from slg3 import mass_calculation
 from slidegate import Slidegate
-from dry.qt import msgbox, BaseMainWindow, get_float_number
-from dry.core import Error
+from Dry.qt import msgbox, BaseMainWindow, get_float_number
+from Dry.core import Error
 
 
 class MainWindow(BaseMainWindow, gui.Ui_Dialog):

@@ -39,7 +39,7 @@ $(DLL): $(OBJECTS)
 	make -C $(DRY)
 	$(LINK.o) -o $@ $^ $(LDLIBS) $(DLLNAME).def -Wl,--out-implib,lib$(DLLNAME)_dll.a
 
-run: all
+run: 
 ifeq (, $(wildcard $(TEST)))
 	$(PYTHON3) main.py
 else

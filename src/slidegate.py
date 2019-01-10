@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 from math import sin, radians, tan, ceil, pi
 from typing import Optional, Tuple
 from screw import SCREWS, TrapezoidalScrew, DEFAULT_PITCH, Screw, METRICS, \
@@ -11,15 +11,15 @@ from slg import SlgKind, Drive, LIMIT_SHEAR_STRESS, Install, MotorControl, \
     THICKNESS
 from wedge import WEDGES, Wedge
 sys.path.append(f'{sys.path[0]}/..')
-from dry.core import Error
+from Dry.core import Error
 
+RECOMMEND_FOS = 1.95   # перешел с 2.35 - 10.01.2019
+SCREW_MJU = 0.7        # перешел с 1.0  - 10.01.2019
 
-RECOMMEND_FOS = 2.35
 SPECIFIC_SEALING_COMPRESS_FORCE = 2 * G * 1e2  # m
 WEDGES_FRIC_ANGLE = 0.148889947609  # atan(0.15)
 SCREW_FRIC_ANGLE = 0.148889947609  # atan(0.15)
 SCREW_ELAST = 2.1e11  # Pa
-SCREW_MJU = 1.0
 TOP_BALK_HEIGHT = 0.2  # m
 DELTA_OPEN = 5.0  # N*m
 RECOMMEND_SPEED = 45 / 60  # rev/sec
@@ -32,7 +32,6 @@ class AumaError(Error):
 
 def _wedges_pairs_number(hydr_head: float, frame_width: float,
                          gate_height: float) -> int:
-
     if hydr_head >= 4.0 and (frame_width >= 1.9 or gate_height >= 1.9):
         return 3
     return 2
@@ -80,8 +79,7 @@ def _min_axial_force(gate_force: float, wedges_angle: float,
 
 
 def _real_axial_force(torque: float, screw: Screw) -> float:
-    return (torque / tan(
-        (SCREW_FRIC_ANGLE + screw.thread_angle) * screw.pitch_diam / 2))
+    return 2 * torque / tan(SCREW_FRIC_ANGLE + screw.thread_angle) / screw.pitch_diam
 
 
 def _way(gate_height: float, frame_height: float,
@@ -342,7 +340,7 @@ class Slidegate():
             self.screw = TrapezoidalScrew(screw_diam)
 
         min_torque_in_one_screw = _min_close_moment(
-            self.min_axial_force_in_one_screw, self.screw) + DELTA_OPEN
+            self.min_axial_force_in_one_screw, self.screw)
 
         if self.have_reducer:
             if reducer is None:
@@ -357,7 +355,7 @@ class Slidegate():
             ratio = 1
 
         min_torque_in_drive = \
-            min_torque_in_one_screw * self.screws_number / ratio
+            (min_torque_in_one_screw + DELTA_OPEN) * self.screws_number / ratio
 
         self.revs = self.way / self.screw.pitch * ratio
 
@@ -381,6 +379,7 @@ class Slidegate():
             self.open_time = self.revs / self.auma.speed
             self.sleeve_sa = _sleeve_sa(self.screws_number,
                                         self.is_screw_pullout)
+
             self.torque_in_drive = max(
                 self.auma.min_torque + DELTA_OPEN * self.screws_number,
                 min_torque_in_drive)
@@ -394,7 +393,7 @@ class Slidegate():
             self.torque_in_drive - DELTA_OPEN * self.screws_number
 
         self.torque_in_one_screw = \
-            self.torque_in_drive / self.screws_number * ratio
+            self.close_torque_in_drive / self.screws_number * ratio
 
         self.axial_force_in_one_screw = \
             _real_axial_force(self.torque_in_one_screw, self.screw)
@@ -418,7 +417,7 @@ class Slidegate():
         self.nut_axe = _nut_axe(self.axial_force_in_one_screw)
 
         self.screw_fos = fos_calc(self.screw.minor_diam, self.screw_length,
-                                  SCREW_ELAST, self.axial_force_in_one_screw)
+                                  SCREW_ELAST, self.axial_force_in_one_screw, SCREW_MJU)
 
         # _mass_calculation(self)
         self.thickness = {i: 0.0 for i in THICKNESS}

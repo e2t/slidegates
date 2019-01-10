@@ -44,9 +44,11 @@ class TrapezoidalScrew(Screw):
 
 SCREWS = (TrapezoidalScrew(0.030),
           TrapezoidalScrew(0.040),  # перешел с 42 - 20.07.2017
-          TrapezoidalScrew(0.055),
-          TrapezoidalScrew(0.065),
-          TrapezoidalScrew(0.075))
+          TrapezoidalScrew(0.055))
+
+          # перешел на градацию 5 после Tr55 - 10.01.2019
+          # TrapezoidalScrew(0.065),
+          # TrapezoidalScrew(0.075))
 
 
 PURCHASED_SCREWS = [x.major_diam for x in SCREWS[:3]]

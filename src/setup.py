@@ -6,7 +6,7 @@ import manifest
 
 
 BUILD_EXE_OPTIONS = {
-    'packages': ['dry.core', 'dry.qt'],
+    'packages': ['Dry.core', 'Dry.qt'],
     'include_files': ['lang', '../dry/lang']
 }
 

@@ -314,11 +314,14 @@ def _mass_crossbar(slg: Slidegate) -> float:
 def _mass_flange(slg: Slidegate, diam: float) -> float:
     # round flanges s20, difference of the diameters 200 mm
     # square flanges s8, 100 mm from below, 140 mm from above
-    return (area_ring_of_diam(diam + 0.2, diam, 2 * pi) * 0.02 if
+    res = (area_ring_of_diam(diam + 0.2, diam, 2 * pi) * 0.02 if
             slg.install in (Install.flange, Install.twoflange)
             else (slg.frame_width * (0.1 + 0.14) +
                   (slg.gate_height - 0.1 - 0.14) * 2 * slg.frame_shelf) *
             0.008) * STEEL_DENSITY
+    if slg.install in (Install.flange, Install.twoflange):
+        print("Масса фланца = ", res)
+    return res
 
 
 def _mass_frame_vert_edge(slg: Slidegate, edge_height: float) -> float:

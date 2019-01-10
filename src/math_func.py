@@ -22,9 +22,8 @@ def axial_inertia_moment(diam: float) -> float:
 
 # Calculation factor of safity in screw by axial force
 def fos_calc(screw_minor_diam: float, screw_length: float, screw_elast: float,
-             axial_force: float) -> float:
-    return axial_inertia_moment(screw_minor_diam) * (pi / screw_length)**2 * \
-        screw_elast / axial_force
+             axial_force: float, mju: float) -> float:
+    return axial_inertia_moment(screw_minor_diam) * screw_elast / axial_force / (mju * screw_length / pi)**2
 
 
 def diam_circle_by_area(area: float) -> float:
