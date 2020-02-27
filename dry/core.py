@@ -54,6 +54,7 @@ def to_mpa(pascals: float) -> float:
 
 
 # кгс -> СИ
+# TODO: rename 'from_kgf'
 def to_n(kgf: float) -> float:
     return kgf * GRAV_ACCELERATION
 

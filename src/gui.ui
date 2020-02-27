@@ -249,21 +249,21 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Гидростатический напор, м</string>
+               <string>Гидростатический напор (м):</string>
               </property>
              </widget>
             </item>
             <item row="4" column="0">
              <widget class="QLabel" name="label_6">
               <property name="text">
-               <string>Плотность жидкости, кг/м3</string>
+               <string>Плотность жидкости (кг/м3):</string>
               </property>
              </widget>
             </item>
             <item row="0" column="0">
              <widget class="QLabel" name="label_2">
               <property name="text">
-               <string>Ширина рамы, м</string>
+               <string>Ширина рамы (м):</string>
               </property>
              </widget>
             </item>
@@ -276,14 +276,14 @@
             <item row="1" column="0">
              <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Высота рамы, м</string>
+               <string>Высота рамы (м):</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_4">
               <property name="text">
-               <string>Высота щита, м</string>
+               <string>Высота щита (м):</string>
               </property>
              </widget>
             </item>
@@ -336,7 +336,7 @@
             <item>
              <widget class="QLabel" name="label_9">
               <property name="text">
-               <string>От верха рамы до земли, м</string>
+               <string>От верха рамы до земли (м):</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -380,7 +380,7 @@
               <item>
                <widget class="QLabel" name="label_10">
                 <property name="text">
-                 <string>От верха рамы до верха щита, м</string>
+                 <string>От верха рамы до верха щита (м):</string>
                 </property>
                 <property name="wordWrap">
                  <bool>false</bool>
@@ -420,131 +420,40 @@
        <item>
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
-          <string>Переопределить автовыбор</string>
+          <string>Переопределить выбор программы</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
            <layout class="QGridLayout" name="gridLayout_2">
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Ручной редуктор</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="edt_way">
-              <property name="placeholderText">
-               <string>Автовыбор</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QComboBox" name="cmb_auma">
-              <item>
-               <property name="text">
-                <string>Автовыбор</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>Мотор-редуктор</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QComboBox" name="cmb_reducer">
-              <item>
-               <property name="text">
-                <string>Автовыбор</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_11">
-              <property name="text">
-               <string>Промеж. опора в раме</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="1">
              <widget class="QLineEdit" name="edt_screw">
               <property name="placeholderText">
-               <string>Автовыбор</string>
+               <string>Авто</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_7">
               <property name="text">
-               <string>Диаметр винта, мм</string>
+               <string>Диаметр винта (мм):</string>
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_8">
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_5">
               <property name="text">
-               <string>Ход винта, м</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
-             <widget class="QLabel" name="label_12">
-              <property name="text">
-               <string>Кол-во пар клиньев</string>
+               <string>Ручной редуктор:</string>
               </property>
              </widget>
             </item>
             <item row="4" column="1">
-             <widget class="QGroupBox" name="groupBox_3">
-              <property name="styleSheet">
-               <string notr="true">border:0;</string>
+             <widget class="QLineEdit" name="edt_way">
+              <property name="placeholderText">
+               <string>Авто</string>
               </property>
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <property name="leftMargin">
-                <number>2</number>
-               </property>
-               <property name="topMargin">
-                <number>2</number>
-               </property>
-               <property name="rightMargin">
-                <number>2</number>
-               </property>
-               <property name="bottomMargin">
-                <number>2</number>
-               </property>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_13">
-                 <item>
-                  <widget class="QRadioButton" name="rad_have_nodes_in_frame_auto">
-                   <property name="text">
-                    <string>Автовыбор</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="rad_have_nodes_in_frame_none">
-                   <property name="text">
-                    <string>Без опор</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
              </widget>
             </item>
-            <item row="5" column="1">
+            <item row="6" column="1">
              <widget class="QGroupBox" name="groupBox_5">
               <property name="styleSheet">
                <string notr="true">border:0;</string>
@@ -570,7 +479,7 @@
                  <item>
                   <widget class="QRadioButton" name="rad_wedge_pairs_auto">
                    <property name="text">
-                    <string>Автовыбор</string>
+                    <string>Авто</string>
                    </property>
                    <property name="checked">
                     <bool>true</bool>
@@ -587,6 +496,114 @@
                 </layout>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Мотор-редуктор:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Промеж. опора в раме:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QGroupBox" name="groupBox_3">
+              <property name="styleSheet">
+               <string notr="true">border:0;</string>
+              </property>
+              <property name="title">
+               <string/>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <property name="leftMargin">
+                <number>2</number>
+               </property>
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="rightMargin">
+                <number>2</number>
+               </property>
+               <property name="bottomMargin">
+                <number>2</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <item>
+                  <widget class="QRadioButton" name="rad_have_nodes_in_frame_auto">
+                   <property name="text">
+                    <string>Авто</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="rad_have_nodes_in_frame_none">
+                   <property name="text">
+                    <string>Без опор</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_8">
+              <property name="text">
+               <string>Ход винта (м):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="cmb_auma">
+              <property name="currentText">
+               <string>Авто</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>Авто</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="cmb_reducer">
+              <item>
+               <property name="text">
+                <string>Авто</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="6" column="0">
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>Кол-во пар клиньев:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QLineEdit" name="edt_pitch">
+              <property name="placeholderText">
+               <string>Указывать с диаметром</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>Шаг винта (мм):</string>
+              </property>
              </widget>
             </item>
            </layout>

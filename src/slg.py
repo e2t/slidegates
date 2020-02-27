@@ -2,7 +2,6 @@ from enum import IntEnum, unique
 
 
 LIMIT_SHEAR_STRESS = 75e6  # Pa
-DEFAULT_PITCH = 0.006  # m
 
 
 @unique

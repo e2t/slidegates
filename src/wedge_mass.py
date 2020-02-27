@@ -101,8 +101,8 @@ def _horiz_edge_square(edge_width: float, edge_height: float,
 
 def _edge_height(slg: Slidegate) -> float:
     k_2 = 0.002  # mm, on every meter of hydr. head above gate
-    return ceilto(slg.shelf_cover_gate + 0.015 +  # 15 mm above cover
-                  k_2 * (slg.hydr_head - slg.gate_height) + slg.gate_s,
+    return ceilto(slg.shelf_cover_gate + 0.015   # 15 mm above cover
+                  + k_2 * (slg.hydr_head - slg.gate_height) + slg.gate_s,
                   0.005) - slg.gate_s
 
 
@@ -209,17 +209,18 @@ def _profiles(slg: Slidegate) -> None:
     # Side distance between gate and frame including limiter = 2 + 8
     dist_limiter = 10e-3
 
-    shelf_gate_2 = ceilto((slg.gate_s + RADIUS[slg.gate_s] +
-                           (dist_from_radius_to_wedge + slg.wedge.width) +
+    shelf_gate_2 = ceilto((slg.gate_s + RADIUS[slg.gate_s]
+                           + (dist_from_radius_to_wedge + slg.wedge.width)
                            # gap from side is 1/5 of wedge width
-                           slg.wedge.width / 5), 2e-3)
+                           + slg.wedge.width / 5), 2e-3)
     # only by two wedges pairs
-    slg.gate_depth = ceilto(shelf_gate_2 + min_diff +
-                            k_1 * (slg.hydr_head - slg.gate_height), 1e-3)
-    slg.gate_shelf = ceilto((dist_from_radius_to_wedge + slg.wedge.width) *
-                            (slg.wedges_pairs_number - 2) + shelf_gate_2, 2e-3)
-    slg.frame_depth = ceilto((slg.gate_depth + dist_compress +
-                              slg.wedge.dist + slg.frame_s * 2), 5e-3)
+    slg.gate_depth = ceilto(shelf_gate_2 + min_diff
+                            + k_1 * (slg.hydr_head - slg.gate_height), 1e-3)
+    slg.gate_shelf = ceilto((dist_from_radius_to_wedge + slg.wedge.width)
+                            * (slg.wedges_pairs_number - 2) + shelf_gate_2,
+                            2e-3)
+    slg.frame_depth = ceilto((slg.gate_depth + dist_compress
+                              + slg.wedge.dist + slg.frame_s * 2), 5e-3)
     slg.gate_depth = slg.frame_depth - slg.frame_s * 2 - slg.wedge.dist - \
         dist_compress
     slg.frame_shelf = ceilto(slg.frame_s + dist_limiter + slg.gate_shelf, 5e-3)
@@ -260,8 +261,8 @@ def _mass_frame(slg: Slidegate) -> float:
         bigpipe_diam = _bigpipe_diam(slg.bigpipe_length, slg.frame_width)
         edge_height = _close_frame_edge_height(slg.frame_height, bigpipe_diam)
         result += _mass_bigpipe(slg, bigpipe_diam) + \
-            (_mass_bottom_segment(slg, bigpipe_diam) +
-             _mass_top_segment(slg, bigpipe_diam)) * \
+            (_mass_bottom_segment(slg, bigpipe_diam)
+             + _mass_top_segment(slg, bigpipe_diam)) * \
             _number_segment(slg.is_frame_closed) + \
             _mass_cap(slg) + _mass_frame_horiz_edge(slg) * \
             _frame_horiz_edge_number(edge_height, slg.is_frame_closed) + \
@@ -285,9 +286,9 @@ def _mass_bar4deep(slg: Slidegate) -> float:
     height = 0.135  # 135 mm height of channel
     # 50 mm ledge, 8 mm thickness of flange
     shelf = 0.05 - 0.008 + slg.frame_s
-    return (_square_sheet_metal(slg.frame_s, (shelf, height, shelf + 0.004)) *
-            (slg.frame_width - 2 * gap) - 2 * (height - 2 * slg.frame_s) *
-            (slg.frame_shelf - gap) * slg.frame_s) * STEEL_DENSITY if \
+    return (_square_sheet_metal(slg.frame_s, (shelf, height, shelf + 0.004))
+            * (slg.frame_width - 2 * gap) - 2 * (height - 2 * slg.frame_s)
+            * (slg.frame_shelf - gap) * slg.frame_s) * STEEL_DENSITY if \
         slg.kind == SlgKind.deep else 0.0
 
 
@@ -315,10 +316,10 @@ def _mass_flange(slg: Slidegate, diam: float) -> float:
     # round flanges s20, difference of the diameters 200 mm
     # square flanges s8, 100 mm from below, 140 mm from above
     res = (area_ring_of_diam(diam + 0.2, diam, 2 * pi) * 0.02 if
-            slg.install in (Install.flange, Install.twoflange)
-            else (slg.frame_width * (0.1 + 0.14) +
-                  (slg.gate_height - 0.1 - 0.14) * 2 * slg.frame_shelf) *
-            0.008) * STEEL_DENSITY
+           slg.install in (Install.flange, Install.twoflange)
+           else (slg.frame_width * (0.1 + 0.14)
+                 + (slg.gate_height - 0.1 - 0.14) * 2 * slg.frame_shelf)
+           * 0.008) * STEEL_DENSITY
     if slg.install in (Install.flange, Install.twoflange):
         print("Масса фланца = ", res)
     return res
@@ -331,14 +332,14 @@ def _mass_frame_vert_edge(slg: Slidegate, edge_height: float) -> float:
 
 def _mass_frame_horiz_edge(slg: Slidegate) -> float:
     # 50 mm of the top balk x 2
-    return ((slg.frame_width + 0.1) * (slg.frame_depth + 0.1) -
-            slg.frame_width * slg.frame_depth) * slg.frame_s * STEEL_DENSITY
+    return ((slg.frame_width + 0.1) * (slg.frame_depth + 0.1)
+            - slg.frame_width * slg.frame_depth) * slg.frame_s * STEEL_DENSITY
 
 
 def _mass_cap(slg: Slidegate) -> float:
     # 50 mm of the top balk
-    return ((slg.frame_width + 0.1) * (slg.frame_depth + 0.1) *
-            slg.frame_s * STEEL_DENSITY) if slg.is_frame_closed else 0
+    return ((slg.frame_width + 0.1) * (slg.frame_depth + 0.1)
+            * slg.frame_s * STEEL_DENSITY) if slg.is_frame_closed else 0
 
 
 def _mass_top_segment(slg: Slidegate, diam: float) -> float:
@@ -352,8 +353,8 @@ def _mass_bottom_segment(slg: Slidegate, diam: float) -> float:
 
 
 def _mass_segment(slg: Slidegate, diam: float, height: float) -> float:
-    return ((height + diam / 2) * (slg.frame_width - 2 * slg.frame_shelf) -
-            area_circle_of_diam(diam, pi)) * slg.frame_s * STEEL_DENSITY
+    return ((height + diam / 2) * (slg.frame_width - 2 * slg.frame_shelf)
+            - area_circle_of_diam(diam, pi)) * slg.frame_s * STEEL_DENSITY
 
 
 def _mass_bigpipe(slg: Slidegate, diam: float) -> float:
@@ -399,8 +400,8 @@ def _mass_bottom(slg: Slidegate) -> float:
     return STEEL_DENSITY * (
         _square_sheet_metal(slg.frame_s, (
             0.05, slg.frame_depth + 0.005, sealing_height + slg.frame_s,
-            top_shelf)) *
-        slg.frame_width - area_break * slg.frame_s)
+            top_shelf))
+        * slg.frame_width - area_break * slg.frame_s)
 
 
 def _mass_channel(slg: Slidegate) -> float:
@@ -411,8 +412,8 @@ def _mass_channel(slg: Slidegate) -> float:
         flange_shelf_area = 0
     return STEEL_DENSITY * (
         _square_sheet_metal(slg.frame_s, (slg.frame_shelf, slg.frame_depth,
-                                          slg.frame_shelf)) *
-        slg.frame_height + flange_shelf_area * slg.frame_s)
+                                          slg.frame_shelf))
+        * slg.frame_height + flange_shelf_area * slg.frame_s)
 
 
 def _mass_gate(slg: Slidegate) -> float:
@@ -472,16 +473,16 @@ def _mass_screw(slg: Slidegate) -> float:
         slg.frame_height >= 2 * slg.gate_height + 0.5 else common_len
     # 4 mm thickness of the pipe
     return slg.screws_number * (
-        (area * rod_len +  # weight of the rod
-         (common_len - rod_len) * area_ring_of_diam(  # weight of the pipe
+        (area * rod_len   # weight of the rod
+         + (common_len - rod_len) * area_ring_of_diam(  # weight of the pipe
              slg.screw.major_diam,
-             slg.screw.major_diam - 2 * 0.004, 2 * pi) +
+             slg.screw.major_diam - 2 * 0.004, 2 * pi)
          # minus 580 mm - length of the shaft
-         area * (slg.frame_width - 0.58)) *
-        STEEL_DENSITY +
-        3.0 +  # plate
-        4.0 *  # bearing housing
-        (2 if not slg.is_screw_pullout and slg.have_rack else 1))
+         + area * (slg.frame_width - 0.58))
+        * STEEL_DENSITY
+        + 3.0   # plate
+        + 4.0   # bearing housing
+        * (2 if not slg.is_screw_pullout and slg.have_rack else 1))
 
 
 def _select_thickness(slg: Slidegate) -> None:

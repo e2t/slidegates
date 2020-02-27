@@ -9,11 +9,11 @@ import gui
 from auma import AUMA_SA, AUMA_GK, AUMA_SAR
 from manifest import VERSION, DESCRIPTION
 from output import output_result
-from slg import SlgKind, Drive, Install, MotorControl, DEFAULT_PITCH
+from slg import SlgKind, Drive, Install, MotorControl
 from slg3 import mass_calculation
 from slidegate import Slidegate
-from Dry.qt import msgbox, BaseMainWindow, get_float_number
-from Dry.core import Error
+from dry.qt import msgbox, BaseMainWindow, get_float_number
+from dry.core import Error
 
 
 class MainWindow(BaseMainWindow, gui.Ui_Dialog):
@@ -75,9 +75,13 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
         is_frame_closed = self.chk_closed_frame.isChecked()
 
         screw_diam = None
+        screw_pitch = None
         if self.edt_screw.text():
+            # Предельные значения задаются в миллиметрах.
             screw_diam = get_float_number(
-                self.edt_screw, (DEFAULT_PITCH * 1e3, False), None) / 1e3
+                self.edt_screw, (15, True), None) / 1e3  # 15 mm
+            screw_pitch = get_float_number(
+                self.edt_pitch, (2, True), (screw_diam * 1e3 / 2, True)) / 1e3
 
         way = None
         if self.edt_way.text():
@@ -94,6 +98,8 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
         if self.rad_kind_deep.isChecked():
             kind = SlgKind.deep
             hydr_head = get_float_number(self.edt_hydr_head, (0, False), None)
+            if hydr_head < gate_height:
+                raise Error('Напор не должен быть меньше высоты щита.')
         else:
             hydr_head = gate_height
             if self.rad_kind_flow.isChecked():
@@ -171,6 +177,7 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
             is_left_hand_closing=None,
             way=way,
             screw_diam=screw_diam,
+            screw_pitch=screw_pitch,
             reducer=reducer,
             auma=auma,
             beth_frame_top_and_gate_top=beth_frame_top_and_gate_top

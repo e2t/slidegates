@@ -1,7 +1,7 @@
 ﻿import sys
-from math import sin, radians, tan, ceil, pi
+from math import sin, radians, tan, pi
 from typing import Optional, Tuple
-from screw import SCREWS, TrapezoidalScrew, DEFAULT_PITCH, Screw, METRICS, \
+from screw import SCREWS, TrapezoidalScrew, Screw, METRICS, \
     MetricScrew
 from math_func import G, min_inertia_moment, diam_by_inertia_moment, fos_calc,\
     diam_circle_by_force_shear
@@ -11,7 +11,7 @@ from slg import SlgKind, Drive, LIMIT_SHEAR_STRESS, Install, MotorControl, \
     THICKNESS
 from wedge import WEDGES, Wedge
 sys.path.append(f'{sys.path[0]}/..')
-from Dry.core import Error
+from dry.core import Error
 
 RECOMMEND_FOS = 1.95   # перешел с 2.35 - 10.01.2019
 SCREW_MJU = 0.7        # перешел с 1.0  - 10.01.2019
@@ -61,8 +61,8 @@ def _sealing_compress_force(kind: SlgKind, frame_width: float,
         horiz_sides = 2
     else:
         horiz_sides = 1
-    return ((2 * gate_height + horiz_sides * frame_width) *
-            SPECIFIC_SEALING_COMPRESS_FORCE)
+    return ((2 * gate_height + horiz_sides * frame_width)
+            * SPECIFIC_SEALING_COMPRESS_FORCE)
 
 
 def _screw_length(have_nodes_in_frame: bool, gate_height: float,
@@ -79,7 +79,8 @@ def _min_axial_force(gate_force: float, wedges_angle: float,
 
 
 def _real_axial_force(torque: float, screw: Screw) -> float:
-    return 2 * torque / tan(SCREW_FRIC_ANGLE + screw.thread_angle) / screw.pitch_diam
+    return 2 * torque / tan(SCREW_FRIC_ANGLE + screw.thread_angle) \
+        / screw.pitch_diam
 
 
 def _way(gate_height: float, frame_height: float,
@@ -93,9 +94,8 @@ def _screw(min_rod: float) -> Screw:
     try:
         result = next(filter(lambda i: min_rod <= i.minor_diam, SCREWS))
     except StopIteration:
-        diam_step = 0.005
-        result = TrapezoidalScrew(
-            ceil((min_rod + DEFAULT_PITCH) / diam_step) * diam_step)
+        raise Error('Нет стандартного винта. Минимальный внутренний диаметр '
+                    f'{min_rod * 1e3:.1f} мм.')
     return result
 
 
@@ -137,15 +137,15 @@ def auma_temperature_range(auma: Auma, motor_control: Optional[MotorControl]) \
     if auma.name[:3] == 'SAR':
         if motor_control is None:
             return (-40, +60)
-        elif motor_control == MotorControl.simple:  # AM
+        if motor_control == MotorControl.simple:  # AM
             return (-40, +60)
         return (-25, +60)  # AC
-    else:  # SA
-        if motor_control is None:
-            return (-40, +80)
-        elif motor_control == MotorControl.simple:  # AM
-            return (-40, +70)
-        return (-25, +70)  # AC
+    # else SA
+    if motor_control is None:
+        return (-40, +80)
+    if motor_control == MotorControl.simple:  # AM
+        return (-40, +70)
+    return (-25, +70)  # AC
 
 
 def _check_screw(axial_force: float, screw_length: float) -> Screw:
@@ -158,8 +158,8 @@ def _check_screw(axial_force: float, screw_length: float) -> Screw:
 def _nut_axe(axial_force: float) -> float:
     axes_number = 2
     hole_diam = 0.010  # M10 into the axe
-    return (4 * axial_force / axes_number / pi / LIMIT_SHEAR_STRESS +
-            hole_diam**2)**0.5
+    return (4 * axial_force / axes_number / pi / LIMIT_SHEAR_STRESS
+            + hole_diam**2)**0.5
 
 
 def _sleeve_gk(is_screw_pullout: bool) -> str:
@@ -198,8 +198,8 @@ def _reducer(required_torque: float, is_tramec: bool,
 def _bolt_by_minor_diam(minor_diam: float, minimal_bolt: float,
                         only_recommend: bool) -> MetricScrew:
     for i in METRICS:
-        if i.major_diam < minimal_bolt or (only_recommend and
-                                           not i.is_recommend):
+        if i.major_diam < minimal_bolt or (
+                only_recommend and not i.is_recommend):
             continue
         if i.minor_diam >= minor_diam:
             return i
@@ -237,6 +237,7 @@ class Slidegate():
                  is_left_hand_closing: Optional[bool] = None,
                  way: Optional[float] = None,
                  screw_diam: Optional[float] = None,
+                 screw_pitch: Optional[float] = None,
                  reducer: Optional[RightAngleGearbox] = None,
                  auma: Optional[Auma] = None,
                  beth_frame_top_and_gate_top: Optional[float] = None) -> None:
@@ -337,7 +338,9 @@ class Slidegate():
         if screw_diam is None:
             self.screw = _screw(self.min_screw_minor_diam)
         else:
-            self.screw = TrapezoidalScrew(screw_diam)
+            if screw_pitch is None:
+                raise Error('Не указан шаг резьбы.')
+            self.screw = TrapezoidalScrew(screw_diam, screw_pitch)
 
         min_torque_in_one_screw = _min_close_moment(
             self.min_axial_force_in_one_screw, self.screw)
@@ -417,7 +420,8 @@ class Slidegate():
         self.nut_axe = _nut_axe(self.axial_force_in_one_screw)
 
         self.screw_fos = fos_calc(self.screw.minor_diam, self.screw_length,
-                                  SCREW_ELAST, self.axial_force_in_one_screw, SCREW_MJU)
+                                  SCREW_ELAST, self.axial_force_in_one_screw,
+                                  SCREW_MJU)
 
         # _mass_calculation(self)
         self.thickness = {i: 0.0 for i in THICKNESS}
@@ -426,8 +430,8 @@ class Slidegate():
                 self.screws_number * self.axial_force_in_one_screw
             self.min_bolts_by_all_pairs = \
                 _bolt_by_minor_diam(diam_circle_by_force_shear(
-                    common_axial_force / self.wedges_pairs_number /
-                    ONE_WEDGE_BOLTS_NUMBER, LIMIT_SHEAR_STRESS), 0.008, True)
+                    common_axial_force / self.wedges_pairs_number
+                    / ONE_WEDGE_BOLTS_NUMBER, LIMIT_SHEAR_STRESS), 0.008, True)
 
             # only by TWO wedge-pairs
             self.wedge = _wedge_by_bolt(

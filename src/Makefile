@@ -1,4 +1,4 @@
-DRY = ../Dry
+DRY = ../dry
 
 include $(DRY)/predefine.mk
 

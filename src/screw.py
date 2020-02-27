@@ -1,6 +1,5 @@
 from math import atan, pi
 from typing import Tuple
-from slg import DEFAULT_PITCH
 
 
 class Screw:
@@ -34,7 +33,7 @@ class Screw:
 
 
 class TrapezoidalScrew(Screw):
-    def __init__(self, diam: float, pitch: float = DEFAULT_PITCH) -> None:
+    def __init__(self, diam: float, pitch: float) -> None:
         super().__init__(diam, diam - pitch / 2, diam - pitch, pitch)
 
     def __str__(self) -> str:
@@ -42,13 +41,13 @@ class TrapezoidalScrew(Screw):
                                       self._pitch * 1e3)
 
 
-SCREWS = (TrapezoidalScrew(0.030),
-          TrapezoidalScrew(0.040),  # перешел с 42 - 20.07.2017
-          TrapezoidalScrew(0.055))
-
-          # перешел на градацию 5 после Tr55 - 10.01.2019
-          # TrapezoidalScrew(0.065),
-          # TrapezoidalScrew(0.075))
+SCREWS = (TrapezoidalScrew(0.030, 0.006),
+          TrapezoidalScrew(0.040, 0.007),
+          TrapezoidalScrew(0.050, 0.008),
+          TrapezoidalScrew(0.060, 0.009),
+          TrapezoidalScrew(0.070, 0.010),
+          TrapezoidalScrew(0.080, 0.010),
+          TrapezoidalScrew(0.090, 0.012))
 
 
 PURCHASED_SCREWS = [x.major_diam for x in SCREWS[:3]]

@@ -1,6 +1,7 @@
 import wedge_mass
 import flow_mass
-from slidegate import Slidegate, SlgKind
+from slidegate import Slidegate
+from slg import SlgKind
 
 
 def _mass_rack(have_rack: bool) -> float:

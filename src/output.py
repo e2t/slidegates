@@ -3,7 +3,7 @@ from slg import SlgKind, Drive
 from slidegate import Slidegate
 from math_func import ceilto
 sys.path.append(f'{sys.path[0]}/..')
-from Dry.core import get_translate, get_dir_current_file
+from dry.core import get_translate, get_dir_current_file
 
 
 def rpm(rps: float) -> float:

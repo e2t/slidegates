@@ -20,10 +20,10 @@ VULTURE = vulture
 
 CC = gcc
 
-LDFLAGS ?= -shared -L$(DRY)
+#LDFLAGS ?= -shared -L$(DRY)
+LDFLAGS ?= -static
 
-# https://lars-lab.jpl.nasa.gov/JPL_Coding_Standard_C.pdf
-CFLAGS ?= -Wall -Wextra -pedantic -std=iso9899:1999 \
+CFLAGS ?= -Wall -Wextra -pedantic -std=c90 \
 	-Wshadow -Wpointer-arith -Wcast-qual -Wcast-align \
 	-Wstrict-prototypes -Wmissing-prototypes -Wconversion
 
