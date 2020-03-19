@@ -130,6 +130,9 @@ msgstr "с монтажным фланцем {flange} для привода"
 msgid "Screw - {screw}{number}, factor of safity {fos}"
 msgstr "Винт - {screw}{number}, запас прочности {fos}"
 
+msgid "Minimal inertia moment {} mm4"
+msgstr "Минимальный момент инерции {} мм4"
+
 msgid "Axial force in screw {force} N"
 msgstr "Осевая сила на винте {force} Н"
 

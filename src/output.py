@@ -4,6 +4,7 @@ from slidegate import Slidegate
 from math_func import ceilto
 sys.path.append(f'{sys.path[0]}/..')
 from dry.core import get_translate, get_dir_current_file
+from dry.allgui import fstr
 
 
 def rpm(rps: float) -> float:
@@ -183,6 +184,8 @@ def output_result(slg: Slidegate, lang: str) -> str:
 
     add(_('Screw - {screw}{number}, factor of safity {fos}').format(
         screw=slg.screw, number=screws_number, fos=round(slg.screw_fos, 1)))
+    add(_('Minimal inertia moment {} mm4').format(
+        fstr(slg.min_screw_inertia_moment * 1e12, '%.2f')))  # to mm^4
 
     if slg.screws_number == 1:
         axial_force = _('Axial force in screw {force} N')

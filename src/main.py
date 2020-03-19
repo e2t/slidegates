@@ -4,7 +4,6 @@ from math import pi
 from typing import Optional
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QTextCursor
-sys.path.append(f'{sys.path[0]}/..')
 import gui
 from auma import AUMA_SA, AUMA_GK, AUMA_SAR
 from manifest import VERSION, DESCRIPTION
@@ -12,6 +11,7 @@ from output import output_result
 from slg import SlgKind, Drive, Install, MotorControl
 from slg3 import mass_calculation
 from slidegate import Slidegate
+sys.path.append(f'{sys.path[0]}/..')
 from dry.qt import msgbox, BaseMainWindow, get_float_number
 from dry.core import Error
 

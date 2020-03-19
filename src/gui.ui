@@ -706,6 +706,43 @@
   </layout>
   <zorder></zorder>
  </widget>
+ <tabstops>
+  <tabstop>rad_kind_surf</tabstop>
+  <tabstop>rad_kind_deep</tabstop>
+  <tabstop>rad_kind_flow</tabstop>
+  <tabstop>rad_drive_electric</tabstop>
+  <tabstop>rad_drive_reducer</tabstop>
+  <tabstop>rad_drive_manual</tabstop>
+  <tabstop>grp_motor_control</tabstop>
+  <tabstop>rad_simple_control</tabstop>
+  <tabstop>rad_extended_control</tabstop>
+  <tabstop>cmb_install</tabstop>
+  <tabstop>chk_closed_frame</tabstop>
+  <tabstop>chk_is_screw_pullout</tabstop>
+  <tabstop>chk_screws_number</tabstop>
+  <tabstop>edt_frame_width</tabstop>
+  <tabstop>edt_frame_height</tabstop>
+  <tabstop>edt_gate_height</tabstop>
+  <tabstop>edt_hydr_head</tabstop>
+  <tabstop>edt_density</tabstop>
+  <tabstop>grp_rack</tabstop>
+  <tabstop>edt_rack_dist</tabstop>
+  <tabstop>edt_flow_dist</tabstop>
+  <tabstop>chk_fixed_gate</tabstop>
+  <tabstop>cmb_auma</tabstop>
+  <tabstop>cmb_reducer</tabstop>
+  <tabstop>edt_screw</tabstop>
+  <tabstop>edt_pitch</tabstop>
+  <tabstop>edt_way</tabstop>
+  <tabstop>rad_have_nodes_in_frame_auto</tabstop>
+  <tabstop>rad_have_nodes_in_frame_none</tabstop>
+  <tabstop>rad_wedge_pairs_auto</tabstop>
+  <tabstop>rad_wedge_pairs_three</tabstop>
+  <tabstop>txt_result</tabstop>
+  <tabstop>rad_lang_ru</tabstop>
+  <tabstop>rad_lang_en</tabstop>
+  <tabstop>btn_run</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
