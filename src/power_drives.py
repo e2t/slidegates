@@ -3,6 +3,7 @@ from typing import Callable
 import docx
 import slidegate
 import slg3
+import slg
 
 
 FRAME_WIDTHS = [i / 10 for i in range(3, 21)]
@@ -16,9 +17,9 @@ def get_surf_slidegate(frame_width: float,
     return slidegate.Slidegate(frame_width=frame_width,
                                gate_height=gate_height,
                                hydr_head=gate_height,
-                               kind=slidegate.SlgKind.surf,
-                               drive=slidegate.Drive.electric,
-                               install=slidegate.Install.wall,
+                               kind=slg.SlgKind.surf,
+                               drive=slg.Drive.electric,
+                               install=slg.Install.wall,
                                is_frame_closed=False,
                                have_rack=False,
                                screws_number=1)
@@ -29,9 +30,9 @@ def get_deep_slidegate(frame_width: float,
     return slidegate.Slidegate(frame_width=frame_width,
                                gate_height=gate_height,
                                hydr_head=HEAD,
-                               kind=slidegate.SlgKind.deep,
-                               drive=slidegate.Drive.electric,
-                               install=slidegate.Install.wall,
+                               kind=slg.SlgKind.deep,
+                               drive=slg.Drive.electric,
+                               install=slg.Install.wall,
                                is_frame_closed=False,
                                have_rack=False,
                                screws_number=1)
@@ -42,9 +43,9 @@ def get_flow_slidegate(frame_width: float,
     return slidegate.Slidegate(frame_width=frame_width,
                                gate_height=gate_height,
                                hydr_head=gate_height,
-                               kind=slidegate.SlgKind.flow,
-                               drive=slidegate.Drive.electric,
-                               install=slidegate.Install.wall,
+                               kind=slg.SlgKind.flow,
+                               drive=slg.Drive.electric,
+                               install=slg.Install.wall,
                                is_frame_closed=False,
                                have_rack=False,
                                screws_number=1)
@@ -64,10 +65,10 @@ def add_power_table(
         row = table.rows[i + 1].cells
         row[0].text = str(gate_height)
         for j, frame_width in enumerate(FRAME_WIDTHS):
-            slg = get_slidegate(frame_width, gate_height)
-            slg3.mass_calculation(slg)
-            power = slg.auma.powers[slg.mode]
-            weight = slg.mass
+            a_slg = get_slidegate(frame_width, gate_height)
+            slg3.mass_calculation(a_slg)
+            power = a_slg.auma.powers[a_slg.mode]
+            weight = a_slg.mass
             row[j + 1].text = f"{power / 1e3} {weight:.0f}"
 
 
@@ -97,7 +98,6 @@ def generic_table_powers() -> None:
     par.add_run(f'Регулирующие глубинные (напор равен высоте щита):')
     add_power_table(doc, get_flow_slidegate)
 
-    # doc.sections[-1].orientation = docx.enum.section.WD_ORIENTATION.LANDSCAPE
     doc.save(FILE_NAME)
 
 

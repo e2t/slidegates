@@ -51,7 +51,7 @@
             <item>
              <widget class="QRadioButton" name="rad_kind_flow">
               <property name="text">
-               <string>Переливной</string>
+               <string>Регулирующий</string>
               </property>
              </widget>
             </item>
@@ -156,7 +156,7 @@
               </item>
               <item>
                <property name="text">
-                <string>Канальная</string>
+                <string>Бесштрабная</string>
                </property>
               </item>
               <item>
@@ -370,7 +370,7 @@
           <bool>false</bool>
          </property>
          <property name="title">
-          <string>Для переливных затворов</string>
+          <string>Для регулирующих затворов</string>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_17">
           <item>
@@ -404,13 +404,6 @@
                </size>
               </property>
              </spacer>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="chk_fixed_gate">
-              <property name="text">
-               <string>С неподвижным щитом</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </item>
@@ -728,7 +721,6 @@
   <tabstop>grp_rack</tabstop>
   <tabstop>edt_rack_dist</tabstop>
   <tabstop>edt_flow_dist</tabstop>
-  <tabstop>chk_fixed_gate</tabstop>
   <tabstop>cmb_auma</tabstop>
   <tabstop>cmb_reducer</tabstop>
   <tabstop>edt_screw</tabstop>

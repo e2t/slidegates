@@ -202,7 +202,8 @@ def _profiles(slg: Slidegate) -> None:
 
     dist_compress = 13e-3
     k_1 = 0.0035  # mm, on every meter hydr. head above gate
-    # Minimal difference between size of gate's shelf and size of gate's depth
+    # Minimal difference between size of gate's shelf and size of
+    # gate's depth
     min_diff = 9e-3
     # Distance between radius of gate and wedge = 2 + 6
     dist_from_radius_to_wedge = 8e-3

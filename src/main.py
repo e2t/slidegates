@@ -94,6 +94,7 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
             beth_frame_top_and_gate_top = \
                 get_float_number(self.edt_rack_dist, (0, False), None)
 
+        # TODO: убрать флаг have_fixed_gate, проверять тип монтажа.
         have_fixed_gate = False
         if self.rad_kind_deep.isChecked():
             kind = SlgKind.deep
@@ -104,7 +105,12 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
             hydr_head = gate_height
             if self.rad_kind_flow.isChecked():
                 kind = SlgKind.flow
-                have_fixed_gate = self.chk_fixed_gate.isChecked()
+                if install in (Install.concrete, Install.channel):
+                    have_fixed_gate = True
+                elif install == Install.wall:
+                    have_fixed_gate = False
+                else:
+                    raise Error('Регулирующие затворы монтируются в канал или на стену.')
                 beth_frame_top_and_gate_top = \
                     get_float_number(self.edt_flow_dist, (0, False), None)
             else:

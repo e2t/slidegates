@@ -1,7 +1,6 @@
 ﻿import sys
 from slg import SlgKind, Drive
 from slidegate import Slidegate
-from math_func import ceilto
 sys.path.append(f'{sys.path[0]}/..')
 from dry.core import get_translate, get_dir_current_file
 from dry.allgui import fstr
@@ -124,9 +123,9 @@ def output_result(slg: Slidegate, lang: str) -> str:
     elif slg.kind == SlgKind.surf:
         letter_type = _('S')
     elif slg.have_fixed_gate:
-        letter_type = _('SOR')
+        letter_type = _('СOR')
     else:
-        letter_type = _('DOR')
+        letter_type = _('WOR')
 
     if slg.drive == Drive.electric:
         letter_drive = _('E')
@@ -149,20 +148,13 @@ def output_result(slg: Slidegate, lang: str) -> str:
 
     for i in slg.thickness:
         if slg.thickness[i]:
-            add(_('Sheet {thickness:g} mm AISI 304 — {mass:.1f} kg').format(
+            add(_('Sheet {thickness:g} mm stainless steel — {mass:.1f} kg').format(
                 thickness=i * 1e3, mass=slg.thickness[i]))
 
-    def diam_rod(major_diam: float) -> float:
-        return ceilto(major_diam + 0.003, 0.005)
-
     def add_screw(screw_type: str, number: str) -> None:
-        add(_('{screw} {thread}{circle} AISI 304 — '
+        add(_('{screw} {thread} stainless steel — '
               '{length:.1f} m{number}').format(
-                  screw=_(screw_type), thread=slg.screw, number=number,
-                  circle=_(' (calibrated rod {diam:g})').format(
-                      diam=diam_rod(slg.screw.major_diam) * 1e3)
-                  if slg.screw.major_diam < 0.05 else '',
-                  length=slg.way + 0.3))
+                  screw=_(screw_type), thread=slg.screw, number=number, length=slg.way + 0.3))
 
     if slg.screws_number > 1 and not slg.reducer_is_tramec:
         add_screw('Right-hand screw', '')

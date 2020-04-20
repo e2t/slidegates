@@ -67,7 +67,7 @@ NAME_SAR_25_1 = 'SAR 25.1'
 NAME_SAR_30_1 = 'SAR 30.1'
 
 NAME_AC_01_2 = 'AC 01.2'
-NAME_AC_01_1 = 'AC 01.1'
+# AC 01.1 - не выпускается (Рудакова, 02.04.2020)
 NAME_AM_01_1 = 'AM 01.1'
 NAME_AM_02_1 = 'AM 02.1'
 
@@ -464,202 +464,202 @@ AUMA_SA: Tuple[Tuple[Auma, ...], ...] = (
         Auma(name=NAME_SA_25_1, speed=RPS_4, powers=(1.1e3, 0.75e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_5_6, powers=(1.1e3, 0.75e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_8, powers=(3e3, 2.2e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_11, powers=(3e3, 2.2e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_16, powers=(4e3, 3e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_22, powers=(4e3, 3e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_32, powers=(7.5e3, 5.5e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=160, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_45, powers=(7.5e3, 5.5e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=160, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_63, powers=(15e3, 11e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=160, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_25_1, speed=RPS_90, powers=(15e3, 11e3),
              min_torque=630, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=160, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1))),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2))),
     (
         Auma(name=NAME_SA_30_1, speed=RPS_4, powers=(2.2e3, 1.5e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_5_6, powers=(2.2e3, 1.5e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_8, powers=(5.5e3, 4e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_11, powers=(5.5e3, 4e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_16, powers=(7.5e3, 5.5e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_22, powers=(7.5e3, 5.5e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_32, powers=(15e3, 11e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=260, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_45, powers=(15e3, 11e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=260, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_63, powers=(30e3, 22e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=260, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_30_1, speed=RPS_90, powers=(30e3, 22e3),
              min_torque=1250, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=260, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1))),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2))),
     (
         Auma(name=NAME_SA_35_1, speed=RPS_4, powers=(4e3, 3e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=410, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_5_6, powers=(4e3, 3e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=410, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_8, powers=(7.5e3, 5.5e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=410, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_11, powers=(7.5e3, 5.5e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=410, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_16, powers=(15e3, 11e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=410, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_22, powers=(15e3, 11e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=410, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_32, powers=(30e3, 14e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=425, selflock=False, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_35_1, speed=RPS_45, powers=(30e3, 14e3),
              min_torque=2500, max_torques=(8000, 5700), flange=FLANGE_F35,
              mass=425, selflock=False, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1))),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2))),
     (
         Auma(name=NAME_SA_40_1, speed=RPS_4, powers=(7.5e3, 5.5e3),
              min_torque=5000, max_torques=(16000, 11200), flange=FLANGE_F40,
              mass=510, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_40_1, speed=RPS_5_6, powers=(7.5e3, 5.5e3),
              min_torque=5000, max_torques=(16000, 11200), flange=FLANGE_F40,
              mass=510, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_40_1, speed=RPS_8, powers=(15e3, 11e3),
              min_torque=5000, max_torques=(16000, 11200), flange=FLANGE_F40,
              mass=510, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_40_1, speed=RPS_11, powers=(15e3, 11e3),
              min_torque=5000, max_torques=(16000, 11200), flange=FLANGE_F40,
              mass=510, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_40_1, speed=RPS_16, powers=(30e3, 22e3),
              min_torque=5000, max_torques=(16000, 11200), flange=FLANGE_F40,
              mass=510, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_40_1, speed=RPS_22, powers=(30e3, 22e3),
              min_torque=5000, max_torques=(16000, 11200), flange=FLANGE_F40,
              mass=510, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_40_1, speed=RPS_32, powers=(30e3, 22e3),
              min_torque=5000, max_torques=(14000, 9800), flange=FLANGE_F40,
              mass=510, selflock=False, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1))),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2))),
     (
         Auma(name=NAME_SA_48_1, speed=RPS_4, powers=(15e3, 11e3),
              min_torque=10000, max_torques=(32000, 22400), flange=FLANGE_F48,
              mass=750, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_48_1, speed=RPS_5_6, powers=(15e3, 11e3),
              min_torque=10000, max_torques=(32000, 22400), flange=FLANGE_F48,
              mass=750, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_48_1, speed=RPS_8, powers=(30e3, 22e3),
              min_torque=10000, max_torques=(32000, 22400), flange=FLANGE_F48,
              mass=750, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_48_1, speed=RPS_11, powers=(30e3, 22e3),
              min_torque=10000, max_torques=(32000, 22400), flange=FLANGE_F48,
              mass=750, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SA_48_1, speed=RPS_16, powers=(45e3, 30e3),
              min_torque=10000, max_torques=(32000, 22400), flange=FLANGE_F48,
              mass=750, selflock=True, mode_names=SA_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)))
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)))
 )
 
 AUMA_SAR: Tuple[Tuple[Auma, ...], ...] = (
@@ -967,42 +967,42 @@ AUMA_SAR: Tuple[Tuple[Auma, ...], ...] = (
         Auma(name=NAME_SAR_25_1, speed=RPS_4, powers=(1.1e3, 0.75e3),
              min_torque=1000, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SAR_25_1, speed=RPS_5_6, powers=(1.1e3, 0.75e3),
              min_torque=1000, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SAR_25_1, speed=RPS_8, powers=(3e3, 2.2e3),
              min_torque=1000, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SAR_25_1, speed=RPS_11, powers=(3e3, 2.2e3),
              min_torque=1000, max_torques=(2000, 1400), flange=FLANGE_F25,
              mass=150, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1))),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2))),
     (
         Auma(name=NAME_SAR_30_1, speed=RPS_4, powers=(2.2e3, 1.5e3),
              min_torque=2000, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SAR_30_1, speed=RPS_5_6, powers=(2.2e3, 1.5e3),
              min_torque=2000, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SAR_30_1, speed=RPS_8, powers=(5.5e3, 4e3),
              min_torque=2000, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)),
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)),
 
         Auma(name=NAME_SAR_30_1, speed=RPS_11, powers=(5.5e3, 4e3),
              min_torque=2000, max_torques=(4000, 2800), flange=FLANGE_F30,
              mass=190, selflock=True, mode_names=SAR_MODE_NAMES,
-             control_names=(NAME_AM_02_1, NAME_AC_01_1)))
+             control_names=(NAME_AM_02_1, NAME_AC_01_2)))
 )
 
 AUMA_GK = (

@@ -56,7 +56,7 @@ def _sealing_compress_force(kind: SlgKind, frame_width: float, gate_height: floa
         horiz_sides = 2
     else:
         horiz_sides = 1
-    return ((2 * gate_height + horiz_sides * frame_width) * SPECIFIC_SEALING_COMPRESS_FORCE)
+    return (2 * gate_height + horiz_sides * frame_width) * SPECIFIC_SEALING_COMPRESS_FORCE
 
 
 def _screw_length(have_nodes_in_frame: bool, frame_height: float, way: float) -> float:

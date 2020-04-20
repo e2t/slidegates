@@ -7,8 +7,9 @@ import manifest
 
 BUILD_EXE_OPTIONS = {
     'packages': ['dry.core', 'dry.qt'],
-    'include_files': ['lang', '../dry/lang',
-                      r'c:\Program Files (x86)\Python37-32\Lib\site-packages\PyQt5\Qt\plugins\platforms']}
+    'include_files': [
+        'lang', '../dry/lang',
+        r'c:\Program Files (x86)\Python37-32\Lib\site-packages\PyQt5\Qt\plugins\platforms']}
 
 BASE = 'Win32GUI'
 
