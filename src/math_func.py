@@ -35,7 +35,7 @@ def diam_circle_by_force_shear(force: float, limit: float) -> float:
     return diam_circle_by_area(force / limit)
 
 
-def area_circle_of_diam(diam: float, angle: float) -> float:
+def area_circle_of_diam(diam: float, angle: float = 2 * pi) -> float:
     return angle * diam**2 / 8
 
 

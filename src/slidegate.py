@@ -3,7 +3,7 @@ from math import sin, radians, tan, pi
 from typing import Optional, Tuple
 from screw import SCREWS, TrapezoidalScrew, Screw, METRICS, MetricScrew
 from math_func import (G, min_inertia_moment, diam_by_inertia_moment, fos_calc,
-                       diam_circle_by_force_shear)
+                       diam_circle_by_force_shear, axial_inertia_moment, area_circle_of_diam)
 from auma import (AUMA_SA, AUMA_SAR, MIN_OPEN_TIME, AUMA_GK, MotorMode, Auma, RightAngleGearbox,
                   TRAMEC_RAC)
 from slg import SlgKind, Drive, LIMIT_SHEAR_STRESS, Install, MotorControl, THICKNESS
@@ -197,6 +197,13 @@ def _wedge_by_bolt(bolt: MetricScrew) -> Wedge:
     return result
 
 
+def _slenderness_ratio(mju: float, screw_length: float, rod_diam: float) -> float:
+    screw_section_area = area_circle_of_diam(rod_diam)
+    screw_inertia_moment = axial_inertia_moment(rod_diam)
+    inertia_radius = (screw_inertia_moment / screw_section_area)**0.5
+    return mju * screw_length / inertia_radius
+
+
 class Slidegate():
     def __init__(self,
                  frame_width: float,
@@ -216,7 +223,6 @@ class Slidegate():
                  have_nodes_in_frame: Optional[bool] = None,
                  wedges_pairs_number: Optional[int] = None,
                  motor_control: Optional[MotorControl] = None,
-                 is_left_hand_closing: Optional[bool] = None,
                  way: Optional[float] = None,
                  screw_diam: Optional[float] = None,
                  screw_pitch: Optional[float] = None,
@@ -241,16 +247,14 @@ class Slidegate():
 
         self.reducer_is_tramec = (self.drive != Drive.electric) and self.screws_number > 1
 
+        # TODO: сделать кол-во клиньев None для регулирующих затворов.
         if wedges_pairs_number is None:
             self.wedges_pairs_number = _wedges_pairs_number(
                 self.hydr_head, self.frame_width, self.gate_height)
         else:
             self.wedges_pairs_number = wedges_pairs_number
 
-        if is_left_hand_closing is None:
-            self.is_left_hand_closing = self.motor_control is not None
-        else:
-            self.is_left_hand_closing = is_left_hand_closing
+        self.is_right_handed_screw: bool = (self.kind == SlgKind.flow)
 
         if self.install in (Install.flange, Install.twoflange):
             self.bigpipe_length = 0.3
@@ -286,20 +290,25 @@ class Slidegate():
         self.hydr_force = _hydr_force(self.frame_width, self.gate_height, self.hydr_head,
                                       self.liquid_density, self.tilt_angle)
 
-        self.sealing_compress_force = _sealing_compress_force(
-            self.kind, self.frame_width, self.gate_height)
+        self.sealing_compress_force = _sealing_compress_force(self.kind, self.frame_width,
+                                                              self.gate_height)
 
         self.gate_force = self.hydr_force + self.sealing_compress_force
 
         self.screw_length = _screw_length(self.have_nodes_in_frame, self.frame_height, self.way)
+
+        if (self.frame_height - self.optimal_frame_height) < 0.4:
+            self.thread_length = (self.frame_height - self.gate_height) + 0.2
+        else:
+            self.thread_length = (self.optimal_frame_height - self.gate_height) + 0.2
 
         if self.kind == SlgKind.flow:
             self.wedges_angle = 0.0
         else:
             self.wedges_angle = radians(15)
 
-        self.min_axial_force_in_one_screw = _min_axial_force(
-            self.gate_force, self.wedges_angle, self.screws_number)
+        self.min_axial_force_in_one_screw = _min_axial_force(self.gate_force, self.wedges_angle,
+                                                             self.screws_number)
 
         self.min_screw_inertia_moment = min_inertia_moment(
             self.min_axial_force_in_one_screw, RECOMMEND_FOS,
@@ -334,6 +343,7 @@ class Slidegate():
         if self.drive == Drive.electric:
             if auma is None:
                 for self.mode in MotorMode:
+                # for self.mode in (MotorMode.large, ):  # force S2-30
                     min_speed = _min_speed(self.revs, MIN_OPEN_TIME[self.mode])
                     try:
                         self.auma = _auma(min_torque_in_drive, min_speed, self.mode, self.kind,
@@ -384,6 +394,9 @@ class Slidegate():
 
         self.screw_fos = fos_calc(self.screw.minor_diam, self.screw_length, SCREW_ELAST,
                                   self.axial_force_in_one_screw, SCREW_MJU)
+
+        self.screw_slenderness = _slenderness_ratio(SCREW_MJU, self.screw_length,
+                                                    self.screw.minor_diam)
 
         # _mass_calculation(self)
         self.thickness = {i: 0.0 for i in THICKNESS}

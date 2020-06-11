@@ -64,8 +64,8 @@ msgstr "скорость вращения {speed:g} об/мин"
 msgid "Sheet {thickness:g} mm stainless steel — {mass:.1f} kg"
 msgstr "Лист {thickness:g} мм нерж. — {mass:.1f} кг"
 
-msgid "{screw} {thread} stainless steel — {length:.1f} m{number}"
-msgstr "{screw} {thread} нерж. — {length:.1f} м{number}"
+msgid "{screw} {thread} stainless steel — {length:g} m{number}"
+msgstr "{screw} {thread} нерж. — {length:g} м{number}"
 
 msgid "Right-hand screw"
 msgstr "Винт с правой резьбой"
@@ -249,3 +249,15 @@ msgstr "нет"
 
 msgid "temperature range {min_temp} °C to {max_temp} °C"
 msgstr "температурный диапазон {min_temp} °C до {max_temp} °C"
+
+msgid "The slenderness ratio of the spindle {}"
+msgstr "Коэффициент гибкости стержня {}"
+
+msgid "Bronze strip 20x10 L={} mm"
+msgstr "Полоса бронзовая 20х10 L={} мм"
+
+msgid "Self made nut"
+msgstr "Гайка собственного изготовления"
+
+msgid "Bronze nut HBD {diam:g} A {hand}"
+msgstr "Гайка бронзовая HBD {diam:g} A {hand}"

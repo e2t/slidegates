@@ -180,7 +180,6 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
             have_nodes_in_frame=have_nodes_in_frame,
             wedges_pairs_number=wedges_pairs_number,
             motor_control=motor_control,
-            is_left_hand_closing=None,
             way=way,
             screw_diam=screw_diam,
             screw_pitch=screw_pitch,

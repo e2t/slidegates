@@ -1,6 +1,7 @@
 ﻿import sys
 from slg import SlgKind, Drive
 from slidegate import Slidegate
+from screw import SCREWS
 sys.path.append(f'{sys.path[0]}/..')
 from dry.core import get_translate, get_dir_current_file
 from dry.allgui import fstr
@@ -47,13 +48,8 @@ def output_result(slg: Slidegate, lang: str) -> str:
             max_torque=slg.auma.max_torques[slg.mode]))
         add(_('flange type {flange}').format(flange=slg.auma.flange))
         add(_('valve attachment {sleeve}').format(sleeve=slg.sleeve_sa))
-        add(_('type of duty {mode}').format(
-            mode=slg.auma.mode_names[slg.mode]))
-        if slg.is_left_hand_closing:
-            add(_('left-hand closing (counter-clockwise)'))
-        else:
-            add(_('right-hand closing (clockwise)'))
-            add(_('the reverse marking open/close on the handwheel'))
+        add(_('type of duty {mode}').format(mode=slg.auma.mode_names[slg.mode]))
+        add(_('right-hand closing (clockwise)'))
         add(_('torque {open_torque} Nm for opening, '
               '{close_torque} Nm for closing').format(
                   open_torque=round(slg.torque_in_drive),
@@ -151,16 +147,32 @@ def output_result(slg: Slidegate, lang: str) -> str:
             add(_('Sheet {thickness:g} mm stainless steel — {mass:.1f} kg').format(
                 thickness=i * 1e3, mass=slg.thickness[i]))
 
-    def add_screw(screw_type: str, number: str) -> None:
-        add(_('{screw} {thread} stainless steel — '
-              '{length:.1f} m{number}').format(
-                  screw=_(screw_type), thread=slg.screw, number=number, length=slg.way + 0.3))
+    def add_screw(is_right_handed_screw: bool, number: str) -> None:
+        if is_right_handed_screw:
+            screw_type = 'Right-hand screw'
+            nut_type = 'R'
+        else:
+            screw_type = 'Left-hand screw'
+            nut_type = 'L'
+        add(_('{screw} {thread} stainless steel — {length:g} m{number}').format(
+            screw=_(screw_type), thread=slg.screw, number=number, length=slg.thread_length))
+
+        for i in SCREWS:
+            if slg.screw.major_diam == i.major_diam and slg.screw.pitch == i.pitch:
+                add(_('Bronze nut HBD {diam:g} A {hand}').format(
+                    diam=slg.screw.major_diam * 1e3, hand=nut_type, number=slg.screws_number))
+                break
+        else:
+            add(_('Self made nut').format(number=slg.screws_number))
 
     if slg.screws_number > 1 and not slg.reducer_is_tramec:
-        add_screw('Right-hand screw', '')
-        add_screw('Left-hand screw', '')
+        add_screw(True, '')
+        add_screw(False, '')
     else:
-        add_screw('Right-hand screw', screws_number)
+        add_screw(slg.is_right_handed_screw, screws_number)
+
+    if slg.kind != SlgKind.flow:
+        add(_('Bronze strip 20x10 L={} mm').format(55 * slg.wedges_pairs_number * 2))
 
     add_empty_line()
 
@@ -176,6 +188,7 @@ def output_result(slg: Slidegate, lang: str) -> str:
 
     add(_('Screw - {screw}{number}, factor of safity {fos}').format(
         screw=slg.screw, number=screws_number, fos=round(slg.screw_fos, 1)))
+    add(_('The slenderness ratio of the spindle {}').format(round(slg.screw_slenderness)))
     add(_('Minimal inertia moment {} mm4').format(
         fstr(slg.min_screw_inertia_moment * 1e12, '%.2f')))  # to mm^4
 

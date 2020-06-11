@@ -50,7 +50,8 @@ SCREWS = (TrapezoidalScrew(0.030, 0.006),
           TrapezoidalScrew(0.090, 0.012))
 
 
-PURCHASED_SCREWS = [x.major_diam for x in SCREWS[:3]]
+# May be remove it.
+# PURCHASED_SCREWS = [x.major_diam for x in SCREWS[:3]]
 
 
 class MetricScrew(Screw):
