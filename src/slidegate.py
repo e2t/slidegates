@@ -345,10 +345,10 @@ class Slidegate():
             ratio = 1
 
         min_torque_in_drive = min_torque_in_one_screw + DELTA_OPEN
+        self.revs = self.way / self.screw.pitch
         if self.screws_number > 1:
             min_torque_in_drive = min_torque_in_drive * self.screws_number / ratio
-
-        self.revs = self.way / self.screw.pitch * ratio
+            self.revs *= ratio
 
         if self.drive == Drive.electric:
             if auma is None:
@@ -378,9 +378,10 @@ class Slidegate():
             self.auma_temp_range = None
 
         self.close_torque_in_drive = self.torque_in_drive - DELTA_OPEN * self.screws_number
-        print(self.close_torque_in_drive)
 
-        self.torque_in_one_screw = self.close_torque_in_drive / self.screws_number * ratio
+        self.torque_in_one_screw = self.close_torque_in_drive / self.screws_number
+        if self.screws_number > 1:
+            self.torque_in_one_screw *= ratio
 
         self.axial_force_in_one_screw = _real_axial_force(self.torque_in_one_screw, self.screw)
 
