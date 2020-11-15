@@ -85,7 +85,10 @@ class BaseMainWindow(QtWidgets.QDialog):  # type: ignore
         self.setupUi(self)  # from gui.Ui_Dialog
         self.setWindowTitle(f'{description} (v{version})')
         self.init_widgets()
-        self.layout().setSizeConstraint(QtWidgets.QLayout.SetFixedSize)
+
+        self.adjustSize()
+        self.setFixedSize(self.width(), self.minimumHeight())
+
         self.connect_actions()
 
 
