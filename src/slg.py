@@ -11,7 +11,7 @@ class SlgKind(IntEnum):
 
 @unique
 class Drive(IntEnum):
-    manual, electric, reducer = range(3)
+    manual, electric, reducer, spur = range(4)
 
 
 @unique

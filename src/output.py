@@ -1,10 +1,9 @@
-﻿import sys
+﻿from dry.core import get_translate, get_dir_current_file
+from dry.allgui import fstr
+
 from slg import SlgKind, Drive
 from slidegate import Slidegate
 from screw import SCREWS
-sys.path.append(f'{sys.path[0]}/..')
-from dry.core import get_translate, get_dir_current_file
-from dry.allgui import fstr
 
 
 def rpm(rps: float) -> float:
@@ -87,9 +86,9 @@ def output_result(slg: Slidegate, lang: str) -> str:
             slg.auma.control_names[slg.motor_control]))
         add_empty_line()
 
-    def add_reducer_gk(has_flange_for_actuator: bool) -> None:
-        add(_('Right angle gearbox {name}').format(
-            name=slg.reducer.name, number=screws_number))
+    def add_reducer_auma(drive: Drive, has_flange_for_actuator: bool) -> None:
+        gearbox = _('Spur gearbox') if drive == Drive.spur else _('Right angle gearbox')
+        add('{gearbox} {name}'.format(name=slg.reducer.name, gearbox=gearbox))
         add(_(" * the general parameters:"))
         add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
         add(_('max torque {torque} Nm').format(
@@ -103,10 +102,11 @@ def output_result(slg: Slidegate, lang: str) -> str:
         add_empty_line()
 
     def add_reducer_tramec() -> None:
-        add(_('Right angle gearbox {name} {param}').format(
-            name=slg.reducer.name, param='C1 F B7 FLS'))
-        add(_('Right angle gearbox {name} {param}').format(
-            name=slg.reducer.name, param='C1 E B7 FLS SEA'))
+        gearbox = _('Right angle gearbox')
+        add('{gearbox} {name} {param}'.format(
+            name=slg.reducer.name, param='C1 F B7 FLS', gearbox=gearbox))
+        add('{gearbox} {name} {param}'.format(
+            name=slg.reducer.name, param='C1 E B7 FLS SEA', gearbox=gearbox))
         add(_(" * the general parameters:"))
         add(_('ratio {ratio}:1').format(ratio=slg.reducer.ratio))
         add(_('max torque {torque} Nm').format(
@@ -137,8 +137,7 @@ def output_result(slg: Slidegate, lang: str) -> str:
 
     add(_('Pressure head {head} m H2O').format(head=slg.hydr_head))
 
-    add(_('Weight of stainless steel {mass} kg').format(
-        mass=round(slg.mass, 1)))
+    add(_('Weight of stainless steel {mass} kg').format(mass=round(slg.mass, 1)))
 
     add_empty_line()
 
@@ -154,13 +153,19 @@ def output_result(slg: Slidegate, lang: str) -> str:
         else:
             screw_type = 'Left-hand screw'
             nut_type = 'L'
-        add(_('{screw} {thread} stainless steel — {length:g} m{number}').format(
-            screw=_(screw_type), thread=slg.screw, number=number, length=slg.thread_length))
+        major_screw_diam_mm = slg.screw.major_diam * 1e3
+        if slg.screw.major_diam > 0.055:
+            calibrated_rod = _(' (calibrated rod {diam:g}h9)').format(diam=major_screw_diam_mm)
+        else:
+            calibrated_rod = ''
+        add(_('{screw} {thread} stainless steel{rod} — {length:g} m{number}').format(
+            screw=_(screw_type), thread=slg.screw, number=number, length=slg.thread_length,
+            rod=calibrated_rod))
 
         for i in SCREWS:
             if slg.screw.major_diam == i.major_diam and slg.screw.pitch == i.pitch:
                 add(_('Bronze nut HBD {diam:g} A {hand}').format(
-                    diam=slg.screw.major_diam * 1e3, hand=nut_type, number=slg.screws_number))
+                    diam=major_screw_diam_mm, hand=nut_type, number=slg.screws_number))
                 break
         else:
             add(_('Self made nut').format(number=slg.screws_number))
@@ -172,7 +177,7 @@ def output_result(slg: Slidegate, lang: str) -> str:
         add_screw(slg.is_right_handed_screw, screws_number)
 
     if slg.kind != SlgKind.flow:
-        add(_('Bronze strip 20x10 L={} mm').format(55 * slg.wedges_pairs_number * 2))
+        add(_('Bronze strip 22x12 L={} mm').format(55 * slg.wedges_pairs_number * 2))
 
     add_empty_line()
 
@@ -182,9 +187,9 @@ def output_result(slg: Slidegate, lang: str) -> str:
         if slg.drive == Drive.electric:
             add_actuator()
         if slg.have_reducer:
-            add_reducer_gk(False)
+            add_reducer_auma(slg.drive, False)
             if slg.drive == Drive.electric:
-                add_reducer_gk(True)
+                add_reducer_auma(slg.drive, True)
 
     add(_('Screw - {screw}{number}, factor of safity {fos}').format(
         screw=slg.screw, number=screws_number, fos=round(slg.screw_fos, 1)))

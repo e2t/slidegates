@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>982</width>
-    <height>607</height>
+    <width>986</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,7 +16,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>favicon.ico</normaloff>favicon.ico</iconset>
+    <normaloff>../../../../.designer/backup/favicon.ico</normaloff>../../../../.designer/backup/favicon.ico</iconset>
   </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
@@ -81,7 +81,14 @@
             <item>
              <widget class="QRadioButton" name="rad_drive_reducer">
               <property name="text">
-               <string>Ручной редуктор</string>
+               <string>Угловой редуктор</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rad_drive_spur">
+              <property name="text">
+               <string>Цилиндрический редуктор</string>
               </property>
              </widget>
             </item>
@@ -212,7 +219,8 @@
             <item>
              <widget class="QCheckBox" name="chk_is_screw_pullout">
               <property name="text">
-               <string>С выдвижным винтом</string>
+               <string>С выдвижным винтом
+Привод НЕ затапливается!</string>
               </property>
              </widget>
             </item>
@@ -434,6 +442,9 @@
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_5">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Ручной редуктор:</string>
               </property>
@@ -571,6 +582,9 @@
             </item>
             <item row="1" column="1">
              <widget class="QComboBox" name="cmb_reducer">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <item>
                <property name="text">
                 <string>Авто</string>

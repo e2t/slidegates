@@ -4,16 +4,17 @@ from math import pi
 from typing import Optional
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QTextCursor
+
+from dry.qt import msgbox, BaseMainWindow, get_float_number
+from dry.core import Error
+
 import gui
-from auma import AUMA_SA, AUMA_GK, AUMA_SAR
+from auma import AUMA_SA, AUMA_GK, AUMA_SAR, AUMA_GST
 from manifest import VERSION, DESCRIPTION
 from output import output_result
 from slg import SlgKind, Drive, Install, MotorControl
 from slg3 import mass_calculation
 from slidegate import Slidegate
-sys.path.append(f'{sys.path[0]}/..')
-from dry.qt import msgbox, BaseMainWindow, get_float_number
-from dry.core import Error
 
 
 class MainWindow(BaseMainWindow, gui.Ui_Dialog):
@@ -28,6 +29,7 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
                 self.cmb_auma.addItems('{0}  {1:g} об/мин'.format(
                     j.name, j.speed * 60) for j in i)
         self.cmb_reducer.addItems(i.name for i in AUMA_GK)
+        self.cmb_reducer.addItems(i.name for i in AUMA_GST)
 
     def connect_actions(self) -> None:
         self.btn_run.clicked.connect(self.run)
@@ -125,6 +127,8 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
             drive = Drive.electric
         elif self.rad_drive_reducer.isChecked():
             drive = Drive.reducer
+        elif self.rad_drive_spur.isChecked():
+            drive = Drive.spur
         else:
             drive = Drive.manual
 
@@ -158,9 +162,14 @@ class MainWindow(BaseMainWindow, gui.Ui_Dialog):
                 index -= 1
 
         reducer = None
-        index_gk = self.cmb_reducer.currentIndex()
-        if index_gk:
-            reducer = AUMA_GK[index_gk - 1]
+        index_gearbox = self.cmb_reducer.currentIndex()
+        if index_gearbox == 0:
+            pass
+        elif index_gearbox <= len(AUMA_GK):
+            reducer = AUMA_GK[index_gearbox - 1]
+        else:
+            index_gearbox -= len(AUMA_GK)
+            reducer = AUMA_GK[index_gearbox - 1]
 
         self.slg = Slidegate(
             frame_width=frame_width,

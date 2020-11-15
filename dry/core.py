@@ -53,6 +53,11 @@ def to_mpa(pascals: float) -> float:
     return pascals / 1e6
 
 
+# Мегапаскали -> СИ
+def from_mpa(mpa: float) -> float:
+    return mpa * 1e6
+
+
 # кгс -> СИ
 # TODO: rename 'from_kgf'
 def to_n(kgf: float) -> float:

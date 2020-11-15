@@ -64,8 +64,8 @@ msgstr "скорость вращения {speed:g} об/мин"
 msgid "Sheet {thickness:g} mm stainless steel — {mass:.1f} kg"
 msgstr "Лист {thickness:g} мм нерж. — {mass:.1f} кг"
 
-msgid "{screw} {thread} stainless steel — {length:g} m{number}"
-msgstr "{screw} {thread} нерж. — {length:g} м{number}"
+msgid "{screw} {thread} stainless steel{rod} — {length:g} m{number}"
+msgstr "{screw} {thread} нерж.{rod} — {length:g} м{number}"
 
 msgid "Right-hand screw"
 msgstr "Винт с правой резьбой"
@@ -73,8 +73,8 @@ msgstr "Винт с правой резьбой"
 msgid "Left-hand screw"
 msgstr "Винт с левой резьбой"
 
-msgid " (calibrated rod {diam:g})"
-msgstr " (круг калибров. {diam:g})"
+msgid " (calibrated rod {diam:g}h9)"
+msgstr " (круг калиброванный {diam:g}h9)"
 
 msgid "electric power {power} kW"
 msgstr "электрическая мощность {power} кВт"
@@ -100,11 +100,11 @@ msgstr "крутящий момент на открытие {open_torque} Нм, 
 msgid "full opening through {time_min} min ({time_sec} sec) and {revs} rev"
 msgstr "полное открытие через {time_min} мин ({time_sec} сек) и {revs} оборотов"
 
-msgid "Right angle gearbox {name}"
-msgstr "Угловой редуктор {name}"
+msgid "Spur gearbox"
+msgstr "Цилиндрический редуктор"
 
-msgid "Right angle gearbox {name} {param}"
-msgstr "Угловой редуктор {name} {param}"
+msgid "Right angle gearbox"
+msgstr "Угловой редуктор"
 
 msgid "Torque in every screw {torque} Nm"
 msgstr "Крутящий момент на каждом винте {torque} Нм"
@@ -253,8 +253,8 @@ msgstr "температурный диапазон {min_temp} °C до {max_tem
 msgid "The slenderness ratio of the spindle {}"
 msgstr "Коэффициент гибкости стержня {}"
 
-msgid "Bronze strip 20x10 L={} mm"
-msgstr "Полоса бронзовая 20х10 L={} мм"
+msgid "Bronze strip 22x12 L={} mm"
+msgstr "Полоса бронзовая 22x12 L={} мм"
 
 msgid "Self made nut"
 msgstr "Гайка собственного изготовления"

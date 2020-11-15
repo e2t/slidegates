@@ -31,7 +31,7 @@ class Auma(NamedTuple):
     control_names: Tuple[str, str]
 
 
-class RightAngleGearbox(NamedTuple):
+class Gearbox(NamedTuple):
     """Угловой редуктор общего вида."""
 
     name: str
@@ -1006,33 +1006,31 @@ AUMA_SAR: Tuple[Tuple[Auma, ...], ...] = (
 )
 
 AUMA_GK = (
-    RightAngleGearbox(name='GK 10.2', max_torque=120, ratio=1,
-                      flange=FLANGE_F10, mass=8.5),
-    RightAngleGearbox(name='GK 14.2', max_torque=250, ratio=2,
-                      flange=FLANGE_F14, mass=15),
-    RightAngleGearbox(name='GK 14.6', max_torque=500, ratio=2.8,
-                      flange=FLANGE_F14, mass=15),
-    RightAngleGearbox(name='GK 16.2', max_torque=1000, ratio=4,
-                      flange=FLANGE_F16, mass=25),
-    RightAngleGearbox(name='GK 25.2', max_torque=2000, ratio=5.6,
-                      flange=FLANGE_F25, mass=60),
-    RightAngleGearbox(name='GK 30.2', max_torque=4000, ratio=8,
-                      flange=FLANGE_F30, mass=110),
-    RightAngleGearbox(name='GK 35.2', max_torque=8000, ratio=11,
-                      flange=FLANGE_F35, mass=190),
-    RightAngleGearbox(name='GK 40.2', max_torque=16000, ratio=16,
-                      flange=FLANGE_F40, mass=250),
+    Gearbox(name='GK 10.2', max_torque=120, ratio=1, flange=FLANGE_F10, mass=8.5),
+    Gearbox(name='GK 14.2', max_torque=250, ratio=2, flange=FLANGE_F14, mass=15),
+    Gearbox(name='GK 14.6', max_torque=500, ratio=2.8, flange=FLANGE_F14, mass=15),
+    Gearbox(name='GK 16.2', max_torque=1000, ratio=4, flange=FLANGE_F16, mass=25),
+    Gearbox(name='GK 25.2', max_torque=2000, ratio=5.6, flange=FLANGE_F25, mass=60),
+    Gearbox(name='GK 30.2', max_torque=4000, ratio=8, flange=FLANGE_F30, mass=110),
+    Gearbox(name='GK 35.2', max_torque=8000, ratio=11, flange=FLANGE_F35, mass=190),
+    Gearbox(name='GK 40.2', max_torque=16000, ratio=16, flange=FLANGE_F40, mass=250),
 )
 
 TRAMEC_RAC = (
-    RightAngleGearbox(name='RA 19', max_torque=35, ratio=1, flange=None,
-                      mass=8.5),
-    RightAngleGearbox(name='RA 24', max_torque=73, ratio=1, flange=None,
-                      mass=14),
-    RightAngleGearbox(name='RA 28', max_torque=146, ratio=1, flange=None,
-                      mass=23),
-    RightAngleGearbox(name='RA 38', max_torque=291, ratio=1, flange=None,
-                      mass=38),
-    RightAngleGearbox(name='RA 48', max_torque=596, ratio=1, flange=None,
-                      mass=62),
+    Gearbox(name='RA 19', max_torque=35, ratio=1, flange=None, mass=8.5),
+    Gearbox(name='RA 24', max_torque=73, ratio=1, flange=None, mass=14),
+    Gearbox(name='RA 28', max_torque=146, ratio=1, flange=None, mass=23),
+    Gearbox(name='RA 38', max_torque=291, ratio=1, flange=None, mass=38),
+    Gearbox(name='RA 48', max_torque=596, ratio=1, flange=None, mass=62),
+)
+
+AUMA_GST = (
+    Gearbox(name='GST 10.1', max_torque=120, ratio=1, flange=FLANGE_F10, mass=14),
+    Gearbox(name='GST 14.1', max_torque=250, ratio=1.4, flange=FLANGE_F14, mass=26),
+    Gearbox(name='GST 14.5', max_torque=500, ratio=2, flange=FLANGE_F14, mass=26),
+    Gearbox(name='GST 16.1', max_torque=1000, ratio=2.8, flange=FLANGE_F16, mass=40),
+    Gearbox(name='GST 25.1', max_torque=2000, ratio=4, flange=FLANGE_F25, mass=82),
+    Gearbox(name='GST 30.1', max_torque=4000, ratio=5.6, flange=FLANGE_F30, mass=115),
+    Gearbox(name='GST 35.1', max_torque=8000, ratio=8, flange=FLANGE_F35, mass=195),
+    Gearbox(name='GST 40.1', max_torque=16000, ratio=11, flange=FLANGE_F40, mass=255),
 )

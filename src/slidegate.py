@@ -1,15 +1,16 @@
-﻿import sys
-from math import sin, radians, tan, pi
+﻿from math import sin, radians, tan, pi
 from typing import Optional, Tuple
+
+from dry.core import Error
+
 from screw import SCREWS, TrapezoidalScrew, Screw, METRICS, MetricScrew
 from math_func import (G, min_inertia_moment, diam_by_inertia_moment, fos_calc,
                        diam_circle_by_force_shear, axial_inertia_moment, area_circle_of_diam)
-from auma import (AUMA_SA, AUMA_SAR, MIN_OPEN_TIME, AUMA_GK, MotorMode, Auma, RightAngleGearbox,
-                  TRAMEC_RAC)
+from auma import (AUMA_SA, AUMA_SAR, MIN_OPEN_TIME, AUMA_GK, MotorMode, Auma, Gearbox,
+                  TRAMEC_RAC, AUMA_GST)
 from slg import SlgKind, Drive, LIMIT_SHEAR_STRESS, Install, MotorControl, THICKNESS
 from wedge import WEDGES, Wedge
-sys.path.append(f'{sys.path[0]}/..')
-from dry.core import Error
+
 
 RECOMMEND_FOS = 1.95   # перешел с 2.35 - 10.01.2019
 SCREW_MJU = 0.7        # перешел с 1.0  - 10.01.2019
@@ -83,9 +84,9 @@ def _way(gate_height: float, frame_height: float, optimal_frame_height: float) -
 def _screw(min_rod: float) -> Screw:
     try:
         result = next(filter(lambda i: min_rod <= i.minor_diam, SCREWS))
-    except StopIteration:
+    except StopIteration as excp:
         raise Error('Нет стандартного винта. Минимальный внутренний диаметр '
-                    f'{min_rod * 1e3:.1f} мм.')
+                    f'{min_rod * 1e3:.1f} мм.') from excp
     return result
 
 
@@ -164,19 +165,22 @@ def _sleeve_sa(screws_number: int, is_screw_pullout: bool) -> str:
     return result
 
 
-def _reducer(required_torque: float, is_tramec: bool, is_screw_pullout: bool) -> RightAngleGearbox:
+def _reducer(required_torque: float, is_tramec: bool, is_screw_pullout: bool,
+             drive: Drive) -> Gearbox:
     if is_screw_pullout and is_tramec:
         raise Error(
             'Недопустимое сочетание: два выдвижных винта и ручное управление. '
             'Tramec не имеет исполнения с резьбовой втулкой')
     if is_tramec:
-        gearboxes: Tuple[RightAngleGearbox, ...] = TRAMEC_RAC
-    else:
+        gearboxes: Tuple[Gearbox, ...] = TRAMEC_RAC
+    elif drive == Drive.reducer:
         gearboxes = AUMA_GK
+    else:
+        gearboxes = AUMA_GST
     try:
         return next(filter(lambda i: required_torque <= i.max_torque, gearboxes))
-    except StopIteration:
-        raise Error('Failed with calculation gearbox')
+    except StopIteration as excp:
+        raise Error('Failed with calculation gearbox') from excp
 
 
 def _bolt_by_minor_diam(minor_diam: float, minimal_bolt: float,
@@ -226,7 +230,7 @@ class Slidegate():
                  way: Optional[float] = None,
                  screw_diam: Optional[float] = None,
                  screw_pitch: Optional[float] = None,
-                 reducer: Optional[RightAngleGearbox] = None,
+                 reducer: Optional[Gearbox] = None,
                  auma: Optional[Auma] = None,
                  beth_frame_top_and_gate_top: Optional[float] = None) -> None:
 
@@ -245,7 +249,11 @@ class Slidegate():
         self.have_rack = have_rack
         self.have_fixed_gate = have_fixed_gate
 
-        self.reducer_is_tramec = (self.drive != Drive.electric) and self.screws_number > 1
+        if self.screws_number > 1 and self.drive == Drive.spur:
+            raise Error('Невозможно использовать цилиндрический редуктор с двумя винтами.')
+
+        self.reducer_is_tramec = (self.drive in (Drive.manual, Drive.reducer)) \
+            and self.screws_number > 1
 
         # TODO: сделать кол-во клиньев None для регулирующих затворов.
         if wedges_pairs_number is None:
@@ -261,7 +269,7 @@ class Slidegate():
         else:
             self.bigpipe_length = 0
 
-        self.have_reducer = self.screws_number > 1 or self.drive == Drive.reducer
+        self.have_reducer = self.screws_number > 1 or (self.drive in (Drive.reducer, Drive.spur))
 
         self.optimal_frame_height = _optimal_frame_height(self.gate_height)
 
@@ -328,7 +336,7 @@ class Slidegate():
         if self.have_reducer:
             if reducer is None:
                 self.reducer = _reducer(min_torque_in_one_screw, self.reducer_is_tramec,
-                                        self.is_screw_pullout)
+                                        self.is_screw_pullout, self.drive)
             else:
                 self.reducer = reducer
             self.sleeve_gk = _sleeve_gk(self.is_screw_pullout)
@@ -336,14 +344,15 @@ class Slidegate():
         else:
             ratio = 1
 
-        min_torque_in_drive = (min_torque_in_one_screw + DELTA_OPEN) * self.screws_number / ratio
+        min_torque_in_drive = min_torque_in_one_screw + DELTA_OPEN
+        if self.screws_number > 1:
+            min_torque_in_drive = min_torque_in_drive * self.screws_number / ratio
 
         self.revs = self.way / self.screw.pitch * ratio
 
         if self.drive == Drive.electric:
             if auma is None:
                 for self.mode in MotorMode:
-                # for self.mode in (MotorMode.large, ):  # force S2-30
                     min_speed = _min_speed(self.revs, MIN_OPEN_TIME[self.mode])
                     try:
                         self.auma = _auma(min_torque_in_drive, min_speed, self.mode, self.kind,
@@ -369,6 +378,7 @@ class Slidegate():
             self.auma_temp_range = None
 
         self.close_torque_in_drive = self.torque_in_drive - DELTA_OPEN * self.screws_number
+        print(self.close_torque_in_drive)
 
         self.torque_in_one_screw = self.close_torque_in_drive / self.screws_number * ratio
 
