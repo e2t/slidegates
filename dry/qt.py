@@ -83,7 +83,7 @@ class BaseMainWindow(QtWidgets.QDialog):  # type: ignore
             None, flags=Qt.WindowMinimizeButtonHint |
             Qt.WindowCloseButtonHint)
         self.setupUi(self)  # from gui.Ui_Dialog
-        self.setWindowTitle(f'{description} (v{version})')
+        self.setWindowTitle(f'{description} v{version}')
         self.init_widgets()
 
         self.adjustSize()
