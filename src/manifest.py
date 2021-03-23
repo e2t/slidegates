@@ -1,3 +1,3 @@
 NAME = 'slidegates'
 DESCRIPTION = 'Расчет щитовых затворов'
-VERSION = '1.4.0'
+VERSION = '1.4.1'

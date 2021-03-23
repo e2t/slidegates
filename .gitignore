@@ -106,3 +106,5 @@ build-msi.bat
 *.geany
 *.o
 *.a
+.vscode
+output/

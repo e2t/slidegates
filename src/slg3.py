@@ -16,5 +16,5 @@ def mass_calculation(slg: Slidegate) -> None:
         wedge_mass.calculation(slg)
     else:
         flow_mass.calculation(slg)
-    slg.mass = slg.gate_mass + slg.frame_mass + slg.screw_mass + \
-        slg.rack_mass * slg.screws_number
+    slg.mass = slg.gate_mass + slg.frame_mass + (slg.screw_mass + slg.rack_mass) \
+        * slg.screws_number

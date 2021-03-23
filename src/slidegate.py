@@ -1,8 +1,6 @@
 ﻿from math import sin, radians, tan, pi
 from typing import Optional, Tuple
-
 from dry.core import Error
-
 from screw import SCREWS, TrapezoidalScrew, Screw, METRICS, MetricScrew
 from math_func import (G, min_inertia_moment, diam_by_inertia_moment, fos_calc,
                        diam_circle_by_force_shear, axial_inertia_moment, area_circle_of_diam)

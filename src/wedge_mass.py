@@ -473,7 +473,7 @@ def _mass_screw(slg: Slidegate) -> float:
     rod_len = slg.screw_length + alen if \
         slg.frame_height >= 2 * slg.gate_height + 0.5 else common_len
     # 4 mm thickness of the pipe
-    return slg.screws_number * (
+    return (
         (area * rod_len   # weight of the rod
          + (common_len - rod_len) * area_ring_of_diam(  # weight of the pipe
              slg.screw.major_diam,
