@@ -1,14 +1,5 @@
-# Slidegates
+# Slidegate
 Десктопное GUI-приложение для расчета щитовых затворов.
-
-### Зависимости
-- [Python 3.6.1+](https://www.python.org/downloads/)
-- [PyQt5](https://pypi.python.org/pypi/PyQt5)
-- [pyqt5-tools](https://pypi.python.org/pypi/pyqt5-tools)
-- [GetText](http://gnuwin32.sourceforge.net/packages/gettext.htm)
-
-Для создания бинарных сборок для Windows используется [cx_Freeze](https://pypi.python.org/pypi/cx_Freeze).
-Для работы бинарных сборок в версиях Windows ниже 10 необходимо установить [KB2999226](https://support.microsoft.com/en-us/kb/2999226) и KB3063858 ([x32](https://www.microsoft.com/ru-ru/download/details.aspx?id=47409), [x64](https://www.microsoft.com/ru-RU/download/details.aspx?id=47442)).
 
 ### Авторские права
 [![CC0](https://licensebuttons.net/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)
