@@ -1,0 +1,725 @@
+object MainForm: TMainForm
+  Left = 415
+  Height = 580
+  Top = 110
+  Width = 1047
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  ClientHeight = 580
+  ClientWidth = 1047
+  KeyPreview = True
+  OnCreate = FormCreate
+  OnKeyPress = FormKeyPress
+  Position = poDefault
+  LCLVersion = '2.0.12.0'
+  Visible = True
+  object PageControlDriveKind: TPageControl
+    Left = 8
+    Height = 160
+    Top = 264
+    Width = 594
+    ActivePage = TabSheetActuator
+    TabIndex = 0
+    TabOrder = 4
+    object TabSheetActuator: TTabSheet
+      Caption = 'Мотор-редуктор'
+      ClientHeight = 132
+      ClientWidth = 586
+      object RadioButtonOpenClose: TRadioButton
+        AnchorSideTop.Control = ComboBoxOpenCloseActuator
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 19
+        Top = 12
+        Width = 152
+        Caption = 'Для открытия-закрытия'
+        Checked = True
+        TabOrder = 0
+        TabStop = True
+      end
+      object ComboBoxRegulActuator: TComboBox
+        Left = 168
+        Height = 23
+        Top = 40
+        Width = 408
+        ItemHeight = 15
+        Style = csDropDownList
+        TabOrder = 3
+      end
+      object ComboBoxOpenCloseActuator: TComboBox
+        Left = 168
+        Height = 23
+        Top = 10
+        Width = 408
+        ItemHeight = 15
+        Style = csDropDownList
+        TabOrder = 1
+      end
+      object RadioButtonRegul: TRadioButton
+        AnchorSideTop.Control = ComboBoxRegulActuator
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 19
+        Top = 42
+        Width = 128
+        Caption = 'Для регулирования'
+        TabOrder = 2
+      end
+      object EditFullWays: TEdit
+        Left = 496
+        Height = 23
+        Top = 102
+        Width = 80
+        TabOrder = 5
+        Text = '2'
+      end
+      object Label17: TLabel
+        AnchorSideTop.Control = EditFullWays
+        AnchorSideTop.Side = asrCenter
+        Left = 168
+        Height = 15
+        Top = 106
+        Width = 305
+        Caption = 'Количество полных ходов щита до перегрева привода:'
+        ParentColor = False
+      end
+      object EditMinSpeed: TEdit
+        Left = 496
+        Height = 23
+        Top = 72
+        Width = 80
+        TabOrder = 4
+        Text = '45'
+      end
+      object Label18: TLabel
+        AnchorSideTop.Control = EditMinSpeed
+        AnchorSideTop.Side = asrCenter
+        Left = 168
+        Height = 15
+        Top = 76
+        Width = 310
+        Caption = 'Предпочитать скорость вращения не меньше (об/мин):'
+        ParentColor = False
+      end
+    end
+    object TabSheetGearbox: TTabSheet
+      Caption = 'Ручной редуктор'
+      ClientHeight = 132
+      ClientWidth = 586
+      object RadioButtonBevelGearbox: TRadioButton
+        AnchorSideTop.Control = ComboBoxBevelGearbox
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 19
+        Top = 12
+        Width = 66
+        Caption = 'Угловой'
+        Checked = True
+        TabOrder = 0
+        TabStop = True
+      end
+      object RadioButtonSpurGearbox: TRadioButton
+        AnchorSideTop.Control = ComboBoxSpurGearbox
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 19
+        Top = 42
+        Width = 116
+        Caption = 'Цилиндрический'
+        TabOrder = 2
+      end
+      object ComboBoxSpurGearbox: TComboBox
+        Left = 168
+        Height = 23
+        Top = 40
+        Width = 408
+        ItemHeight = 15
+        Style = csDropDownList
+        TabOrder = 3
+      end
+      object ComboBoxBevelGearbox: TComboBox
+        Left = 168
+        Height = 23
+        Top = 10
+        Width = 408
+        ItemHeight = 15
+        Style = csDropDownList
+        TabOrder = 1
+      end
+    end
+    object TabSheetHandWheel: TTabSheet
+      Caption = 'Штурвал'
+      ClientHeight = 132
+      ClientWidth = 586
+      object LabelHandWheel: TLabel
+        AnchorSideTop.Control = TabSheetHandWheel
+        AnchorSideTop.Side = asrCenter
+        Left = 24
+        Height = 75
+        Top = 29
+        Width = 542
+        Caption = 'Покупные штурвалы Ø300...500 могут быть использованы:'#13#10'— при крутящем моменте до 192 Нм,'#13#10'— с невыдвижными винтами любых размеров,'#13#10'— с выдвижными винтами диаметром не более 40 мм.'#13#10'В остальных случаях необходимо использовать двуплечую рукоятку собственного изготовления.'
+        ParentColor = False
+      end
+    end
+  end
+  object EditLiquidDensity: TEdit
+    Left = 512
+    Height = 23
+    Top = 128
+    Width = 80
+    TabOrder = 2
+    Text = '1000'
+  end
+  object Label6: TLabel
+    AnchorSideTop.Control = EditLiquidDensity
+    AnchorSideTop.Side = asrCenter
+    Left = 336
+    Height = 15
+    Top = 132
+    Width = 160
+    Caption = 'Плотность жидкости (кг/м3):'
+    ParentColor = False
+  end
+  object PageControlSlgKind: TPageControl
+    Left = 8
+    Height = 248
+    Top = 8
+    Width = 312
+    ActivePage = TabSheetSurf
+    TabIndex = 0
+    TabOrder = 0
+    object TabSheetSurf: TTabSheet
+      Caption = 'Поверхностный'
+      ClientHeight = 220
+      ClientWidth = 304
+      object Label10: TLabel
+        Left = 8
+        Height = 45
+        Top = 8
+        Width = 176
+        Caption = 'Уплотнение по трем сторонам.'#13#10'Закрытие вниз, открытие вверх.'#13#10'Винт с левой резьбой.'
+        ParentColor = False
+      end
+      object Label7: TLabel
+        Left = 8
+        Height = 15
+        Top = 56
+        Width = 250
+        Caption = 'Гидростатический напор равен высоте щита.'
+        ParentColor = False
+      end
+      object GroupBox3: TGroupBox
+        Left = 8
+        Height = 104
+        Top = 80
+        Width = 288
+        Caption = 'Установка'
+        ClientHeight = 84
+        ClientWidth = 284
+        TabOrder = 0
+        object RadioButtonSurfConcrete: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 8
+          Width = 75
+          Caption = 'Штрабная'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioButtonSurfChannel: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 32
+          Width = 94
+          Caption = 'Бесштрабная'
+          TabOrder = 1
+        end
+        object RadioButtonSurfWall: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 56
+          Width = 78
+          Caption = 'Настенная'
+          TabOrder = 2
+        end
+      end
+    end
+    object TabSheetDeep: TTabSheet
+      Caption = 'Глубинный'
+      ClientHeight = 220
+      ClientWidth = 304
+      object EditHydrHead: TEdit
+        Left = 184
+        Height = 23
+        Top = 52
+        Width = 80
+        TabOrder = 0
+      end
+      object Label8: TLabel
+        AnchorSideTop.Control = EditHydrHead
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 15
+        Top = 56
+        Width = 161
+        Caption = 'Гидростатический напор (м):'
+        ParentColor = False
+      end
+      object Label11: TLabel
+        Left = 8
+        Height = 45
+        Top = 8
+        Width = 195
+        Caption = 'Уплотнение по четырем сторонам.'#13#10'Закрытие вниз, открытие вверх.'#13#10'Винт с левой резьбой.'
+        ParentColor = False
+      end
+      object GroupBox4: TGroupBox
+        Left = 8
+        Height = 128
+        Top = 80
+        Width = 288
+        Caption = 'Установка'
+        ClientHeight = 108
+        ClientWidth = 284
+        TabOrder = 1
+        object RadioButtonDeepWall: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 8
+          Width = 78
+          Caption = 'Настенная'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioButtonDeepConcrete: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 32
+          Width = 75
+          Caption = 'Штрабная'
+          TabOrder = 1
+        end
+        object RadioButtonDeepFlange: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 56
+          Width = 80
+          Caption = 'На фланце'
+          TabOrder = 2
+        end
+        object RadioButtonDeepTwoFlange: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 80
+          Width = 245
+          Caption = 'На двух фланцах (с герметичной рамой)'
+          TabOrder = 4
+        end
+        object CheckBoxCounterFlange: TCheckBox
+          Left = 96
+          Height = 19
+          Top = 56
+          Width = 189
+          Caption = 'С ответным(и) фланцем(-ами)'
+          TabOrder = 3
+        end
+      end
+    end
+    object TabSheetFlow: TTabSheet
+      Caption = 'Регулирующий'
+      ClientHeight = 220
+      ClientWidth = 304
+      object Label12: TLabel
+        Left = 8
+        Height = 45
+        Top = 8
+        Width = 176
+        Caption = 'Уплотнение по трем сторонам.'#13#10'Закрытие вверх, открытие вниз.'#13#10'Винт с правой резьбой.'
+        ParentColor = False
+      end
+      object Label9: TLabel
+        Left = 8
+        Height = 15
+        Top = 56
+        Width = 250
+        Caption = 'Гидростатический напор равен высоте щита.'
+        ParentColor = False
+      end
+      object EditBethFrameTopAndGateTop: TEdit
+        Left = 216
+        Height = 23
+        Top = 192
+        Width = 80
+        TabOrder = 1
+      end
+      object Label13: TLabel
+        AnchorSideTop.Control = EditBethFrameTopAndGateTop
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 15
+        Top = 196
+        Width = 187
+        Caption = 'От верха рамы до верха щита (м):'
+        ParentColor = False
+      end
+      object GroupBox2: TGroupBox
+        Left = 8
+        Height = 104
+        Top = 80
+        Width = 288
+        Caption = 'Установка'
+        ClientHeight = 84
+        ClientWidth = 284
+        TabOrder = 0
+        object RadioButtonRegulConcrete: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 8
+          Width = 217
+          Caption = 'Штрабная (с неподвижным щитом)'
+          Checked = True
+          TabOrder = 0
+          TabStop = True
+        end
+        object RadioButtonRegulChannel: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 32
+          Width = 236
+          Caption = 'Бесштрабная (с неподвижным щитом)'
+          TabOrder = 1
+        end
+        object RadioButtonRegulWall: TRadioButton
+          Left = 8
+          Height = 19
+          Top = 56
+          Width = 78
+          Caption = 'Настенная'
+          TabOrder = 2
+        end
+      end
+    end
+  end
+  object GroupBox5: TGroupBox
+    Left = 328
+    Height = 88
+    Top = 168
+    Width = 272
+    Caption = 'Винт'
+    ClientHeight = 68
+    ClientWidth = 268
+    TabOrder = 3
+    object RadioButtonNonPullout: TRadioButton
+      Left = 8
+      Height = 19
+      Top = 8
+      Width = 99
+      Caption = 'Невыдвижной'
+      Checked = True
+      TabOrder = 0
+      TabStop = True
+    end
+    object RadioButtonPullout: TRadioButton
+      Left = 128
+      Height = 19
+      Top = 8
+      Width = 85
+      Caption = 'Выдвижной'
+      TabOrder = 1
+    end
+    object Label16: TLabel
+      Left = 8
+      Height = 30
+      Top = 32
+      Width = 251
+      Caption = 'Важно: С выдвижным винтом не допускается'#13#10'затопление привода (даже с IP68).'
+      ParentColor = False
+    end
+  end
+  object MemoOutput: TMemo
+    Left = 608
+    Height = 527
+    Top = 15
+    Width = 432
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 7
+  end
+  object ButtonRun: TButton
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Side = asrBottom
+    Left = 965
+    Height = 25
+    Top = 548
+    Width = 75
+    Caption = 'Расчет'
+    OnClick = ButtonRunClick
+    TabOrder = 9
+  end
+  object GroupBox7: TGroupBox
+    Left = 328
+    Height = 137
+    Top = 436
+    Width = 272
+    Caption = 'Для инженера'
+    ClientHeight = 117
+    ClientWidth = 268
+    TabOrder = 6
+    object Label14: TLabel
+      AnchorSideTop.Control = ComboBoxScrew
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 15
+      Top = 8
+      Width = 82
+      Caption = 'Винт TrxS (мм):'
+      ParentColor = False
+    end
+    object ComboBoxScrew: TComboBox
+      Left = 104
+      Height = 23
+      Top = 4
+      Width = 100
+      ItemHeight = 15
+      TabOrder = 0
+    end
+    object Label15: TLabel
+      AnchorSideTop.Control = EditWay
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 15
+      Top = 36
+      Width = 75
+      Caption = 'Ход щита (м):'
+      ParentColor = False
+    end
+    object EditWay: TEdit
+      Left = 104
+      Height = 23
+      Top = 32
+      Width = 100
+      TabOrder = 1
+    end
+    object CheckBoxWithoutFrameNodes: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 64
+      Width = 204
+      Caption = 'Без промежуточных опор в раме'
+      TabOrder = 2
+    end
+    object CheckBoxThreeWedgePairs: TCheckBox
+      Left = 8
+      Height = 19
+      Top = 88
+      Width = 120
+      Caption = 'Три пары клиньев'
+      TabOrder = 3
+    end
+  end
+  object Panel1: TPanel
+    AnchorSideBottom.Side = asrBottom
+    Left = 608
+    Height = 25
+    Top = 548
+    Width = 98
+    Anchors = [akLeft, akBottom]
+    BevelOuter = bvNone
+    ClientHeight = 25
+    ClientWidth = 98
+    TabOrder = 8
+    object RadioButtonLangRus: TRadioButton
+      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 19
+      Top = 3
+      Width = 34
+      Caption = 'Ru'
+      Checked = True
+      OnChange = RadioButtonLangRusChange
+      TabOrder = 0
+      TabStop = True
+    end
+    object RadioButtonLangEng: TRadioButton
+      AnchorSideTop.Control = Panel1
+      AnchorSideTop.Side = asrCenter
+      Left = 56
+      Height = 19
+      Top = 3
+      Width = 33
+      Caption = 'En'
+      TabOrder = 1
+    end
+  end
+  object GroupBox6: TGroupBox
+    Left = 328
+    Height = 113
+    Top = 8
+    Width = 272
+    Caption = 'Размеры затвора'
+    ClientHeight = 93
+    ClientWidth = 268
+    TabOrder = 1
+    object EditFrameWidth: TEdit
+      Left = 182
+      Height = 23
+      Top = 4
+      Width = 80
+      TabOrder = 0
+    end
+    object Label2: TLabel
+      AnchorSideTop.Control = EditFrameWidth
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 15
+      Top = 8
+      Width = 102
+      Caption = 'Ширина рамы (м):'
+      ParentColor = False
+    end
+    object EditFrameHeight: TEdit
+      Left = 182
+      Height = 23
+      Top = 32
+      Width = 80
+      TabOrder = 1
+    end
+    object EditGateHeight: TEdit
+      Left = 182
+      Height = 23
+      Top = 60
+      Width = 80
+      TabOrder = 2
+    end
+    object Label3: TLabel
+      AnchorSideTop.Control = EditFrameHeight
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 15
+      Top = 36
+      Width = 97
+      Caption = 'Высота рамы (м):'
+      ParentColor = False
+    end
+    object Label4: TLabel
+      AnchorSideTop.Control = EditGateHeight
+      AnchorSideTop.Side = asrCenter
+      Left = 8
+      Height = 15
+      Top = 64
+      Width = 95
+      Caption = 'Высота щита (м):'
+      ParentColor = False
+    end
+  end
+  object PageControlDriveLocation: TPageControl
+    Left = 8
+    Height = 117
+    Top = 456
+    Width = 312
+    ActivePage = TabSheetOnFrame
+    TabIndex = 0
+    TabOrder = 5
+    object TabSheetOnFrame: TTabSheet
+      Caption = 'На раме затвора'
+      ClientHeight = 89
+      ClientWidth = 304
+      object Label19: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 279
+        Caption = 'Стандартное размещение на верхней балке рамы.'
+        ParentColor = False
+      end
+    end
+    object TabSheetOnRack: TTabSheet
+      Caption = 'Колонка управления'
+      ClientHeight = 89
+      ClientWidth = 304
+      object Label5: TLabel
+        AnchorSideTop.Control = EditBtwFrameTopAndGround
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 15
+        Top = 36
+        Width = 158
+        Caption = 'От верха рамы до земли (м):'
+        ParentColor = False
+      end
+      object EditBtwFrameTopAndGround: TEdit
+        Left = 184
+        Height = 23
+        Top = 32
+        Width = 80
+        TabOrder = 0
+      end
+      object CheckBoxRackWithoutPipeNodes: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 64
+        Width = 214
+        Caption = 'Без промежуточных опор на трубе'
+        TabOrder = 1
+      end
+      object Label21: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 203
+        Caption = 'Высота колонки управления 760 мм.'
+        ParentColor = False
+      end
+    end
+    object TabSheetOnBracket: TTabSheet
+      Caption = 'Кронштейн'
+      ClientHeight = 89
+      ClientWidth = 304
+      object EditBtwFrameTopAndDriveUnit: TEdit
+        Left = 184
+        Height = 23
+        Top = 32
+        Width = 80
+        TabOrder = 0
+      end
+      object Label20: TLabel
+        AnchorSideTop.Control = EditBtwFrameTopAndDriveUnit
+        AnchorSideTop.Side = asrCenter
+        Left = 8
+        Height = 15
+        Top = 36
+        Width = 170
+        Caption = 'От верха рамы до привода (м):'
+        ParentColor = False
+      end
+      object CheckBoxBracketWithoutPipeNodes: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 64
+        Width = 214
+        Caption = 'Без промежуточных опор на трубе'
+        TabOrder = 1
+      end
+      object Label22: TLabel
+        Left = 8
+        Height = 15
+        Top = 8
+        Width = 240
+        Caption = 'Выносная опора с настенным креплением.'
+        ParentColor = False
+      end
+    end
+  end
+  object Label1: TLabel
+    Left = 16
+    Height = 15
+    Top = 436
+    Width = 212
+    Caption = 'Расположение привода или штурвала'
+    ParentColor = False
+  end
+end
