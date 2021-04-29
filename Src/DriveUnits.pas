@@ -78,20 +78,22 @@ const
   S230 = 'S2-30 min';
   S425 = 'S4-25%';
   S450 = 'S4-50%';
+  SAM = ' + АUMA МATIC (AM)';
+  SAC = ' + АUMATIC (AC)';
 
   SAuma = 'AUMA';
   SAumaSAS215 = 'AUMA SA (S2-15min)';
-  SAumaSAS215AM = 'AUMA SA (S2-15min) / AM';
-  SAumaSAS215AC = 'AUMA SA (S2-15min) / AC';
+  SAumaSAS215AM = 'AUMA SA (S2-15min)' + SAM;
+  SAumaSAS215AC = 'AUMA SA (S2-15min)' + SAC;
   SAumaSAS230 = 'AUMA SA (S2-30min)';
-  SAumaSAS230AM = 'AUMA SA (S2-30min) / AM';
-  SAumaSAS230AC = 'AUMA SA (S2-30min) / AC';
+  SAumaSAS230AM = 'AUMA SA (S2-30min)' + SAM;
+  SAumaSAS230AC = 'AUMA SA (S2-30min)' + SAC;
   SAumaSARS425 = 'AUMA SAR (S4-25%)';
-  SAumaSARS425AM = 'AUMA SAR (S4-25%) / AM';
-  SAumaSARS425AC = 'AUMA SAR (S4-25%) / AC';
+  SAumaSARS425AM = 'AUMA SAR (S4-25%)' + SAM;
+  SAumaSARS425AC = 'AUMA SAR (S4-25%)' + SAC;
   SAumaSARS450 = 'AUMA SAR (S4-50%)';
-  SAumaSARS450AM = 'AUMA SAR (S4-50%) / AM';
-  SAumaSARS450AC = 'AUMA SAR (S4-50%) / AC';
+  SAumaSARS450AM = 'AUMA SAR (S4-50%)' + SAM;
+  SAumaSARS450AC = 'AUMA SAR (S4-50%)' + SAC;
   SAumaGK = 'AUMA GK';
   SAumaGST = 'AUMA GST';
 

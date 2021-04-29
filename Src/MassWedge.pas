@@ -553,24 +553,17 @@ end;
 
 function MassScrew(const Slg: TSlidegate): Double;
 const
-  Alen = 0.31;  // 310 mm in the bearing housing and the drive
-  ShaftLength = 0.58;  // minus 580 mm - length of the shaft
   MassPlate = 3.0;
   BearingHouseMass = 4.0;
-  PipeThickness = 0.003;
   NutHeight = 0.1;
   AboveTheFrame = 0.1;
 var
-  SectionArea, CommonLength, RodLength: Double;
+  SectionArea, RodLength: Double;
   BearingHouseCount: Integer;
 begin
   SectionArea := CircleSectorArea(Slg.Screw.MajorDiam, 2 * Pi);
   // общая длина винта
-  CommonLength := Slg.FrameHeight - Slg.GateHeight + NutHeight + AboveTheFrame;
-  if Slg.FrameHeight >= (2 * Slg.GateHeight + 0.5) then
-    RodLength := Slg.ScrewLength + Alen
-  else
-    RodLength := CommonLength;
+  RodLength := Slg.FrameHeight - Slg.GateHeight + NutHeight + AboveTheFrame;
   if Slg.IsScrewPullout then
     BearingHouseCount := 0
   else
@@ -580,10 +573,9 @@ begin
     else
       BearingHouseCount := 2;
   end;
-  Result := (SectionArea * RodLength + CalcPipeMass(Slg.Screw.MajorDiam,
-    PipeThickness, CommonLength - RodLength) + SectionArea *
-    (Slg.FrameWidth - ShaftLength)) * SteelDensity + MassPlate +
+  Result := SectionArea * RodLength * SteelDensity + MassPlate +
     BearingHouseMass * BearingHouseCount;
+  //writeln(result);
 end;
 
 procedure CalcMassWedged(out SgMass: Double; var SheetWeights: TSheetWeights;
@@ -595,6 +587,9 @@ begin
   CalcWedgedDesign(Des, Slg);
   CalcMassGate(MassGate, SheetWeights, Slg, Des);
   CalcMassFrame(MassFrame, SheetWeights, Slg, Des);
+  //writeln(MassGate);
+  //writeln(MassFrame);
+  //writeln(MassScrew(Slg));
   SgMass := MassGate + MassFrame + MassScrew(Slg);
 end;
 
