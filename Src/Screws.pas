@@ -14,6 +14,7 @@ type
     DesignationL: string;
     SectionSize: Double;
     Length: Double;
+    IsSquare: Boolean;
   end;
 
   TScrew = record
@@ -76,6 +77,20 @@ begin
   Result.Length := Length;
 end;
 
+function RoundNut(const DesignationR, DesignationL: string;
+  const SectionSize, Length: Double): TNut;
+begin
+  Result := CreateNut(DesignationR, DesignationL, SectionSize, Length);
+  Result.IsSquare := False;
+end;
+
+function SquareNut(const DesignationR, DesignationL: string;
+  const SectionSize, Length: Double): TNut;
+begin
+  Result := CreateNut(DesignationR, DesignationL, SectionSize, Length);
+  Result.IsSquare := True;
+end;
+
 function SelfMadeNut(const MajorScrewDiam: Double): TNut;
 const
   RoundBase = 0.01;  // 10 mm
@@ -92,7 +107,7 @@ begin
     RodFactor := 1.57
   else
     RodFactor := 1.5;
-  Result := CreateNut('', '', RoundMultiple(MajorScrewDiam * RodFactor, RoundBase),
+  Result := RoundNut('', '', RoundMultiple(MajorScrewDiam * RodFactor, RoundBase),
     RoundMultiple(MajorScrewDiam * 2, RoundBase));
 end;
 
@@ -106,30 +121,30 @@ end;
 
 initialization
   StdScrews[0].Screw := ScrewTr(Mm(30), Mm(6));
-  StdScrews[0].NutForPullout := CreateNut('HBD 30 A R', 'HBD 30 A L', Mm(60), Mm(60));
-  StdScrews[0].NutForFixed := CreateNut('Nakrętka 4-kątna Tr30x6 prawa',
+  StdScrews[0].NutForPullout := RoundNut('HBD 30 A R', 'HBD 30 A L', Mm(60), Mm(60));
+  StdScrews[0].NutForFixed := SquareNut('Nakrętka 4-kątna Tr30x6 prawa',
     'Nakrętka 4-kątna Tr30x6 lewa', Mm(50), Mm(60));
 
   StdScrews[1].Screw := ScrewTr(Mm(40), Mm(7));
-  StdScrews[1].NutForPullout := CreateNut('HBD 40 A R', 'HBD 40 A L', Mm(80), Mm(80));
-  StdScrews[1].NutForFixed := CreateNut('Nakrętka 4-kątna Tr40x7 prawa',
+  StdScrews[1].NutForPullout := RoundNut('HBD 40 A R', 'HBD 40 A L', Mm(80), Mm(80));
+  StdScrews[1].NutForFixed := SquareNut('Nakrętka 4-kątna Tr40x7 prawa',
     'Nakrętka 4-kątna Tr40x7 lewa', Mm(60), Mm(70));
 
   StdScrews[2].Screw := ScrewTr(Mm(50), Mm(8));
-  StdScrews[2].NutForPullout := CreateNut('HBD 50 A R', 'HBD 50 A L', Mm(90), Mm(100));
-  StdScrews[2].NutForFixed := CreateNut('Nakrętka 4-kątna Tr50x8 prawa',
+  StdScrews[2].NutForPullout := RoundNut('HBD 50 A R', 'HBD 50 A L', Mm(90), Mm(100));
+  StdScrews[2].NutForFixed := SquareNut('Nakrętka 4-kątna Tr50x8 prawa',
     'Nakrętka 4-kątna Tr50x8 lewa', Mm(70), Mm(90));
 
   StdScrews[3].Screw := ScrewTr(Mm(60), Mm(9));
-  StdScrews[3].NutForPullout := CreateNut('HBD 60 A R', 'HBD 60 A L', Mm(100), Mm(120));
+  StdScrews[3].NutForPullout := RoundNut('HBD 60 A R', 'HBD 60 A L', Mm(100), Mm(120));
   StdScrews[3].NutForFixed := StdScrews[3].NutForPullout;
 
   StdScrews[4].Screw := ScrewTr(Mm(70), Mm(10));
-  StdScrews[4].NutForPullout := CreateNut('HBD 70 A R', 'HBD 70 A L', Mm(110), Mm(140));
+  StdScrews[4].NutForPullout := RoundNut('HBD 70 A R', 'HBD 70 A L', Mm(110), Mm(140));
   StdScrews[4].NutForFixed := StdScrews[4].NutForPullout;
 
   StdScrews[5].Screw := ScrewTr(Mm(80), Mm(10));
-  StdScrews[5].NutForPullout := CreateNut('HBD 80 A R', 'HBD 80 A L', Mm(120), Mm(160));
+  StdScrews[5].NutForPullout := RoundNut('HBD 80 A R', 'HBD 80 A L', Mm(120), Mm(160));
   StdScrews[5].NutForFixed := StdScrews[5].NutForPullout;
 
   StdScrews[6].Screw := ScrewTr(Mm(90), Mm(12));

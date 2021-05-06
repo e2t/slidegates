@@ -58,8 +58,8 @@ initialization
   L10n[11, Eng] := '%S %S stainless steel (calibrated rod %.3Gh9) — %.3G m';
   L10n[11, Rus] := '%S %S нерж. (круг калибр. %.3Gh9) — %.3G м';
 
-  L10n[12, Eng] := 'Bronze nut %S';
-  L10n[12, Rus] := 'Гайка бронзовая %S';
+  L10n[12, Eng] := 'Bronze nut %S (◻%.0Fx%.0F, L=%.0F)';
+  L10n[12, Rus] := 'Гайка бронзовая %S (◻%.0Fx%.0F, L=%.0F)';
 
   L10n[13, Eng] := 'Self-made nut';
   L10n[13, Rus] := 'Гайка собственного изготовления';
@@ -233,6 +233,9 @@ initialization
 
   L10n[65, Eng] := 'Leakage %.1F l/min';
   L10n[65, Rus] := 'Утечки %.1F л/мин';
+
+  L10n[66, Eng] := 'Bronze nut %S (Ø%.0F, L=%.0F)';
+  L10n[66, Rus] := 'Гайка бронзовая %S (Ø%.0F, L=%.0F)';
 
   //L10n[, Eng] := '';
   //L10n[, Rus] := '';

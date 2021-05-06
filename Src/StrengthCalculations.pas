@@ -683,10 +683,11 @@ begin
       CalcActuatorTemperatureRange(Slg.MinDriveUnitTemperature,
         Slg.MaxDriveUnitTemperature, Slg.Actuator, Slg.ControlBlock);
     end;
-
     else
     begin
-      if not Slg.IsScrewPullout or (Slg.Screw.MajorDiam <= MaxPulloutScrew) then
+      if (not Slg.IsScrewPullout) or
+        // Slg.Screw.MajorDiam <= MaxPulloutScrew
+        (CompareValue(Slg.Screw.MajorDiam, MaxPulloutScrew, 1e-6) <= 0) then
         ChooseHandWheel(Slg.HandWheel, Slg.MinTorque);
       Slg.Torque := Slg.MinTorque;
       Slg.CloseTorque := Slg.MinTorque;

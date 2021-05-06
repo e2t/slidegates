@@ -570,6 +570,7 @@ function Output(const Slg: TSlidegate; const Mass: Double;
   const SheetWeights: TSheetWeights; const Lang: TLang): TStringList;
 var
   I: Integer;
+  NutDesignation: string;
 begin
   Result := TStringList.Create;
   Result.Append(Designation(Slg, Lang));
@@ -591,10 +592,19 @@ begin
   begin
     if Slg.Nut.DesignationL = '' then
       Result.Append(L10n[13, Lang])
-    else if Slg.IsRightHandedScrew then
-      Result.Append(Format(L10n[12, Lang], [Slg.Nut.DesignationR]))
     else
-      Result.Append(Format(L10n[12, Lang], [Slg.Nut.DesignationL]));
+    begin
+      if Slg.IsRightHandedScrew then
+        NutDesignation := Slg.Nut.DesignationR
+      else
+        NutDesignation := Slg.Nut.DesignationL;
+      if Slg.Nut.IsSquare then
+        Result.Append(Format(L10n[12, Lang], [NutDesignation,
+          ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]))
+      else
+        Result.Append(Format(L10n[66, Lang], [NutDesignation,
+          ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
+    end;
   end;
 
   if Slg.BronzeWedgeStripLength > 0 then
@@ -694,5 +704,4 @@ begin
 end;
 
 end.
-
 
