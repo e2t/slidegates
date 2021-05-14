@@ -98,6 +98,7 @@ type
     HaveCounterFlange: Boolean;
     HavePipeNodes: Boolean;
     BtwFrameTopAndDriveUnit: Double;
+    IsSmall: Boolean;
   end;
 
   TFuncSlidegateError = function(const Slg: TSlidegate; const Lang: TLang): string;
@@ -541,6 +542,10 @@ begin
 
   Slg.FrameWidth := InputData.FrameWidth;
   Slg.GateHeight := InputData.GateHeight;
+  Slg.FrameHeight := InputData.FrameHeight;
+  Assert(Slg.FrameHeight >= MinFrameHeight(Slg.GateHeight),
+    'Слишком низкая рама');
+
   Slg.IsScrewPullout := InputData.IsScrewPullout;
   Slg.SlgKind := InputData.SlgKind;
   Slg.DriveKind := InputData.DriveKind;
@@ -553,6 +558,9 @@ begin
   Slg.HaveCounterFlange := InputData.HaveCounterFlange;
   Slg.HavePipeNodes := InputData.HavePipeNodes;
   Slg.BtwFrameTopAndDriveUnit := InputData.BtwFrameTopAndDriveUnit;
+
+  Slg.IsSmall := (Slg.SlgKind = Surf) and (Slg.FrameWidth <= 1.5) and
+    (Slg.GateHeight <= 1.5);
 
   if InputData.HydrHead.HasValue then
     Slg.HydrHead := InputData.HydrHead.Value
@@ -571,9 +579,7 @@ begin
 
   Slg.IsRightHandedScrew := Slg.SlgKind = Flow;
 
-  Slg.FrameHeight := InputData.FrameHeight;
-  Assert(Slg.FrameHeight >= MinFrameHeight(Slg.GateHeight),
-    'Слишком низкая рама');
+
   if InputData.Way.HasValue then
   begin
     Slg.Way := InputData.Way.Value;
@@ -595,7 +601,7 @@ begin
   else
     Slg.HaveFrameNodes := True;
 
-  if Slg.SlgKind <> Flow then
+  if (Slg.SlgKind <> Flow) and (not Slg.IsSmall) then
   begin
     Slg.BronzeWedgeStrip := '22x12';
     Slg.BronzeWedgeStripLength := 0.055 * Slg.WedgePairsCount * 2;

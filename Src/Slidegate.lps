@@ -55,8 +55,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <WindowIndex Value="1"/>
-        <TopLine Value="675"/>
-        <CursorPos X="11" Y="696"/>
+        <TopLine Value="588"/>
+        <CursorPos X="43" Y="603"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -70,8 +70,8 @@
         <Filename Value="Localization.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="70"/>
-        <CursorPos X="57" Y="238"/>
+        <TopLine Value="50"/>
+        <CursorPos X="8" Y="67"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit5>
@@ -80,8 +80,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="248"/>
-        <CursorPos X="17" Y="259"/>
+        <TopLine Value="592"/>
+        <CursorPos X="16" Y="609"/>
         <UsageCount Value="233"/>
         <Loaded Value="True"/>
       </Unit6>
@@ -256,123 +256,127 @@
         <UsageCount Value="5"/>
       </Unit28>
     </Units>
-    <JumpHistory Count="29" HistoryIndex="28">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="545" Column="36" TopLine="528"/>
+        <Caret Line="249" Column="24" TopLine="228"/>
       </Position1>
       <Position2>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="537" Column="20" TopLine="525"/>
+        <Caret Line="414" Column="78" TopLine="385"/>
       </Position2>
       <Position3>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="35" Column="12" TopLine="17"/>
+        <Caret Line="442" Column="23" TopLine="419"/>
       </Position3>
       <Position4>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="244" Column="24" TopLine="228"/>
+        <Caret Line="551" Column="44" TopLine="528"/>
       </Position4>
       <Position5>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="249" Column="24" TopLine="228"/>
+        <Caret Line="352" Column="25" TopLine="335"/>
       </Position5>
       <Position6>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="414" Column="78" TopLine="385"/>
+        <Caret Line="513" Column="13" TopLine="507"/>
       </Position6>
       <Position7>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="442" Column="23" TopLine="419"/>
+        <Caret Line="352" Column="25" TopLine="334"/>
       </Position7>
       <Position8>
-        <Filename Value="MassWedge.pas"/>
-        <Caret Line="551" Column="44" TopLine="528"/>
+        <Filename Value="Controller.pas"/>
+        <Caret Line="277" Column="44" TopLine="269"/>
       </Position8>
       <Position9>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="352" Column="25" TopLine="335"/>
+        <Caret Line="601" Column="40" TopLine="579"/>
       </Position9>
       <Position10>
         <Filename Value="MassWedge.pas"/>
-        <Caret Line="513" Column="13" TopLine="507"/>
+        <Caret Line="597" Column="34" TopLine="569"/>
       </Position10>
       <Position11>
-        <Filename Value="MassWedge.pas"/>
-        <Caret Line="352" Column="25" TopLine="334"/>
+        <Filename Value="Controller.pas"/>
+        <Caret Line="113" Column="55" TopLine="108"/>
       </Position11>
       <Position12>
         <Filename Value="Controller.pas"/>
-        <Caret Line="277" Column="44" TopLine="269"/>
+        <Caret Line="702" TopLine="316"/>
       </Position12>
       <Position13>
-        <Filename Value="MassWedge.pas"/>
-        <Caret Line="601" Column="40" TopLine="579"/>
+        <Filename Value="Screws.pas"/>
+        <Caret Line="148" Column="40" TopLine="125"/>
       </Position13>
       <Position14>
-        <Filename Value="MassWedge.pas"/>
-        <Caret Line="597" Column="34" TopLine="569"/>
+        <Filename Value="Screws.pas"/>
+        <Caret Line="110" Column="38" TopLine="82"/>
       </Position14>
       <Position15>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="113" Column="55" TopLine="108"/>
+        <Filename Value="Screws.pas"/>
+        <Caret Line="83" Column="18" TopLine="71"/>
       </Position15>
       <Position16>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="702" TopLine="316"/>
+        <Filename Value="Screws.pas"/>
+        <Caret Line="90" Column="22" TopLine="71"/>
       </Position16>
       <Position17>
         <Filename Value="Screws.pas"/>
-        <Caret Line="148" Column="40" TopLine="125"/>
+        <Caret Line="71" Column="19" TopLine="53"/>
       </Position17>
       <Position18>
         <Filename Value="Screws.pas"/>
-        <Caret Line="110" Column="38" TopLine="82"/>
+        <Caret Line="83" Column="22" TopLine="54"/>
       </Position18>
       <Position19>
-        <Filename Value="Screws.pas"/>
-        <Caret Line="83" Column="18" TopLine="71"/>
+        <Filename Value="StrengthCalculations.pas"/>
+        <Caret Line="621" Column="28" TopLine="602"/>
       </Position19>
       <Position20>
-        <Filename Value="Screws.pas"/>
-        <Caret Line="90" Column="22" TopLine="71"/>
+        <Filename Value="StrengthCalculations.pas"/>
+        <Caret Line="128" Column="18" TopLine="105"/>
       </Position20>
       <Position21>
-        <Filename Value="Screws.pas"/>
-        <Caret Line="71" Column="19" TopLine="53"/>
+        <Filename Value="StrengthCalculations.pas"/>
+        <Caret Line="690" Column="18" TopLine="670"/>
       </Position21>
       <Position22>
-        <Filename Value="Screws.pas"/>
-        <Caret Line="83" Column="22" TopLine="54"/>
+        <Filename Value="StrengthCalculations.pas"/>
+        <Caret Line="609" Column="30" TopLine="592"/>
       </Position22>
       <Position23>
         <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="621" Column="28" TopLine="602"/>
+        <Caret Line="616" Column="30" TopLine="593"/>
       </Position23>
       <Position24>
         <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="128" Column="18" TopLine="105"/>
+        <Caret Line="689" Column="55" TopLine="661"/>
       </Position24>
       <Position25>
-        <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="690" Column="18" TopLine="670"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="238" Column="72" TopLine="70"/>
       </Position25>
       <Position26>
-        <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="609" Column="30" TopLine="592"/>
+        <Filename Value="Controller.pas"/>
+        <Caret Line="259" Column="17" TopLine="511"/>
       </Position26>
       <Position27>
         <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="616" Column="30" TopLine="593"/>
+        <Caret Line="684" Column="25" TopLine="675"/>
       </Position27>
       <Position28>
         <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="689" Column="55" TopLine="661"/>
+        <Caret Line="92" Column="27" TopLine="74"/>
       </Position28>
       <Position29>
         <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="602" Column="38" TopLine="674"/>
+        <Caret Line="669" Column="23" TopLine="659"/>
       </Position29>
+      <Position30>
+        <Filename Value="StrengthCalculations.pas"/>
+        <Caret Line="92" Column="27" TopLine="74"/>
+      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>
