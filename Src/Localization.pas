@@ -58,8 +58,9 @@ initialization
   L10n[11, Eng] := '%S %S stainless steel (calibrated rod %.3Gh9) — %.3G m';
   L10n[11, Rus] := '%S %S нерж. (круг калибр. %.3Gh9) — %.3G м';
 
-  L10n[12, Eng] := 'Bronze nut %S (◻%.0Fx%.0F, L=%.0F)';
-  L10n[12, Rus] := 'Гайка бронзовая %S (◻%.0Fx%.0F, L=%.0F)';
+  L10n[12, Eng] := 'Bronze square nut %S ◻%.0Fx%.0F, L=%.0F';
+  L10n[12, Rus] :=
+    'Гайка бронзовая квадратная %S ◻%.0Fx%.0F, L=%.0F';
 
   L10n[13, Eng] := 'Self-made nut';
   L10n[13, Rus] := 'Гайка собственного изготовления';
@@ -73,8 +74,9 @@ initialization
   L10n[16, Eng] := 'Minimal inertia moment %.0F mm4';
   L10n[16, Rus] := 'Минимальный момент инерции %.0F мм4';
 
-  L10n[17, Eng] := 'The slenderness ratio of the spindle %.0F';
-  L10n[17, Rus] := 'Коэффициент гибкости стержня %.0F';
+  L10n[17, Eng] := 'Slenderness ratio of the spindle %.0F (should be less than 250)';
+  L10n[17, Rus] :=
+    'Коэффициент гибкости стержня %.0F (должен быть меньше 250)';
 
   L10n[18, Eng] := 'Axial force in screw %.0F N';
   L10n[18, Rus] := 'Осевая сила на винте %.0F Н';
@@ -104,10 +106,14 @@ initialization
   L10n[26, Rus] := 'Минимальный внутренний диаметр %.1F мм.';
 
   L10n[27, Eng] :=
-    'It is impossible to select a standard gearbox. Minimum torque %.1F Nm.';
+    'It is impossible to select a standard gearbox. Minimum torque %.1F Nm.' +
+    LineEnding +
+    'If the torque is within the permissible limits, try changing the gearbox brand.';
   L10n[27, Rus] :=
     'Невозможно подобрать стандартный редуктор. ' +
-    'Минимальный крутящий момент %.1F Нм';
+    'Минимальный крутящий момент %.1F Нм.' +
+    LineEnding +
+    'Если крутящий момент в допустимых пределах, попробуйте поменять бренд редуктора.';
 
   L10n[28, Eng] :=
     'It is impossible to select a standard actuator. ' +
@@ -216,8 +222,9 @@ initialization
   L10n[59, Eng] := 'Max torque %.0F Nm';
   L10n[59, Rus] := 'Максимальный крутящий момент %.0F Нм';
 
-  L10n[60, Eng] := 'Self-made two-armed handle';
-  L10n[60, Rus] := 'Двуплечая рукоятка собственного изготовления';
+  L10n[60, Eng] := 'Self-made two-armed handle D >= %.0F mm';
+  L10n[60, Rus] :=
+    'Двуплечая рукоятка собственного изготовления D >= %.0F мм';
 
   L10n[61, Eng] := 'Handwheel %S';
   L10n[61, Rus] := 'Штурвал %S';
@@ -234,8 +241,57 @@ initialization
   L10n[65, Eng] := 'Leakage %.1F l/min';
   L10n[65, Rus] := 'Утечки %.1F л/мин';
 
-  L10n[66, Eng] := 'Bronze nut %S (Ø%.0F, L=%.0F)';
-  L10n[66, Rus] := 'Гайка бронзовая %S (Ø%.0F, L=%.0F)';
+  L10n[66, Eng] := 'Bronze nut %S Ø%.0F, L=%.0F';
+  L10n[66, Rus] := 'Гайка бронзовая %S Ø%.0F, L=%.0F';
+
+  L10n[67, Eng] := 'Installation by concreting';
+  L10n[67, Rus] := 'Штрабной монтаж';
+
+  L10n[68, Eng] := 'Installation by anchoring to channel';
+  L10n[68, Rus] := 'Бесштрабной монтаж';
+
+  L10n[69, Eng] := 'Installation by anchoring to wall';
+  L10n[69, Rus] := 'Настенный монтаж';
+
+  L10n[70, Eng] := 'Installation by flange';
+  L10n[70, Rus] := 'Монтаж на фланце';
+
+  L10n[71, Eng] := 'Installation by two flanges';
+  L10n[71, Rus] := 'Монтаж на двух фланцах';
+
+  L10n[72, Eng] := 'Non-rising spindle';
+  L10n[72, Rus] := 'Невыдвижной винт';
+
+  L10n[73, Eng] := 'Rising spindle';
+  L10n[73, Rus] := 'Выдвижной винт';
+
+  L10n[74, Eng] := 'Only bevel reducers are used with two screws.';
+  L10n[74, Rus] :=
+    'С двумя винтами используются только угловые редукторы.';
+
+  L10n[75, Eng] := 'Sealing length is %.1F m';
+  L10n[75, Rus] := 'Длина уплотнения %.1F м';
+
+  L10n[76, Eng] := 'Equation File';
+  L10n[76, Rus] := 'Файл уравнений';
+
+  L10n[77, Eng] := 'For the design engineer';
+  L10n[77, Rus] := 'Для конструктора';
+
+  L10n[78, Eng] := ' (right-hand)';
+  L10n[78, Rus] := ' (правая)';
+
+  L10n[79, Eng] := ' (left-hand)';
+  L10n[79, Rus] := ' (левая)';
+
+  L10n[80, Eng] := ' with a control column';
+  L10n[80, Rus] := ' с колонкой управления';
+
+  L10n[81, Eng] := ' with a remote bracket';
+  L10n[81, Rus] := ' с выносным кронштейном';
+
+  L10n[82, Eng] := 'Number of anchors m2r: M12 - %D min, M16 - %D min';
+  L10n[82, Rus] := 'Кол-во анкеров m2r: М12 - не менее %D, М16 - не менее %D';
 
   //L10n[, Eng] := '';
   //L10n[, Rus] := '';
@@ -248,112 +304,4 @@ initialization
 
   //L10n[, Eng] := '';
   //L10n[, Rus] := '';
-
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
-
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
-
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
-
 end.
-(*
-# затвор щитовой - slidegate
-msgid "SG{l_type}{l_drive} {frame_w}x{frame_h}({gate_h})"
-msgstr "ЗЩ{l_type}{l_drive} {frame_w}x{frame_h}({gate_h})"
-
-
-msgid " * frame {mass} kg, thickness {thickness} mm"
-msgstr " * рама {mass} кг, толщина {thickness} мм"
-
-msgid " * gate {mass} kg, thickness {thickness} mm"
-msgstr " * щит {mass} кг, толщина {thickness} мм"
-
-msgid " * screw {mass} kg"
-msgstr " * винт {mass} кг"
-
-msgid " * rack {mass} kg{number}"
-msgstr " * колонка {mass} кг{number}"
-
-
-
-msgid "Sheet {thickness:g} mm stainless steel — {mass:.1f} kg"
-msgstr "Лист {thickness:g} мм нерж. — {mass:.1f} кг"
-
-
-
-
-
-
-msgid "weight {mass} kg"
-msgstr "масса {mass} кг"
-
-
-
-
-
-msgid "Torque in every screw {torque} Nm"
-msgstr "Крутящий момент на каждом винте {torque} Нм"
-
-
-
-msgid "Free torque in every screw {torque} Nm"
-msgstr "Свободный крутящий момент на каждом винте {torque} Нм"
-
-
-
-msgid "mounting flange {flange} for the actuator"
-msgstr "с монтажным фланцем {flange} для привода"
-
-
-
-
-msgid "Axial force in every screw {force} N"
-msgstr "Осевая сила на каждом винте {force} Н"
-
-
-msgid "Wedges {wedge} ({material}) - {pairs} pairs{all}"
-msgstr "Клинья {wedge} ({material}) - {pairs} пары{all}"
-
-msgid " ({bolt} for the {number} pairs)"
-msgstr " ({bolt} для {number} пар)"
-
-
-msgid "The frame {depth} x {shelf} mm, s = {thick} mm"
-msgstr "Рама {depth} x {shelf} мм, s = {thick} мм"
-
-
-
-msgid "The gate {width} x {depth} x {shelf} mm, s = {thick} mm"
-msgstr "Щит {width} x {depth} x {shelf} мм, s = {thick} мм"
-
-msgid "Edges of the gate {height}, s = {thick} mm: horizontal {horiz}{vert}"
-msgstr "Ребра щита {height}, s = {thick} мм: горизонтальных {horiz}{vert}"
-
-msgid ", vertical {vert}"
-msgstr ", вертикальных {vert}"
-
-msgid "Profile of the cover {depth} x {shelf} mm, s = {thick} mm"
-msgstr "Профиль кожуха {depth} x {shelf} мм, s = {thick} мм"
-
-msgid "left-hand closing (counter-clockwise)"
-msgstr "левостороннее закрытие (против часовой стрелки)"
-
-
-msgid "polyamide"
-msgstr "полиамид"
-
-msgid "bronze"
-msgstr "бронза"
-
-msgid "the reverse marking open/close on the handwheel"
-msgstr "обратная маркировка откр./закр. на штурвале"
-
-
-
-msgid "no"
-msgstr "нет"
-
-*)

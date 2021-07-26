@@ -78,7 +78,7 @@ begin
   CalcFlowDesign(Des);
   MassGate := CalcMassGate(Slg);
   MassFrame := CalcMassFrame(Slg);
-  SgMass := MassGate + MassFrame + MassScrew(Slg);
+  SgMass := MassGate + MassFrame + MassScrew(Slg) * Slg.ScrewsNumber;
 
   UpdateSheetWeight(SheetWeights, Des.GateSheet.S, MassGate);
   UpdateSheetWeight(SheetWeights, Des.FrameSheet.S, MassFrame);

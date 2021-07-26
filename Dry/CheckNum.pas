@@ -8,6 +8,9 @@ unit CheckNum;
 
 interface
 
+const
+  CompAccuracy = 1e-6;
+
 function IsThis(const Condition: Boolean; const Message: string): Boolean;
 function IsPositiveInt(const Value: Integer): Boolean;
 function IsPositiveFloat(const Value: Double): Boolean;

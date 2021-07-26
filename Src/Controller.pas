@@ -17,16 +17,26 @@ implementation
 uses
   DriveUnits, GuiMainForm, Screws, Measurements, StrengthCalculations,
   Localization, SysUtils, Nullable, StdCtrls, Classes, Controls,
-  GuiHelper, MassGeneral, FileInfo;
+  GuiHelper, MassGeneral, ProgramInfo, Equations, Fgl;
 
 type
   TArrayControlBlock = array of TControlBlock;
   TFuncInputDataError = function(const Lang: TLang): string;
 
+  TActuatorWithControl = record
+    ModelActuator: TModelActuator;
+    ControlBlock: TControlBlock;
+  end;
+  TChoiceModelActuator = specialize TFPGMap<string, TActuatorWithControl>;
+  TChoiceModelGearbox = specialize TFPGMap<string, TModelGearbox>;
+
 var
+  ModelOpenCloseActuators, ModelRegulActuators: TChoiceModelActuator;
   OpenCloseActuators, RegulActuators: TArrayActuator;
+  ModelBevelGearboxes, ModelSpurGearboxes: TChoiceModelGearbox;
   BevelGearboxes, SpurGearboxes: TArrayGearbox;
   OpenCloseActuatorControlBlocks, RegulActuatorControlBlocks: TArrayControlBlock;
+  LabelHandWheelText: string;
 
 function ActuatorName(const Actuator: TActuator;
   const ControlBlock: TControlBlock): string;
@@ -87,35 +97,21 @@ begin
     end;
 end;
 
-function GetProgramTitle(): string;
-var
-  Info: TFileVersionInfo;
-  Versions: TStringArray;
-begin
-  Info := TFileVersionInfo.Create(nil);
-  Info.ReadFileInfo;
-  Versions := Info.VersionStrings.Values['FileVersion'].Split('.');
-  Result := Format('%s v%s.%s.%s', [Info.VersionStrings.Values['FileDescription'],
-    Versions[0], Versions[1], Versions[2]]);
-  Info.Free;
-end;
-
 procedure MainFormInit();
 var
   ScrewSet: TBuyableScrewSet;
+  I: Integer;
 begin
   MainForm.Caption := GetProgramTitle;
   MainForm.ActiveControl := MainForm.EditFrameWidth;
+  MainForm.LabelHandWheel.Caption := LabelHandWheelText;
 
   // Приводы Открыть-Закрыть
+  for I := 0 to ModelOpenCloseActuators.Count - 1 do
+    MainForm.ComboBoxOpenCloseActuator.Items.Add(ModelOpenCloseActuators.Keys[I]);
+
   SetLength(OpenCloseActuators, 1024);
   SetLength(OpenCloseActuatorControlBlocks, 1024);
-  MainForm.ComboBoxOpenCloseActuator.Items.Add(SAumaSAS215);
-  MainForm.ComboBoxOpenCloseActuator.Items.Add(SAumaSAS215AM);
-  MainForm.ComboBoxOpenCloseActuator.Items.Add(SAumaSAS215AC);
-  MainForm.ComboBoxOpenCloseActuator.Items.Add(SAumaSAS230);
-  MainForm.ComboBoxOpenCloseActuator.Items.Add(SAumaSAS230AM);
-  MainForm.ComboBoxOpenCloseActuator.Items.Add(SAumaSAS230AC);
   ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
     AumaSADutyS215, OpenCloseActuatorControlBlocks, NoBlock);
   ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
@@ -134,14 +130,11 @@ begin
     MainForm.ComboBoxOpenCloseActuator.Items.Count);
 
   // Регулирующие приводы
+  for I := 0 to ModelRegulActuators.Count - 1 do
+    MainForm.ComboBoxRegulActuator.Items.Add(ModelRegulActuators.Keys[I]);
+
   SetLength(RegulActuators, 1024);
   SetLength(RegulActuatorControlBlocks, 1024);
-  MainForm.ComboBoxRegulActuator.Items.Add(SAumaSARS425);
-  MainForm.ComboBoxRegulActuator.Items.Add(SAumaSARS425AM);
-  MainForm.ComboBoxRegulActuator.Items.Add(SAumaSARS425AC);
-  MainForm.ComboBoxRegulActuator.Items.Add(SAumaSARS450);
-  MainForm.ComboBoxRegulActuator.Items.Add(SAumaSARS450AM);
-  MainForm.ComboBoxRegulActuator.Items.Add(SAumaSARS450AC);
   ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
     AumaSARDutyS425, RegulActuatorControlBlocks, NoBlock);
   ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
@@ -159,16 +152,22 @@ begin
   SetLength(RegulActuatorControlBlocks, MainForm.ComboBoxRegulActuator.Items.Count);
 
   // Угловые редукторы
+  for I := 0 to ModelBevelGearboxes.Count - 1 do
+    MainForm.ComboBoxBevelGearbox.Items.Add(ModelBevelGearboxes.Keys[I]);
+
   SetLength(BevelGearboxes, 1024);
-  MainForm.ComboBoxBevelGearbox.Items.Add(SAumaGK);
   ComboBoxGearboxFill(MainForm.ComboBoxBevelGearbox, BevelGearboxes,
     AumaGK);
+  ComboBoxGearboxFill(MainForm.ComboBoxBevelGearbox, BevelGearboxes,
+    TramecR);
   MainForm.ComboBoxBevelGearbox.ItemIndex := 0;
   SetLength(BevelGearboxes, MainForm.ComboBoxBevelGearbox.Items.Count);
 
   // Цилиндрические редукторы
+  for I := 0 to ModelSpurGearboxes.Count - 1 do
+    MainForm.ComboBoxSpurGearbox.Items.Add(ModelSpurGearboxes.Keys[I]);
+
   SetLength(SpurGearboxes, 1024);
-  MainForm.ComboBoxSpurGearbox.Items.Add(SAumaGST);
   ComboBoxGearboxFill(MainForm.ComboBoxSpurGearbox, SpurGearboxes,
     AumaGST);
   MainForm.ComboBoxSpurGearbox.ItemIndex := 0;
@@ -191,12 +190,36 @@ begin
   Result := L10n[62, Lang];
 end;
 
+function ErrorNonBevelGearboxWithTwoScrews(const Lang: TLang): string;
+begin
+  Result := L10n[74, Lang];
+end;
+
+procedure GetGearboxOrModel(var ModelGearbox: TModelGearbox; var Gearbox: TGearbox);
+var
+  Choice: string;
+begin
+  if MainForm.RadioButtonBevelGearbox.Checked then
+  begin
+    Choice := MainForm.ComboBoxBevelGearbox.Text;
+    if not ModelBevelGearboxes.TryGetData(Choice, ModelGearbox) then
+      Gearbox := BevelGearboxes[MainForm.ComboBoxBevelGearbox.ItemIndex];
+  end
+  else if MainForm.RadioButtonSpurGearbox.Checked then
+  begin
+    Choice := MainForm.ComboBoxSpurGearbox.Text;
+    if not ModelSpurGearboxes.TryGetData(Choice, ModelGearbox) then
+      Gearbox := SpurGearboxes[MainForm.ComboBoxSpurGearbox.ItemIndex];
+  end;
+end;
+
 function CreateInputData(out InputData: TInputData): TFuncInputDataError;
 var
   ScrewSize: array of string;
-  ScrewNote: string;
+  ScrewNote, Choice: string;
   I: Integer;
   Value, AMaxWay: Double;
+  ActuatorWithControl: TActuatorWithControl;
 begin
   InputData := Default(TInputData);
   Result := nil;
@@ -285,112 +308,43 @@ begin
     if MainForm.RadioButtonOpenClose.Checked then
     begin
       InputData.DriveKind := OpenCloseActuator;
-      case MainForm.ComboBoxOpenCloseActuator.Text of
-        SAumaSAS215:
-        begin
-          InputData.ModelActuator := AumaSADutyS215;
-          InputData.ControlBlock := NoBlock;
-        end;
-        SAumaSAS215AM:
-        begin
-          InputData.ModelActuator := AumaSADutyS215;
-          InputData.ControlBlock := AumaAM;
-        end;
-        SAumaSAS215AC:
-        begin
-          InputData.ModelActuator := AumaSADutyS215;
-          InputData.ControlBlock := AumaAC;
-        end;
-        SAumaSAS230:
-        begin
-          InputData.ModelActuator := AumaSADutyS230;
-          InputData.ControlBlock := NoBlock;
-        end;
-        SAumaSAS230AM:
-        begin
-          InputData.ModelActuator := AumaSADutyS230;
-          InputData.ControlBlock := AumaAM;
-        end;
-        SAumaSAS230AC:
-        begin
-          InputData.ModelActuator := AumaSADutyS230;
-          InputData.ControlBlock := AumaAC;
-        end;
-        else
-        begin
-          I := MainForm.ComboBoxOpenCloseActuator.ItemIndex;
-          InputData.Actuator := OpenCloseActuators[I];
-          InputData.ControlBlock := OpenCloseActuatorControlBlocks[I];
-        end;
+      Choice := MainForm.ComboBoxOpenCloseActuator.Text;
+      if ModelOpenCloseActuators.TryGetData(Choice, ActuatorWithControl) then
+      begin
+        InputData.ModelActuator := ActuatorWithControl.ModelActuator;
+        InputData.ControlBlock := ActuatorWithControl.ControlBlock;
+      end
+      else
+      begin
+        I := MainForm.ComboBoxOpenCloseActuator.ItemIndex;
+        InputData.Actuator := OpenCloseActuators[I];
+        InputData.ControlBlock := OpenCloseActuatorControlBlocks[I];
       end;
     end
     else if MainForm.RadioButtonRegul.Checked then
     begin
       InputData.DriveKind := RegulActuator;
-      case MainForm.ComboBoxRegulActuator.Text of
-        SAumaSARS425:
-        begin
-          InputData.ModelActuator := AumaSARDutyS425;
-          InputData.ControlBlock := NoBlock;
-        end;
-        SAumaSARS425AM:
-        begin
-          InputData.ModelActuator := AumaSARDutyS425;
-          InputData.ControlBlock := AumaAM;
-        end;
-        SAumaSARS425AC:
-        begin
-          InputData.ModelActuator := AumaSARDutyS425;
-          InputData.ControlBlock := AumaAC;
-        end;
-        SAumaSARS450:
-        begin
-          InputData.ModelActuator := AumaSARDutyS450;
-          InputData.ControlBlock := NoBlock;
-        end;
-        SAumaSARS450AM:
-        begin
-          InputData.ModelActuator := AumaSARDutyS450;
-          InputData.ControlBlock := AumaAM;
-        end;
-        SAumaSARS450AC:
-        begin
-          InputData.ModelActuator := AumaSARDutyS450;
-          InputData.ControlBlock := AumaAC;
-        end;
-        else
-        begin
-          I := MainForm.ComboBoxRegulActuator.ItemIndex;
-          InputData.Actuator := RegulActuators[I];
-          InputData.ControlBlock := RegulActuatorControlBlocks[I];
-        end;
+      Choice := MainForm.ComboBoxRegulActuator.Text;
+      if ModelRegulActuators.TryGetData(Choice, ActuatorWithControl) then
+      begin
+        InputData.ModelActuator := ActuatorWithControl.ModelActuator;
+        InputData.ControlBlock := ActuatorWithControl.ControlBlock;
+      end
+      else
+      begin
+        I := MainForm.ComboBoxRegulActuator.ItemIndex;
+        InputData.Actuator := RegulActuators[I];
+        InputData.ControlBlock := RegulActuatorControlBlocks[I];
       end;
     end;
   end
   else if MainForm.PageControlDriveKind.ActivePage = MainForm.TabSheetGearbox then
   begin
     if MainForm.RadioButtonBevelGearbox.Checked then
-    begin
-      InputData.DriveKind := BevelGearbox;
-      case MainForm.ComboBoxBevelGearbox.Text of
-        SAumaGK:
-          InputData.ModelGearbox := AumaGK;
-        else
-          InputData.Gearbox :=
-            BevelGearboxes[MainForm.ComboBoxBevelGearbox.ItemIndex];
-      end;
-    end
+      InputData.DriveKind := BevelGearbox
     else if MainForm.RadioButtonSpurGearbox.Checked then
-    begin
       InputData.DriveKind := SpurGearbox;
-      case MainForm.ComboBoxSpurGearbox.Text of
-        SAumaGST:
-          InputData.ModelGearbox := AumaGST;
-        else
-          InputData.Gearbox :=
-            SpurGearboxes[MainForm.ComboBoxSpurGearbox.ItemIndex];
-      end;
-    end;
+    GetGearboxOrModel(InputData.ModelGearbox, InputData.Gearbox);
   end
   else if MainForm.PageControlDriveKind.ActivePage = MainForm.TabSheetHandWheel then
     InputData.DriveKind := HandWheel;
@@ -478,6 +432,16 @@ begin
     InputData.FullWays := Value  // безразмерная величина
   else
     Exit(@ErrorIncorrectValue);
+
+  if MainForm.CheckBoxTwoScrews.Checked then
+  begin
+    if not MainForm.RadioButtonBevelGearbox.Checked then
+      Exit(@ErrorNonBevelGearboxWithTwoScrews);
+    InputData.ScrewsNumber := 2;
+    GetGearboxOrModel(InputData.ModelGearbox, InputData.Gearbox);
+  end
+  else
+    InputData.ScrewsNumber := 1;
 end;
 
 function Designation(const Slg: TSlidegate; const Lang: Integer): string;
@@ -542,108 +506,194 @@ begin
   Put.Append(L10n[52, Lang]);
   Put.Append(L10n[53, Lang]);
   Put.Append(L10n[54, Lang]);
+  Put.Append('');
 end;
 
 procedure OutputHandWheel(var Put: TStringList; const HandWheel: THandWheel;
   const Lang: TLang);
 begin
-  if HandWheel = nil then
-    Put.Append(L10n[60, Lang])
+  if HandWheel.Name = '' then
+    Put.Append(Format(L10n[60, Lang], [ToMm(HandWheel.Diameter)]))
   else
     Put.Append(Format(L10n[61, Lang], [HandWheel.Name]));
+  Put.Append('');
 end;
 
 procedure OutputAumaGearbox(var Put: TStringList; const Grb: TGearbox;
-  const Lang: TLang; const Sleeve: string);
+  const Lang: TLang; const Sleeve: string; const ScrewsNumber: Integer);
+var
+  DriveName: string;
 begin
-  if Grb.GearboxType = TGearboxType.AumaGK then
-    Put.Append(Format(L10n[56, Lang], [Grb.Brand, Grb.Name]))
-  else if Grb.GearboxType = TGearboxType.AumaGST then
-    Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name]));
+  case Grb.GearboxType of
+    TGearboxType.AumaGK, TGearboxType.MechanicRZAM:
+      DriveName := Format(L10n[58, Lang], [Grb.Brand, Grb.Name]);
+    TGearboxType.AumaGST:
+      DriveName := Format(L10n[56, Lang], [Grb.Brand, Grb.Name]);
+  end;
+  if ScrewsNumber > 1 then
+    DriveName := DriveName + ' (x2)';
+  Put.Append(DriveName);
   Put.Append(Format(L10n[57, Lang], [Grb.Ratio]));
   Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
   Put.Append(Format(L10n[34, Lang], [Grb.Flange]));
   Put.Append(Format(L10n[35, Lang], [Sleeve]));
+  Put.Append('');
+end;
+
+procedure OutputRotorkGearbox(var Put: TStringList; const Grb: TGearbox;
+  const Lang: TLang; const Sleeve: string; const Need2InputShaft: Boolean);
+begin
+  Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name]));
+  if Need2InputShaft then
+    Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name +
+      ' DUAL INPUT BEVEL GEARCASE (180)']));
+  Put.Append(Format(L10n[57, Lang], [Grb.Ratio]));
+  Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
+  Put.Append(Format(L10n[34, Lang], [Grb.Flange]));
+  Put.Append(Format(L10n[35, Lang], [Sleeve]));
+  Put.Append('');
+end;
+
+procedure OutputTramecGearbox(var Put: TStringList; const Grb: TGearbox;
+  const Lang: TLang; const Need2InputShaft: Boolean);
+begin
+  Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name]));
+  if Need2InputShaft then
+    Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name + ' seA']));
+  Put.Append(Format(L10n[57, Lang], [Grb.Ratio]));
+  Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
+  Put.Append('');
+end;
+
+procedure OutputScrew(var Put: TStringList; const IsRightHandedScrew: Boolean;
+  const Screw: TScrew; const ThreadLength: Double; const Lang: TLang);
+begin
+  if IsRightHandedScrew then
+    Put.Append(Format(L10n[11, Lang], [L10n[9, Lang], Screw.DesignationR,
+      ToMm(Screw.MajorDiam), ThreadLength]))
+  else
+    Put.Append(Format(L10n[11, Lang], [L10n[10, Lang], Screw.DesignationL,
+      ToMm(Screw.MajorDiam), ThreadLength]));
+end;
+
+procedure OutputOfficeMemo(var Put: TStringList; const Slg: TSlidegate;
+  const SheetWeights: TSheetWeights; const Lang: TLang);
+var
+  I: Integer;
+begin
+  for I := 0 to SheetWeights.Count - 1 do
+    Put.Append(Format(L10n[63, Lang], [ToMm(SheetWeights.Keys[I]),
+      SheetWeights.Data[I]]));
+
+  OutputScrew(Put, Slg.IsRightHandedScrew, Slg.Screw, Slg.ThreadLength, Lang);
+  if (Slg.ScrewsNumber > 1) then
+    OutputScrew(Put, Slg.IsRightHandedScrew2, Slg.Screw, Slg.ThreadLength, Lang);
+
+  if (not Slg.IsScrewPullout) or (Slg.DriveKind = HandWheel) then
+  begin
+    if Slg.Nut.DesignationL = '' then
+      Put.Append(L10n[13, Lang])
+    else
+    begin
+      if Slg.Nut.IsSquare then
+      begin
+        Put.Append(Format(L10n[12, Lang],
+          [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew, Lang),
+          ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
+        if (Slg.ScrewsNumber > 1) then
+          Put.Append(Format(L10n[12, Lang],
+            [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew2, Lang),
+            ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.SectionSize),
+            ToMm(Slg.Nut.Length)]));
+      end
+      else
+      begin
+        Put.Append(Format(L10n[66, Lang],
+          [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew, Lang),
+          ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
+        if (Slg.ScrewsNumber > 1) then
+          Put.Append(Format(L10n[66, Lang],
+            [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew2, Lang),
+            ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
+      end;
+    end;
+  end;
+
+  if Slg.BronzeWedgeStripLength > 0 then
+    Put.Append(Format(L10n[14, Lang], [Slg.BronzeWedgeStrip,
+      ToMm(Slg.BronzeWedgeStripLength)]));
+
+  Put.Append(Format(L10n[75, Lang], [Slg.SealingLength]));
+  Put.Append('');
+end;
+
+function Header(const Line: string): string;
+begin
+  Result := '[ ' + Line + ' ]' + LineEnding;
 end;
 
 function Output(const Slg: TSlidegate; const Mass: Double;
   const SheetWeights: TSheetWeights; const Lang: TLang): TStringList;
 var
-  I: Integer;
-  NutDesignation: string;
+  SInstallKind, SDriveLocation, ScrewDescription: string;
 begin
   Result := TStringList.Create;
   Result.Append(Designation(Slg, Lang));
+  case Slg.InstallKind of
+    Concrete:
+      SInstallKind := L10n[67, Lang];
+    Channel:
+      SInstallKind := L10n[68, Lang];
+    Wall:
+      SInstallKind := L10n[69, Lang];
+    Flange:
+      SInstallKind := L10n[70, Lang];
+    TwoFlange:
+      SInstallKind := L10n[71, Lang];
+  end;
+  case Slg.DriveLocation of
+    OnRack:
+      SDriveLocation := L10n[80, Lang];
+    OnBracket:
+      SDriveLocation := L10n[81, Lang];
+  end;
+  Result.Append(SInstallKind + SDriveLocation);
+  if Slg.IsScrewPullout then
+    ScrewDescription := L10n[73, Lang]
+  else
+    ScrewDescription := L10n[72, Lang];
+  if Slg.ScrewsNumber > 1 then
+    ScrewDescription := ScrewDescription + ' (x2)';
+  Result.Append(ScrewDescription);
   Result.Append(Format(L10n[0, Lang], [Slg.HydrHead]));
   Result.Append(Format(L10n[1, Lang], [Mass]));
+  Result.Append(Format(L10n[65, Lang], [Slg.Leakage]));
   Result.Append('');
 
-  for I := 0 to SheetWeights.Count - 1 do
-    Result.Append(Format(L10n[63, Lang], [ToMm(SheetWeights.Keys[I]),
-      SheetWeights.Data[I]]));
-  if Slg.IsRightHandedScrew then
-    Result.Append(Format(L10n[11, Lang], [L10n[9, Lang], Slg.Screw.DesignationR,
-      ToMm(Slg.Screw.MajorDiam), Slg.ThreadLength]))
-  else
-    Result.Append(Format(L10n[11, Lang], [L10n[10, Lang], Slg.Screw.DesignationL,
-      ToMm(Slg.Screw.MajorDiam), Slg.ThreadLength]));
-
-  if (not Slg.IsScrewPullout) or (Slg.DriveKind = HandWheel) then
+  if Slg.Actuator <> nil then
+    OutputAumaActuator(Result, Slg, Lang);
+  if Slg.Gearbox <> nil then
   begin
-    if Slg.Nut.DesignationL = '' then
-      Result.Append(L10n[13, Lang])
+    if Slg.Gearbox.GearboxType = TGearboxType.TramecR then
+      OutputTramecGearbox(Result, Slg.Gearbox, Lang, Slg.GearboxNeed2InputShaft)
+    else if Slg.Gearbox.GearboxType = TGearboxType.RotorkIB then
+      OutputRotorkGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve,
+        Slg.GearboxNeed2InputShaft)
     else
-    begin
-      if Slg.IsRightHandedScrew then
-        NutDesignation := Slg.Nut.DesignationR
-      else
-        NutDesignation := Slg.Nut.DesignationL;
-      if Slg.Nut.IsSquare then
-        Result.Append(Format(L10n[12, Lang], [NutDesignation,
-          ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]))
-      else
-        Result.Append(Format(L10n[66, Lang], [NutDesignation,
-          ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
-    end;
+      OutputAumaGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber);
   end;
+  if Slg.HandWheel <> nil then
+    OutputHandWheel(Result, Slg.HandWheel, Lang);
 
-  if Slg.BronzeWedgeStripLength > 0 then
-    Result.Append(Format(L10n[14, Lang], [Slg.BronzeWedgeStrip,
-      ToMm(Slg.BronzeWedgeStripLength)]));
-
-  Result.Append('');
-
-  case Slg.DriveKind of
-    OpenCloseActuator, RegulActuator:
-      case Slg.Actuator.ActuatorType of
-        AumaSA, AumaSAR:
-          OutputAumaActuator(Result, Slg, Lang);
-        else
-          Assert(False, 'Неизвестный тип электропривода');
-      end;
-
-    BevelGearbox, SpurGearbox:
-      case Slg.Gearbox.GearboxType of
-        TGearboxType.AumaGK, TGearboxType.AumaGST:
-          OutputAumaGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve);
-        else
-          Assert(False, 'Неизвестный тип редуктора');
-      end;
-
-    HandWheel:
-      OutputHandWheel(Result, Slg.HandWheel, Lang);
-
-    else
-      Assert(False, 'Неизвестный вид управления');
-  end;
-  Result.Append('');
+  Result.Append(Header(L10n[77, Lang]));
+  OutputOfficeMemo(Result, Slg, SheetWeights, Lang);
 
   Result.Append(Format(L10n[15, Lang], [Slg.Screw.SizeToStr, Slg.ScrewFoS]));
   Result.Append(Format(L10n[17, Lang], [Slg.ScrewSlenderness]));
   if Slg.MinScrewInertiaMoment > 0 then
     Result.Append(Format(L10n[16, Lang], [ToMm4(Slg.MinScrewInertiaMoment)]));
   Result.Append(Format(L10n[18, Lang], [Slg.AxialForce]));
-  Result.Append(Format(L10n[19, Lang], [Slg.Torque]));
+  Result.Append(Format(L10n[19, Lang], [Slg.CloseScrewTorque]));
   Result.Append('');
 
   if Slg.HaveFrameNodes then
@@ -653,10 +703,16 @@ begin
   if Slg.WedgePairsCount > 0 then
     Result.Append(Format(L10n[23, Lang], [Slg.WedgePairsCount]));
   Result.Append(Format(L10n[24, Lang], [ToMm(Slg.NutAxe)]));
-  Result.Append('');
-
+  if (Slg.InstallKind = Channel) or (Slg.InstallKind = Wall) then
+    Result.Append(Format(L10n[82, Lang], [Slg.Anchor12Numbers, Slg.Anchor16Numbers]));
   Result.Append(Format(L10n[25, Lang], [Slg.HydrForce]));
-  Result.Append(Format(L10n[65, Lang], [Slg.Leakage]));
+
+  if Slg.IsSmall then
+  begin
+    Result.Append('');
+    Result.Append(Header(L10n[76, Lang]));
+    Result.Append(CreateSmallSgEquations(Slg));
+  end;
 end;
 
 procedure PrintResults(const Slg: TSlidegate; const Mass: Double;
@@ -703,5 +759,79 @@ begin
   PrintResults(Slidegate, Mass, SheetWeights, SlidegateError, InputDataError);
 end;
 
-end.
+var
+  ActuatorWithControl: TActuatorWithControl;
 
+initialization
+  ModelOpenCloseActuators := TChoiceModelActuator.Create;
+
+  ActuatorWithControl.ModelActuator := AumaSADutyS215;
+  ActuatorWithControl.ControlBlock := NoBlock;
+  ModelOpenCloseActuators.Add(SAumaSAS215, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSADutyS215;
+  ActuatorWithControl.ControlBlock := AumaAM;
+  ModelOpenCloseActuators.Add(SAumaSAS215AM, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSADutyS215;
+  ActuatorWithControl.ControlBlock := AumaAC;
+  ModelOpenCloseActuators.Add(SAumaSAS215AC, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSADutyS230;
+  ActuatorWithControl.ControlBlock := NoBlock;
+  ModelOpenCloseActuators.Add(SAumaSAS230, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSADutyS230;
+  ActuatorWithControl.ControlBlock := AumaAM;
+  ModelOpenCloseActuators.Add(SAumaSAS230AM, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSADutyS230;
+  ActuatorWithControl.ControlBlock := AumaAC;
+  ModelOpenCloseActuators.Add(SAumaSAS230AC, ActuatorWithControl);
+
+  ModelRegulActuators := TChoiceModelActuator.Create;
+
+  ActuatorWithControl.ModelActuator := AumaSARDutyS425;
+  ActuatorWithControl.ControlBlock := NoBlock;
+  ModelRegulActuators.Add(SAumaSARS425, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSARDutyS425;
+  ActuatorWithControl.ControlBlock := AumaAM;
+  ModelRegulActuators.Add(SAumaSARS425AM, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSARDutyS425;
+  ActuatorWithControl.ControlBlock := AumaAC;
+  ModelRegulActuators.Add(SAumaSARS425AC, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSARDutyS450;
+  ActuatorWithControl.ControlBlock := NoBlock;
+  ModelRegulActuators.Add(SAumaSARS450, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSARDutyS450;
+  ActuatorWithControl.ControlBlock := AumaAM;
+  ModelRegulActuators.Add(SAumaSARS450AM, ActuatorWithControl);
+
+  ActuatorWithControl.ModelActuator := AumaSARDutyS450;
+  ActuatorWithControl.ControlBlock := AumaAC;
+  ModelRegulActuators.Add(SAumaSARS450AC, ActuatorWithControl);
+
+  ModelBevelGearboxes := TChoiceModelGearbox.Create;
+
+  ModelBevelGearboxes.Add(SAumaGK, AumaGK);
+  ModelBevelGearboxes.Add(SMechanicRZAM, MechanicRZAM);
+  ModelBevelGearboxes.Add(STramecR, TramecR);
+  ModelBevelGearboxes.Add(SRotorkIB, RotorkIB);
+
+  ModelSpurGearboxes := TChoiceModelGearbox.Create;
+
+  ModelSpurGearboxes.add(SAumaGST, AumaGST);
+
+  LabelHandWheelText := Format(
+    'Покупные штурвалы Ø%.0F...%.0F можно использовать:'
+    + LineEnding + '— при невысоком крутящем моменте,' +
+    LineEnding + '— с невыдвижными винтами любых размеров,'
+    + LineEnding +
+    '— с выдвижными винтами диаметром не более %.0F мм.'
+    + LineEnding +
+    'В остальных случаях необходимо использовать двуплечую рукоятку собственного изготовления.', [ToMm(HandWheels[0].Diameter), ToMm(HandWheels[High(HandWheels)].Diameter), ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
+end.

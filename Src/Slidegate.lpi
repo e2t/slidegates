@@ -18,8 +18,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="2"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="3"/>
+      <MinorVersionNr Value="1"/>
+      <BuildNr Value="4"/>
       <Language Value="0419"/>
       <StringTable FileDescription="Расчет щитовых затворов" InternalName="Slidegate" LegalCopyright="Zero-Clause BSD (0BSD)" OriginalFilename="Slidegate.exe" ProductName="Slidegate"/>
     </VersionInfo>
@@ -39,7 +39,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="15">
+    <Units Count="19">
       <Unit0>
         <Filename Value="Slidegate.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -103,6 +103,22 @@
         <Filename Value="..\Dry\MathUtils.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="..\Dry\ProgramInfo.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="Equations.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="..\Dry\CheckNum.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="Anchors.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit18>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

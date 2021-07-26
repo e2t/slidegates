@@ -110,6 +110,9 @@ type
 
 implementation
 
+uses
+  SysUtils, Math, CheckNum;
+
 type
   generic TWinControlManager<T, V> = class
     class function GetValue(const Control: T; const S: string; out Value: V): Boolean;
@@ -522,7 +525,8 @@ class function TWinControlManager.GetValueMinMaxEq(const Control: T;
 begin
   Result := TWinControlManager.GetValue(Control, S, Value);
   if Result then
-    Result := (MinValue < Value) and (Value <= MaxValue);
+    Result := (MinValue < Value) and
+      (CompareValue(Value, MaxValue, CompAccuracy) <= 0);
 end;
 
 class function TWinControlManager.GetValueMinEqMaxEq(const Control: T;

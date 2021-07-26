@@ -72,3 +72,5 @@ modules/
 backup/
 lib/
 *.dbg
+Dry/*
+!Dry/*.pas

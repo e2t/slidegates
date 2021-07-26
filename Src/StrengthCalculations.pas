@@ -47,6 +47,7 @@ type
     HaveCounterFlange: Boolean;
     BtwFrameTopAndDriveUnit: Double;
     HavePipeNodes: Boolean;
+    ScrewsNumber: Integer;
   end;
 
   TSlidegate = record
@@ -63,6 +64,7 @@ type
     HaveFixedGate: Boolean;
     WedgePairsCount: Integer;
     IsRightHandedScrew: Boolean;
+    IsRightHandedScrew2: Boolean;
     FrameHeight: Double;
     Way: Double;
     BethFrameTopAndGateTop: Double;
@@ -73,7 +75,7 @@ type
     MinAxialForce: Double;
     MinScrewInertiaMoment: Double;
     MinScrewMinorDiam: Double;
-    MinTorque: Double;
+    MinScrewTorque: Double;
     Screw: TScrew;
     Nut: TNut;
     Actuator: TActuator;
@@ -99,6 +101,12 @@ type
     HavePipeNodes: Boolean;
     BtwFrameTopAndDriveUnit: Double;
     IsSmall: Boolean;
+    ScrewsNumber: Integer;
+    CloseScrewTorque: Double;
+    GearboxNeed2InputShaft: Boolean;
+    SealingLength: Double;
+    Anchor12Numbers: Integer;
+    Anchor16Numbers: Integer;
   end;
 
   TFuncSlidegateError = function(const Slg: TSlidegate; const Lang: TLang): string;
@@ -115,7 +123,7 @@ const
 implementation
 
 uses
-  SysUtils, Math, Measurements;
+  SysUtils, Math, Measurements, CheckNum, Anchors;
 
 const
   TopBalkHeight = 0.2;  // Metre
@@ -126,10 +134,9 @@ const
   DeltaOpen = 5.0;  // N*Metre
   LimitShearStress = 75e6;  // Pa
   SpecificLeakage = 0.02;  // l/m/s
-  MaxPulloutScrew = 0.04;  // Tr40
   { Перешел с 2.35 - 10.01.2019
     Перешел с 1.95 - 23.04.2021 }
-  RecommendFoS = 1.45;
+  RecommendFoS = 1.46;
 
 function CalcWedgePairsCount(const HydrHead: Double; const FrameWidth: Double;
   const GateHeight: Double): Integer;
@@ -284,9 +291,37 @@ begin
   end;
 end;
 
+function ChooseGearbox(var Gearbox: TGearbox; const RequiredTorque: Double;
+  const IsScrewPullout: Boolean; const Screw: TScrew;
+  const ModelGearbox: TModelGearbox; const Need2InputShaft: Boolean): Boolean;
+var
+  I, J: Integer;
+begin
+  Result := False;
+  I := 0;
+  while (I <= High(ModelGearbox)) and (not Result) do
+  begin
+    J := 0;
+    while (J <= High(ModelGearbox[I])) and (not Result) do
+    begin
+      if (ModelGearbox[I, J].MaxTorque >= RequiredTorque) and
+        ((not IsScrewPullout) or
+        (CompareValue(ModelGearbox[I, J].MaxScrew, Screw.MajorDiam, CompAccuracy) >=
+        0)) and ((not Need2InputShaft) or ModelGearbox[I, J].CanHave2InputShaft) then
+      begin
+        Gearbox := ModelGearbox[I, J];
+        Result := True;
+      end;
+      Inc(J);
+    end;
+    Inc(I);
+  end;
+end;
+
 function ChooseScrewByPitchDiam(var Screw: TScrew; var Nut: TNut;
-  const MinAxialForce, MinTorque, MaxTorque, ScrewLength: Double;
-  const IsScrewPullout: Boolean): Boolean;
+  var Gearbox: TGearbox; const MinAxialForce, MinTorque, MaxTorque, ScrewLength: Double;
+  const IsScrewPullout: Boolean; const ScrewsNumber: Integer;
+  const ModelGearbox: TModelGearbox; const GearboxNeed2InputShaft: Boolean): Boolean;
 var
   I: Integer;
   Torque, AxialForce, FoS: Double;
@@ -295,7 +330,19 @@ begin
   I := 0;
   while (I <= High(StdScrews)) and (not Result) do
   begin
+    // Для одного винта - крутящий момент в приводе.
+    // Для двух винтов - крутящий момент в редукторе.
     Torque := CalcScrewTorque(MinAxialForce, StdScrews[I].Screw);
+
+    if ScrewsNumber > 1 then
+    begin
+      if (Gearbox <> nil) or ChooseGearbox(Gearbox, Torque, IsScrewPullout,
+        StdScrews[I].Screw, ModelGearbox, GearboxNeed2InputShaft) then
+        Torque := Torque / Gearbox.Ratio * ScrewsNumber
+      else
+        continue;  // TODO: or exit
+    end;
+
     if Torque <= MaxTorque then
     begin
       if Torque < MinTorque then
@@ -337,26 +384,6 @@ begin
   begin
     Screw := ScrewTr(MajorDiam, Pitch);
     Nut := SelfMadeNut(MajorDiam);
-  end;
-end;
-
-function ChooseGearbox(var Gearbox: TGearbox; const RequiredTorque: Double;
-  const IsScrewPullout: Boolean; const Screw: TScrew;
-  const ModelGearbox: array of TArrayGearbox): Boolean;
-var
-  I: Integer;
-begin
-  Result := False;
-  I := 0;
-  while (I <= High(ModelGearbox)) and (not Result) do
-  begin
-    if ModelGearbox[I, 0].MaxTorque >= RequiredTorque then
-      if (not IsScrewPullout) or (ModelGearbox[I, 0].MaxScrew >= Screw.MajorDiam) then
-      begin
-        Gearbox := ModelGearbox[I, 0];
-        Result := True;
-      end;
-    Inc(I);
   end;
 end;
 
@@ -414,9 +441,9 @@ var
 begin
   case Duty of
     S215, S425:
-      OpenTimeForFullWays := Mins(12);  // sec
+      OpenTimeForFullWays := Minute(12);
     S230, S450:
-      OpenTimeForFullWays := Mins(27);  // sec
+      OpenTimeForFullWays := Minute(27);
     else
       Assert(False, 'Неизвестный режим работы');
   end;
@@ -457,23 +484,39 @@ begin
   end;
 end;
 
-function ChooseHandWheel(var HandWheel: THandWheel;
-  const RequiredTorque: Double): Boolean;
+function CalcHandWheelDiam(const RequiredTorque: Double;
+  const SlgKind: TSlgKind): Double;
+const
+  MaxForceOpenClose = 45 * GravAcc;  // ГОСТ 21752-76
+  MaxForceRegul = 20 * GravAcc;
+var
+  MaxForce: Double;
+begin
+  if SlgKind = Flow then
+    MaxForce := MaxForceRegul
+  else
+    MaxForce := MaxForceOpenClose;
+  Result := RequiredTorque / MaxForce * 2;
+end;
+
+procedure ChooseHandWheel(var HandWheel: THandWheel; const RequiredTorque: Double;
+  const IsScrewPullout: Boolean; const ScrewDiam: Double; const SlgKind: TSlgKind);
 var
   I: Integer;
+  RecommendDiam: Double;
 begin
-  Result := False;
+  RecommendDiam := CalcHandWheelDiam(RequiredTorque, SlgKind);
   I := 0;
-  while (I <= High(HandWheels)) and (not Result) do
+  while (I <= High(HandWheels)) and (HandWheel = nil) do
   begin
-    if HandWheels[I].MaxTorque >= RequiredTorque then
-      //IF (NOT IsScrewPullout) OR (ModelActuator[I, J].MaxScrew >= Screw.MajorDiam) THEN
-    begin
-      HandWheel := HandWheels[I];
-      Result := True;
-    end;
+    if (CompareValue(RecommendDiam, HandWheels[I].Diameter, CompAccuracy) <= 0) then
+      if (not IsScrewPullout) or
+        (CompareValue(ScrewDiam, HandWheels[I].MaxScrew, CompAccuracy) <= 0) then
+        HandWheel := HandWheels[I];
     Inc(I);
   end;
+  if HandWheel = nil then  // двуплечая рукоятка
+    HandWheel := THandWheel.Create('', '', RecommendDiam, Nm(0), 1, Kg(0), Mm(0));
 end;
 
 function CalcSleeve(const IsScrewPullout: Boolean): string;
@@ -487,16 +530,14 @@ end;
 function CalcNutAxe(const AxialForce: Double): Double;
 const
   AxesNumber = 2;
-  HoleDiam = 0.010;  // M10 into the axe
 begin
-  Result := (4 * AxialForce / AxesNumber / Pi / LimitShearStress +
-    HoleDiam ** 2) ** 0.5;
+  Result := Sqrt(4 * AxialForce / AxesNumber / Pi / LimitShearStress);
 end;
 
 // Для полного круга Angle = 2 * Pi
 function CalcAreaCircleOfDiam(const Diam: Double; const Angle: Double): Double;
 begin
-  Result := Angle * Diam ** 2 / 8;
+  Result := Angle * Sqr(Diam) / 8;
 end;
 
 function CalcSlendernessRatio(const ScrewLength: Double; const RodDiam: Double): Double;
@@ -504,15 +545,18 @@ begin
   Result := ScrewLength / (RodDiam / 4);
 end;
 
-function CalcLeakage(const Kind: TSlgKind; const FrameWidth, GateHeight: Double): Double;
-var
-  SealingPerimeter: Double;
+function CalcSealingLength(const Kind: TSlgKind;
+  const FrameWidth, GateHeight: Double): Double;
 begin
   if Kind = Deep then
-    SealingPerimeter := GateHeight * 2 + FrameWidth * 2
+    Result := GateHeight * 2 + FrameWidth * 2
   else
-    SealingPerimeter := GateHeight * 2 + FrameWidth;
-  Result := SpecificLeakage * SealingPerimeter * 60;  // l/min
+    Result := GateHeight * 2 + FrameWidth;
+end;
+
+function CalcLeakage(const SealingLength: Double): Double;
+begin
+  Result := SpecificLeakage * SealingLength * 60;  // l/min
 end;
 
 function ErrorCantChooseScrew(const Slg: TSlidegate; const Lang: TLang): string;
@@ -526,16 +570,28 @@ end;
 
 function ErrorCantChooseGearbox(const Slg: TSlidegate; const Lang: TLang): string;
 begin
-  Result := Format(L10n[27, Lang], [Slg.MinTorque]);
+  Result := Format(L10n[27, Lang], [Slg.MinScrewTorque]);
 end;
 
 function ErrorCantChooseActuator(const Slg: TSlidegate; const Lang: TLang): string;
 begin
-  Result := Format(L10n[28, Lang], [Slg.MinTorque, ToRpm(Slg.MinSpeed)]);
+  Result := Format(L10n[28, Lang], [Slg.MinScrewTorque, ToRpm(Slg.MinSpeed)]);
+end;
+
+function CalcAnchorsNumberByTension(const Force: Double; const Anchor: TAnchor): Integer;
+begin
+  Result := Ceil(Force / Anchor.RecomendTensionLoad);
+end;
+
+function CalcAnchorsNumberByShear(const Force: Double; const Anchor: TAnchor): Integer;
+begin
+  Result := Ceil(Force / Anchor.RecomendShearLoad);
 end;
 
 function CalcSlidegate(out Slg: TSlidegate;
   const InputData: TInputData): TFuncSlidegateError;
+var
+  MinActuatorTorque: Double;
 begin
   Slg := Default(TSlidegate);
   Result := nil;
@@ -558,6 +614,12 @@ begin
   Slg.HaveCounterFlange := InputData.HaveCounterFlange;
   Slg.HavePipeNodes := InputData.HavePipeNodes;
   Slg.BtwFrameTopAndDriveUnit := InputData.BtwFrameTopAndDriveUnit;
+  Slg.ScrewsNumber := InputData.ScrewsNumber;
+  Slg.Gearbox := InputData.Gearbox;
+
+  Slg.GearboxNeed2InputShaft :=
+    (Slg.ScrewsNumber > 1) and (Slg.DriveKind <> OpenCloseActuator) and
+    (Slg.DriveKind <> RegulActuator);
 
   Slg.IsSmall := (Slg.SlgKind = Surf) and (Slg.FrameWidth <= 1.5) and
     (Slg.GateHeight <= 1.5);
@@ -567,7 +629,8 @@ begin
   else
     Slg.HydrHead := Slg.GateHeight;
 
-  Slg.Leakage := CalcLeakage(Slg.SlgKind, Slg.FrameWidth, Slg.GateHeight);
+  Slg.SealingLength := CalcSealingLength(Slg.SlgKind, Slg.FrameWidth, Slg.GateHeight);
+  Slg.Leakage := CalcLeakage(Slg.SealingLength);
 
   if Slg.SlgKind = Flow then
     Slg.WedgePairsCount := 0
@@ -578,13 +641,15 @@ begin
       Slg.GateHeight);
 
   Slg.IsRightHandedScrew := Slg.SlgKind = Flow;
-
+  // TODO: if Tramec then 1 = 2
+  if Slg.ScrewsNumber > 1 then
+    Slg.IsRightHandedScrew2 := not Slg.IsRightHandedScrew;
 
   if InputData.Way.HasValue then
   begin
     Slg.Way := InputData.Way.Value;
-    Assert(Slg.Way <= MaxWay(Slg.FrameHeight, Slg.GateHeight),
-      'Слишком большой ход щита');
+    Assert(CompareValue(Slg.Way, MaxWay(Slg.FrameHeight, Slg.GateHeight),
+      CompAccuracy) <= 0, 'Слишком большой ход щита');
   end
   else
     Slg.Way := CalcWay(Slg.FrameHeight, Slg.GateHeight);
@@ -616,7 +681,7 @@ begin
     Slg.HavePipeNodes, Slg.FrameHeight, Slg.Way, Slg.GateHeight,
     Slg.BtwFrameTopAndDriveUnit, Slg.DriveLocation);
 
-  Slg.MinAxialForce := CalcMinAxialForce(Slg.HydrForce);
+  Slg.MinAxialForce := CalcMinAxialForce(Slg.HydrForce / Slg.ScrewsNumber);
 
   if InputData.ScrewDiam.HasValue and InputData.ScrewPitch.HasValue then
     ChooseScrewByMatch(Slg.Screw, Slg.Nut, InputData.ScrewDiam.Value,
@@ -624,9 +689,19 @@ begin
   else if ((Slg.DriveKind = OpenCloseActuator) or (Slg.DriveKind = RegulActuator)) and
     (InputData.Actuator <> nil) then
   begin
-    if not ChooseScrewByPitchDiam(Slg.Screw, Slg.Nut, Slg.MinAxialForce,
-      InputData.Actuator.MinTorque, InputData.Actuator.MaxTorque,
-      Slg.ScrewLength, Slg.IsScrewPullout) then
+    if not ChooseScrewByPitchDiam(Slg.Screw, Slg.Nut, Slg.Gearbox,
+      Slg.MinAxialForce, InputData.Actuator.MinTorque, InputData.Actuator.MaxTorque,
+      Slg.ScrewLength, Slg.IsScrewPullout, Slg.ScrewsNumber,
+      InputData.ModelGearbox, Slg.GearboxNeed2InputShaft) then
+      Exit(@ErrorCantChooseScrew);
+  end
+  else if ((Slg.DriveKind = BevelGearbox) or (Slg.DriveKind = SpurGearbox)) and
+    (InputData.Gearbox <> nil) then
+  begin
+    if not ChooseScrewByPitchDiam(Slg.Screw, Slg.Nut, Slg.Gearbox,
+      Slg.MinAxialForce, 0, InputData.Gearbox.MaxTorque, Slg.ScrewLength,
+      Slg.IsScrewPullout, Slg.ScrewsNumber, InputData.ModelGearbox,
+      Slg.GearboxNeed2InputShaft) then
       Exit(@ErrorCantChooseScrew);
   end
   else
@@ -643,19 +718,30 @@ begin
   Slg.ThreadLength := CaclThreadLength(Slg.FrameHeight, Slg.Way,
     Slg.GateHeight, Slg.Nut, Slg.IsScrewPullout);
 
-  Slg.MinTorque := CalcScrewTorque(Slg.MinAxialForce, Slg.Screw);
+  Slg.MinScrewTorque := CalcScrewTorque(Slg.MinAxialForce, Slg.Screw);
   Slg.Revs := Slg.Way / Slg.Screw.Pitch;
+
+  if Slg.ScrewsNumber > 1 then
+  begin
+    if (Slg.Gearbox = nil) and not ChooseGearbox(Slg.Gearbox,
+      Slg.MinScrewTorque, Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox,
+      Slg.GearboxNeed2InputShaft) then
+      Exit(@ErrorCantChooseGearbox);
+    Slg.Revs := Slg.Revs * Slg.GearBox.Ratio;
+  end;
 
   case Slg.DriveKind of
     BevelGearbox, SpurGearbox:
     begin
-      if InputData.Gearbox <> nil then
-        Slg.Gearbox := InputData.Gearbox
-      else if not ChooseGearbox(Slg.Gearbox, Slg.MinTorque,
-        Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox) then
+      if (Slg.Gearbox = nil) and not ChooseGearbox(Slg.Gearbox,
+        Slg.MinScrewTorque, Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox,
+        Slg.GearboxNeed2InputShaft) then
         Exit(@ErrorCantChooseGearbox);
-      Slg.Torque := Slg.MinTorque;
-      Slg.CloseTorque := Slg.MinTorque;
+      if (Slg.ScrewsNumber > 1) then
+        ChooseHandWheel(Slg.HandWheel, Slg.MinScrewTorque, False,
+          Slg.Screw.MajorDiam, Slg.SlgKind);
+      Slg.Torque := Slg.MinScrewTorque;
+      Slg.CloseTorque := Slg.MinScrewTorque;
     end;
 
     OpenCloseActuator, RegulActuator:
@@ -670,20 +756,26 @@ begin
       begin
         Slg.MinSpeed := CalcMinSpeed(Slg.Revs, InputData.ModelActuator[0, 0].Duty,
           InputData.FullWays);
-        if not ChooseActuator(Slg.Actuator, Slg.MinTorque + DeltaOpen,
-          Slg.IsScrewPullout, Slg.Screw, InputData.ModelActuator,
+
+        if Slg.ScrewsNumber > 1 then
+          MinActuatorTorque := Slg.MinScrewTorque / Slg.Gearbox.Ratio * Slg.ScrewsNumber
+        else
+          MinActuatorTorque := Slg.MinScrewTorque;
+
+        if not ChooseActuator(Slg.Actuator, MinActuatorTorque +
+          DeltaOpen, Slg.IsScrewPullout, Slg.Screw, InputData.ModelActuator,
           Slg.SlgKind, Slg.MinSpeed, InputData.RecommendMinSpeed) then
           Exit(@ErrorCantChooseActuator);
       end;
       Slg.OpenTime := Slg.Revs / Slg.Actuator.Speed;
       if Slg.SlgKind = Flow then
       begin
-        Slg.Torque := Max(Slg.Actuator.MinTorque, Slg.MinTorque);
+        Slg.Torque := Max(Slg.Actuator.MinTorque, MinActuatorTorque);
         Slg.CloseTorque := Slg.Torque;
       end
       else
       begin
-        Slg.Torque := Max(Slg.Actuator.MinTorque, Slg.MinTorque) + DeltaOpen;
+        Slg.Torque := Max(Slg.Actuator.MinTorque, MinActuatorTorque) + DeltaOpen;
         Slg.CloseTorque := Slg.Torque - DeltaOpen;
       end;
       CalcActuatorTemperatureRange(Slg.MinDriveUnitTemperature,
@@ -691,16 +783,24 @@ begin
     end;
     else
     begin
-      if (not Slg.IsScrewPullout) or
-        // Slg.Screw.MajorDiam <= MaxPulloutScrew
-        (CompareValue(Slg.Screw.MajorDiam, MaxPulloutScrew, 1e-6) <= 0) then
-        ChooseHandWheel(Slg.HandWheel, Slg.MinTorque);
-      Slg.Torque := Slg.MinTorque;
-      Slg.CloseTorque := Slg.MinTorque;
+      if (Slg.ScrewsNumber > 1) then
+        ChooseHandWheel(Slg.HandWheel, Slg.MinScrewTorque, False,
+          Slg.Screw.MajorDiam, Slg.SlgKind)
+      else
+        ChooseHandWheel(Slg.HandWheel, Slg.MinScrewTorque, Slg.IsScrewPullout,
+          Slg.Screw.MajorDiam, Slg.SlgKind);
+      Slg.Torque := Slg.MinScrewTorque;
+      Slg.CloseTorque := Slg.MinScrewTorque;
     end;
   end;
 
-  Slg.AxialForce := CalcAxialForce(Slg.CloseTorque, Slg.Screw);
+  // Осевая сила создает потерю устойчивости только при закрытии.
+  if Slg.ScrewsNumber > 1 then
+    Slg.CloseScrewTorque := Slg.CloseTorque * Slg.Gearbox.Ratio / Slg.ScrewsNumber
+  else
+    Slg.CloseScrewTorque := Slg.CloseTorque;
+
+  Slg.AxialForce := CalcAxialForce(Slg.CloseScrewTorque, Slg.Screw);
 
   Slg.NutAxe := CalcNutAxe(Slg.AxialForce);
 
@@ -708,6 +808,16 @@ begin
     ScrewElast, Slg.AxialForce, ScrewMju);
 
   Slg.ScrewSlenderness := CalcSlendernessRatio(Slg.ScrewLength, Slg.Screw.MinorDiam);
+  if Slg.InstallKind = Wall then
+  begin
+    Slg.Anchor12Numbers := CalcAnchorsNumberByTension(Slg.HydrForce, Mungo[0]);
+    Slg.Anchor16Numbers := CalcAnchorsNumberByTension(Slg.HydrForce, Mungo[1]);
+  end
+  else if Slg.InstallKind = Channel then
+  begin
+    Slg.Anchor12Numbers := CalcAnchorsNumberByShear(Slg.HydrForce, Mungo[0]);
+    Slg.Anchor16Numbers := CalcAnchorsNumberByShear(Slg.HydrForce, Mungo[1]);
+  end
 end;
 
 end.

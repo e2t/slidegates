@@ -14,9 +14,10 @@ function Mm(const Millimeter: Double): Double;
 function Kw(const Kilowatt: Double): Double;
 function Nm(const NewtonMeter: Double): Double;
 function Kg(const KiloGram: Double): Double;
-function Mins(const Minute: Double): Double;
+function Minute(const AMinute: Double): Double;
 function Metre(const Metres: Double): Double;
 function KgPerM3(const KilogramPerMetre3: Double): Double;
+function kN(const KiloNewton: Double): Double;
 
 // Output
 function ToMm(const Meter: Double): Double;
@@ -37,9 +38,9 @@ begin
   Result := Metres;
 end;
 
-function Mins(const Minute: Double): Double;  // to sec
+function Minute(const AMinute: Double): Double;  // to sec
 begin
-  Result := Minute * 60;
+  Result := AMinute * 60;
 end;
 
 function Rpm(const RevPerMinute: Double): Double;  // to rev/sec
@@ -90,6 +91,11 @@ end;
 function ToMin(const Second: Double): Double;  // to minute
 begin
   Result := Second / 60;
+end;
+
+function kN(const KiloNewton: Double): Double; // to newton
+begin
+  Result := KiloNewton * 1e3;
 end;
 
 end.

@@ -587,10 +587,7 @@ begin
   CalcWedgedDesign(Des, Slg);
   CalcMassGate(MassGate, SheetWeights, Slg, Des);
   CalcMassFrame(MassFrame, SheetWeights, Slg, Des);
-  //writeln(MassGate);
-  //writeln(MassFrame);
-  //writeln(MassScrew(Slg));
-  SgMass := MassGate + MassFrame + MassScrew(Slg);
+  SgMass := MassGate + MassFrame + MassScrew(Slg) * Slg.ScrewsNumber;
 end;
 
 end.

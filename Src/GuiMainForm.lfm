@@ -146,19 +146,29 @@ object MainForm: TMainForm
         Style = csDropDownList
         TabOrder = 1
       end
+      object Label16: TLabel
+        Left = 8
+        Height = 45
+        Top = 80
+        Width = 472
+        Caption = 'С двумя винтами AUMA GK и РЗАМ можно использовать только с электроприводом.'#13#10'Tramec можно использовать только с невыдвижным(и) винтом(-ами).'#13#10'Цилиндрический редуктор можно использовать только с одним винтом.'
+        ParentColor = False
+      end
     end
     object TabSheetHandWheel: TTabSheet
       Caption = 'Штурвал'
       ClientHeight = 132
       ClientWidth = 586
       object LabelHandWheel: TLabel
+        AnchorSideLeft.Control = TabSheetHandWheel
+        AnchorSideLeft.Side = asrCenter
         AnchorSideTop.Control = TabSheetHandWheel
         AnchorSideTop.Side = asrCenter
-        Left = 24
-        Height = 75
-        Top = 29
-        Width = 542
-        Caption = 'Покупные штурвалы Ø300...500 могут быть использованы:'#13#10'— при крутящем моменте до 192 Нм,'#13#10'— с невыдвижными винтами любых размеров,'#13#10'— с выдвижными винтами диаметром не более 40 мм.'#13#10'В остальных случаях необходимо использовать двуплечую рукоятку собственного изготовления.'
+        Left = 235
+        Height = 15
+        Top = 59
+        Width = 116
+        Caption = 'Заполняется в коде...'
         ParentColor = False
       end
     end
@@ -423,20 +433,23 @@ object MainForm: TMainForm
       TabStop = True
     end
     object RadioButtonPullout: TRadioButton
-      Left = 128
+      Left = 8
       Height = 19
-      Top = 8
+      Hint = 'Не допускает затопления привода'
+      Top = 32
       Width = 85
       Caption = 'Выдвижной'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
     end
-    object Label16: TLabel
-      Left = 8
-      Height = 30
-      Top = 32
-      Width = 251
-      Caption = 'Важно: С выдвижным винтом не допускается'#13#10'затопление привода (даже с IP68).'
-      ParentColor = False
+    object CheckBoxTwoScrews: TCheckBox
+      Left = 184
+      Height = 19
+      Top = 8
+      Width = 74
+      Caption = 'Два винта'
+      TabOrder = 2
     end
   end
   object MemoOutput: TMemo
@@ -652,7 +665,7 @@ object MainForm: TMainForm
         ParentColor = False
       end
       object EditBtwFrameTopAndGround: TEdit
-        Left = 184
+        Left = 208
         Height = 23
         Top = 32
         Width = 80
@@ -680,7 +693,7 @@ object MainForm: TMainForm
       ClientHeight = 89
       ClientWidth = 304
       object EditBtwFrameTopAndDriveUnit: TEdit
-        Left = 184
+        Left = 208
         Height = 23
         Top = 32
         Width = 80
@@ -692,8 +705,8 @@ object MainForm: TMainForm
         Left = 8
         Height = 15
         Top = 36
-        Width = 170
-        Caption = 'От верха рамы до привода (м):'
+        Width = 193
+        Caption = 'От верха рамы до кронштейна (м):'
         ParentColor = False
       end
       object CheckBoxBracketWithoutPipeNodes: TCheckBox

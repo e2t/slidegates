@@ -8,6 +8,9 @@ unit Screws;
 
 interface
 
+uses
+  Localization;
+
 type
   TNut = record
     DesignationR: string;
@@ -40,6 +43,8 @@ var
 function SelfMadeNut(const MajorScrewDiam: Double): TNut;
 function ScrewTr(const MajorDiam, Pitch: Double): TScrew;
 function GetNut(const StdScrew: TBuyableScrewSet; const IsScrewPullout: Boolean): TNut;
+function NutDesgination(const Nut: TNut; const IsRightHanded: Boolean;
+  const Lang: TLang): string;
 
 implementation
 
@@ -119,21 +124,27 @@ begin
     Result := StdScrew.NutForFixed;
 end;
 
+function NutDesgination(const Nut: TNut; const IsRightHanded: Boolean;
+  const Lang: TLang): string;
+begin
+  if IsRightHanded then
+    Result := Nut.DesignationR + L10n[78, Lang]
+  else
+    Result := Nut.DesignationL + L10n[79, Lang];
+end;
+
 initialization
   StdScrews[0].Screw := ScrewTr(Mm(30), Mm(6));
   StdScrews[0].NutForPullout := RoundNut('HBD 30 A R', 'HBD 30 A L', Mm(60), Mm(60));
-  StdScrews[0].NutForFixed := SquareNut('Nakrętka 4-kątna Tr30x6 prawa',
-    'Nakrętka 4-kątna Tr30x6 lewa', Mm(50), Mm(60));
+  StdScrews[0].NutForFixed := SquareNut('Tr30x6', 'Tr30x6LH', Mm(50), Mm(60));
 
   StdScrews[1].Screw := ScrewTr(Mm(40), Mm(7));
   StdScrews[1].NutForPullout := RoundNut('HBD 40 A R', 'HBD 40 A L', Mm(80), Mm(80));
-  StdScrews[1].NutForFixed := SquareNut('Nakrętka 4-kątna Tr40x7 prawa',
-    'Nakrętka 4-kątna Tr40x7 lewa', Mm(60), Mm(70));
+  StdScrews[1].NutForFixed := SquareNut('Tr40x7', 'Tr40x7LH', Mm(60), Mm(70));
 
   StdScrews[2].Screw := ScrewTr(Mm(50), Mm(8));
   StdScrews[2].NutForPullout := RoundNut('HBD 50 A R', 'HBD 50 A L', Mm(90), Mm(100));
-  StdScrews[2].NutForFixed := SquareNut('Nakrętka 4-kątna Tr50x8 prawa',
-    'Nakrętka 4-kątna Tr50x8 lewa', Mm(70), Mm(90));
+  StdScrews[2].NutForFixed := SquareNut('Tr50x8', 'Tr50x8LH', Mm(70), Mm(90));
 
   StdScrews[3].Screw := ScrewTr(Mm(60), Mm(9));
   StdScrews[3].NutForPullout := RoundNut('HBD 60 A R', 'HBD 60 A L', Mm(100), Mm(120));

@@ -17,7 +17,9 @@ uses {$IFDEF UNIX} {$IFDEF UseCThreads}
   Localization,
   Controller,
   MassWedge,
-  MassFlow;
+  MassFlow,
+  ProgramInfo,
+  Equations, Anchors;
 
 {$R *.res}
 

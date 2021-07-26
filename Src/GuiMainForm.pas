@@ -18,6 +18,7 @@ type
 
   TMainForm = class(TForm)
     ButtonRun: TButton;
+    CheckBoxTwoScrews: TCheckBox;
     CheckBoxCounterFlange: TCheckBox;
     CheckBoxWithoutFrameNodes: TCheckBox;
     CheckBoxThreeWedgePairs: TCheckBox;
@@ -46,6 +47,7 @@ type
     GroupBox6: TGroupBox;
     GroupBox7: TGroupBox;
     Label1: TLabel;
+    Label16: TLabel;
     Label19: TLabel;
     Label20: TLabel;
     Label21: TLabel;
@@ -58,7 +60,6 @@ type
     Label13: TLabel;
     Label14: TLabel;
     Label15: TLabel;
-    Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
     Label2: TLabel;
