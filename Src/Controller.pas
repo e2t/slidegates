@@ -214,6 +214,8 @@ begin
 end;
 
 function CreateInputData(out InputData: TInputData): TFuncInputDataError;
+const
+  Delims: array [0..4] of string = ('x', 'X', 'х', 'Х', ' ');
 var
   ScrewSize: array of string;
   ScrewNote, Choice: string;
@@ -400,7 +402,7 @@ begin
   ScrewNote := MainForm.ComboBoxScrew.Text;
   if ScrewNote <> '' then
   begin
-    ScrewSize := ScrewNote.Split(['x', 'X', 'х', 'Х', ' ']);
+    ScrewSize := ScrewNote.Split(Delims);
     if Length(ScrewSize) <> 2 then
       Exit(@ErrorIncorrectValue)
     else
@@ -828,10 +830,13 @@ initialization
 
   LabelHandWheelText := Format(
     'Покупные штурвалы Ø%.0F...%.0F можно использовать:'
-    + LineEnding + '— при невысоком крутящем моменте,' +
-    LineEnding + '— с невыдвижными винтами любых размеров,'
     + LineEnding +
+    '— при невысоком крутящем моменте,' + LineEnding +
+    '— с невыдвижными винтами любых размеров,' +
+    LineEnding +
     '— с выдвижными винтами диаметром не более %.0F мм.'
     + LineEnding +
-    'В остальных случаях необходимо использовать двуплечую рукоятку собственного изготовления.', [ToMm(HandWheels[0].Diameter), ToMm(HandWheels[High(HandWheels)].Diameter), ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
+    'В остальных случаях необходимо использовать двуплечую рукоятку собственного изготовления.',
+    [ToMm(HandWheels[0].Diameter), ToMm(HandWheels[High(HandWheels)].Diameter),
+    ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
 end.

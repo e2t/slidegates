@@ -817,7 +817,7 @@ begin
   begin
     Slg.Anchor12Numbers := CalcAnchorsNumberByShear(Slg.HydrForce, Mungo[0]);
     Slg.Anchor16Numbers := CalcAnchorsNumberByShear(Slg.HydrForce, Mungo[1]);
-  end
+  end;
 end;
 
 end.

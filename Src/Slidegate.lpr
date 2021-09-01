@@ -19,7 +19,8 @@ uses {$IFDEF UNIX} {$IFDEF UseCThreads}
   MassWedge,
   MassFlow,
   ProgramInfo,
-  Equations, Anchors;
+  Equations,
+  Anchors;
 
 {$R *.res}
 

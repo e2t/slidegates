@@ -15,8 +15,6 @@ procedure CalcMassFlow(out SgMass: Double; var SheetWeights: TSheetWeights;
 
 implementation
 
-uses Math;
-
 type
   TFlowDesign = record
     GateSheet, FrameSheet: TSheetMetal;
@@ -30,43 +28,41 @@ begin
   Des.GateSheet := StdSheet[3];  // 5mm
 end;
 
-function MassFixedGate(const Slg: TSlidegate): Double;
-var
-  SteelDensityMm3: Double;
-begin
-  SteelDensityMm3 := SteelDensity / 1e9;
-  Result := (Slg.FrameHeight * 1e3 - Slg.BethFrameTopAndGateTop *
-    1e3 - Slg.GateHeight * 1e3 - 40) * (Slg.FrameWidth * 1e3 - 170) *
-    5 * SteelDensityMm3 + (0.008 * Slg.FrameWidth * 1e3 - 0.001);
-end;
-
 function CalcMassFrame(const Slg: TSlidegate): Double;
 var
-  BottomBeamMass, StandMass, TopCornerMass: Double;
-  TopBeamMass: Double;  // верх./пром. балка
+  //Вес рамы без направляющих.
+  PureFrame: Double;
+  //Вес одной направляющей.
+  Lead: Double;
+  //Неподвижный щит.
+  FixedGate: Double;
 begin
-  BottomBeamMass := 0.012 * Slg.FrameWidth * 1e3 - 2.103;
-  StandMass := 0.012 * Slg.FrameHeight * 1e3 - 0.016;
-  TopBeamMass := 0.007 * Slg.FrameWidth * 1e3 - 1.242;
-  TopCornerMass := 0.005 * Slg.FrameWidth * 1e3 - 0.806;
-  Result := BottomBeamMass + StandMass * 2 + TopBeamMass * 2 +
-    TopCornerMass + 4 + (0.004 * (Slg.FrameHeight * 1e3 -
-    Slg.BethFrameTopAndGateTop * 1e3) - 0.26) * 2;
-  if Slg.HaveFixedGate then
-    Result := Result + MassFixedGate(Slg);
+  if Slg.InstallKind = Wall then
+  begin
+    PureFrame := 30 * Slg.FrameWidth + 21 * Slg.FrameHeight + 9.1;
+    Lead := 8 * Slg.GateHeight + 1;
+    Result := PureFrame + 2 * Lead + 1;
+  end
+  else
+  begin
+    PureFrame := 26.01 * Slg.FrameWidth + 17.6 * Slg.FrameHeight - 5.018;
+    FixedGate := 32 * Slg.FrameWidth * Slg.GateHeight + 8.2 * Slg.GateHeight - 0.1;
+    Lead := 3.25 * Slg.GateHeight - 0.31;
+    Result := PureFrame + FixedGate + 2 * Lead + 1.5;
+  end;
+  Assert(Result > 0);
 end;
 
 function CalcMassGate(const Slg: TSlidegate): Double;
 begin
-  Result := (4.058e-5 * Slg.FrameWidth * 1e3 * Slg.GateHeight * 1e3 +
-    -5.059e-3 * Slg.FrameWidth * 1e3 - 0.00419 * Slg.GateHeight * 1e3) +
-    (0.003 * Slg.GateHeight * 1e3 - 0.033) * Round(Slg.FrameWidth * 1e3 / 300) +
-    (0.003 * Slg.FrameWidth * 1e3 - 0.61) * Floor(Slg.GateHeight * 1e3 / 300);
+  Result := 112 * Slg.FrameWidth * Slg.GateHeight - 23 * Slg.FrameWidth -
+    61 * Slg.GateHeight + 10;
+  Assert(Result > 0);
 end;
 
 function MassScrew(const Slg: TSlidegate): Double;
 begin
-  Result := 0.011 * Slg.BethFrameTopAndGateTop * 1e3 + 1.756;
+  Result := 5.66 * Slg.ScrewLength + 0.816;
 end;
 
 procedure CalcMassFlow(out SgMass: Double; var SheetWeights: TSheetWeights;
@@ -78,12 +74,10 @@ begin
   CalcFlowDesign(Des);
   MassGate := CalcMassGate(Slg);
   MassFrame := CalcMassFrame(Slg);
-  SgMass := MassGate + MassFrame + MassScrew(Slg) * Slg.ScrewsNumber;
+  SgMass := MassGate + MassFrame + MassScrew(Slg) * Slg.ScrewsNumber + 3;
 
   UpdateSheetWeight(SheetWeights, Des.GateSheet.S, MassGate);
   UpdateSheetWeight(SheetWeights, Des.FrameSheet.S, MassFrame);
 end;
 
 end.
-
-
