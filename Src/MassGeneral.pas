@@ -18,8 +18,6 @@ type
   end;
 
 const
-  SteelDensity = 8000;  // kg/m3
-
   StdSheet: array [0..5] of TSheetMetal = (
     (S: 0.002; R: 0.00247),
     (S: 0.003; R: 0.00234),
@@ -59,10 +57,11 @@ procedure CalcMass(out Mass: Double; out SheetWeights: TSheetWeights;
 const
   RackThickness = 0.004;
   BracketThickness = 0.005;
-  // промежуточная труба: диаметр винта х 3 мм
+
+  { промежуточная труба: диаметр винта х 3 мм }
   PipeThickness = 0.003;
-  MassRack = 9;  // kg
-  BracketMass = 4;  // kg
+  MassRack = 9;  { kg }
+  BracketMass = 4;  { kg }
 var
   PipeMass: Double;
 begin

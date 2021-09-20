@@ -67,10 +67,13 @@ type
   TGearbox = class(TDriveUnit)
     GearboxType: TGearboxType;
     CanHave2InputShaft: Boolean;
+    HandWheelDiam: Double;
+    NominalRatio: Double;
     constructor Create(const ABrand: string; const AGearboxType: TGearboxType;
-      const AName: string; const AMaxTorque: Double; const ARatio: Double;
-      const AMass: Double; const AFlange: string; const AMaxScrew: Double;
-      const ACanHave2InputShaft: Boolean);
+      const AName: string; const AMaxTorque: Double; const ANominalRatio: Double;
+      const ARatio: Double; const AMass: Double; const AFlange: string;
+      const AMaxScrew: Double; const ACanHave2InputShaft: Boolean;
+      const AHandWheelDiam: Double);
   end;
 
   TArrayActuator = array of TActuator;
@@ -183,13 +186,17 @@ begin
 end;
 
 constructor TGearbox.Create(const ABrand: string; const AGearboxType: TGearboxType;
-  const AName: string; const AMaxTorque: Double; const ARatio: Double;
-  const AMass: Double; const AFlange: string; const AMaxScrew: Double;
-  const ACanHave2InputShaft: Boolean);
+  const AName: string; const AMaxTorque: Double; const ANominalRatio: Double;
+  const ARatio: Double; const AMass: Double; const AFlange: string;
+  const AMaxScrew: Double; const ACanHave2InputShaft: Boolean;
+  const AHandWheelDiam: Double);
 begin
   inherited Create(ABrand, AName, AMaxTorque, ARatio, AMass, AFlange, AMaxScrew);
   GearboxType := AGearboxType;
   CanHave2InputShaft := ACanHave2InputShaft;
+  HandWheelDiam := AHandWheelDiam;
+  NominalRatio := ANominalRatio;
+  Assert(NominalRatio >= Ratio);
 end;
 
 const
@@ -242,7 +249,7 @@ const
   RZAM500 = 'РЗАМ-С-500';
   RZAM1000 = 'РЗАМ-С-1000';
   RZAM2500 = 'РЗАМ-С-2500';
-  RZAM10000 = 'РЗАМ-С-10000';
+  RZAMS210000 = 'РЗАМ-С2-10000';
 
   F07 = 'F07';
   F10 = 'F10';
@@ -342,9 +349,9 @@ var
   TramecR48: array [0..0] of TGearbox;
 
   MechanicRZAM500: array [0..1] of TGearbox;
-  MechanicRZAM1000: array [0..0] of TGearbox;
+  MechanicRZAM1000: array [0..1] of TGearbox;
   MechanicRZAM2500: array [0..0] of TGearbox;
-  MechanicRZAM10000: array [0..1] of TGearbox;
+  MechanicRZAMS210000: array [0..1] of TGearbox;
 
   RotorkIB5: array [0..3] of TGearbox;
   RotorkIB7: array [0..2] of TGearbox;
@@ -1165,44 +1172,44 @@ initialization
   AumaSARDutyS450[7] := AumaSAR301DutyS450;
 
   AumaGK102[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK102,
-    Nm(120), 1, Kg(8.5), F10, Mm(40), False);
+    Nm(120), 1, 0.9, Kg(8.5), F10, Mm(40), False, Mm(315));
   AumaGK102[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK102,
-    Nm(120), 2, Kg(8.5), F10, Mm(40), False);
+    Nm(120), 2, 1.8, Kg(8.5), F10, Mm(40), False, Mm(200));
 
   AumaGK142[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK142,
-    Nm(250), 2, Kg(15), F14, Mm(57), False);
+    Nm(250), 2, 1.8, Kg(15), F14, Mm(57), False, Mm(315));
   AumaGK142[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK142,
-    Nm(250), 2.8, Kg(15), F14, Mm(57), False);
+    Nm(250), 2.8, 2.5, Kg(15), F14, Mm(57), False, Mm(200));
 
   AumaGK146[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK146,
-    Nm(500), 2.8, Kg(15), F14, Mm(57), False);
+    Nm(500), 2.8, 2.5, Kg(15), F14, Mm(57), False, Mm(400));
   AumaGK146[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK146,
-    Nm(500), 4, Kg(15), F14, Mm(57), False);
+    Nm(500), 4, 3.6, Kg(15), F14, Mm(57), False, Mm(315));
 
   AumaGK162[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK162,
-    Nm(1000), 4, Kg(25), F16, Mm(75), False);
+    Nm(1000), 4, 3.6, Kg(25), F16, Mm(75), False, Mm(500));
   AumaGK162[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK162,
-    Nm(1000), 5.6, Kg(25), F16, Mm(75), False);
+    Nm(1000), 5.6, 5, Kg(25), F16, Mm(75), False, Mm(400));
 
   AumaGK252[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK252,
-    Nm(2000), 5.6, Kg(60), F25, Mm(95), False);
+    Nm(2000), 5.6, 5, Kg(60), F25, Mm(95), False, Mm(630));
   AumaGK252[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK252,
-    Nm(2000), 8, Kg(60), F25, Mm(95), False);
+    Nm(2000), 8, 7.2, Kg(60), F25, Mm(95), False, Mm(500));
 
   AumaGK302[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK302,
-    Nm(4000), 8, Kg(110), F30, Mm(115), False);
+    Nm(4000), 8, 7.2, Kg(110), F30, Mm(115), False, Mm(800));
   AumaGK302[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK302,
-    Nm(4000), 11, Kg(110), F30, Mm(115), False);
+    Nm(4000), 11, 9.9, Kg(110), F30, Mm(115), False, Mm(800));
 
   AumaGK352[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK352,
-    Nm(8000), 11, Kg(190), F35, Mm(155), False);
+    Nm(8000), 11, 9.9, Kg(190), F35, Mm(155), False, Mm(800));
   AumaGK352[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK352,
-    Nm(8000), 16, Kg(190), F35, Mm(155), False);
+    Nm(8000), 16, 14.4, Kg(190), F35, Mm(155), False, Mm(800));
 
   AumaGK402[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK402,
-    Nm(16000), 16, Kg(250), F40, Mm(175), False);
+    Nm(16000), 16, 14.4, Kg(250), F40, Mm(175), False, Mm(800));
   AumaGK402[1] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK402,
-    Nm(16000), 22, Kg(250), F40, Mm(175), False);
+    Nm(16000), 22, 19.8, Kg(250), F40, Mm(175), False, Mm(800));
 
   AumaGK[0] := AumaGK102;
   AumaGK[1] := AumaGK142;
@@ -1214,60 +1221,60 @@ initialization
   AumaGK[7] := AumaGK402;
 
   AumaGST101[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST101,
-    Nm(120), 1, Kg(14), F10, Mm(40), True);
+    Nm(120), 1, 0.9, Kg(14), F10, Mm(40), True, Mm(200));
   AumaGST101[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST101,
-    Nm(120), 1.4, Kg(14), F10, Mm(40), True);
+    Nm(120), 1.4, 1.3, Kg(14), F10, Mm(40), True, Mm(200));
   AumaGST101[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST101,
-    Nm(120), 2, Kg(14), F10, Mm(40), True);
+    Nm(120), 2, 1.8, Kg(14), F10, Mm(40), True, Mm(200));
 
   AumaGST141[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST141,
-    Nm(250), 1.4, Kg(26), F14, Mm(57), True);
+    Nm(250), 1.4, 1.3, Kg(26), F14, Mm(57), True, Mm(315));
   AumaGST141[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST141,
-    Nm(250), 2, Kg(26), F14, Mm(57), True);
+    Nm(250), 2, 1.8, Kg(26), F14, Mm(57), True, Mm(315));
   AumaGST141[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST141,
-    Nm(250), 2.8, Kg(26), F14, Mm(57), True);
+    Nm(250), 2.8, 2.5, Kg(26), F14, Mm(57), True, Mm(250));
 
   AumaGST145[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST145,
-    Nm(500), 2, Kg(26), F14, Mm(57), True);
+    Nm(500), 2, 1.8, Kg(26), F14, Mm(57), True, Mm(315));
   AumaGST145[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST145,
-    Nm(500), 2.8, Kg(26), F14, Mm(57), True);
+    Nm(500), 2.8, 2.5, Kg(26), F14, Mm(57), True, Mm(315));
   AumaGST145[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST145,
-    Nm(500), 4, Kg(26), F14, Mm(57), True);
+    Nm(500), 4, 3.6, Kg(26), F14, Mm(57), True, Mm(315));
 
   AumaGST161[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST161,
-    Nm(1000), 2.8, Kg(40), F16, Mm(75), True);
+    Nm(1000), 2.8, 2.5, Kg(40), F16, Mm(75), True, Mm(400));
   AumaGST161[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST161,
-    Nm(1000), 4, Kg(40), F16, Mm(75), True);
+    Nm(1000), 4, 3.6, Kg(40), F16, Mm(75), True, Mm(400));
   AumaGST161[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST161,
-    Nm(1000), 5.6, Kg(40), F16, Mm(75), True);
+    Nm(1000), 5.6, 5, Kg(40), F16, Mm(75), True, Mm(400));
 
   AumaGST251[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST251,
-    Nm(2000), 4, Kg(82), F25, Mm(95), True);
+    Nm(2000), 4, 3.6, Kg(82), F25, Mm(95), True, Mm(500));
   AumaGST251[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST251,
-    Nm(2000), 5.6, Kg(82), F25, Mm(95), True);
+    Nm(2000), 5.6, 5, Kg(82), F25, Mm(95), True, Mm(500));
   AumaGST251[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST251,
-    Nm(2000), 8, Kg(82), F25, Mm(95), True);
+    Nm(2000), 8, 7.2, Kg(82), F25, Mm(95), True, Mm(500));
 
   AumaGST301[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST301,
-    Nm(4000), 5.6, Kg(115), F30, Mm(115), True);
+    Nm(4000), 5.6, 5, Kg(115), F30, Mm(115), True, Mm(500));
   AumaGST301[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST301,
-    Nm(4000), 8, Kg(115), F30, Mm(115), True);
+    Nm(4000), 8, 7.2, Kg(115), F30, Mm(115), True, Mm(500));
   AumaGST301[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST301,
-    Nm(4000), 11, Kg(115), F30, Mm(115), True);
+    Nm(4000), 11, 9.9, Kg(115), F30, Mm(115), True, Mm(500));
 
   AumaGST351[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST351,
-    Nm(8000), 8, Kg(195), F35, Mm(155), True);
+    Nm(8000), 8, 7.2, Kg(195), F35, Mm(155), True, Mm(500));
   AumaGST351[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST351,
-    Nm(8000), 11, Kg(195), F35, Mm(155), True);
+    Nm(8000), 11, 9.9, Kg(195), F35, Mm(155), True, Mm(500));
   AumaGST351[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST351,
-    Nm(8000), 16, Kg(195), F35, Mm(155), True);
+    Nm(8000), 16, 14.4, Kg(195), F35, Mm(155), True, Mm(500));
 
   AumaGST401[0] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST401,
-    Nm(16000), 11, Kg(255), F40, Mm(175), True);
+    Nm(16000), 11, 9.9, Kg(255), F40, Mm(175), True, Mm(500));
   AumaGST401[1] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST401,
-    Nm(16000), 16, Kg(255), F40, Mm(175), True);
+    Nm(16000), 16, 14.4, Kg(255), F40, Mm(175), True, Mm(500));
   AumaGST401[2] := TGearbox.Create(SAuma, TGearboxType.AumaGST, GST401,
-    Nm(16000), 22, Kg(255), F40, Mm(175), True);
+    Nm(16000), 22, 19.8, Kg(255), F40, Mm(175), True, Mm(500));
 
   AumaGST[0] := AumaGST101;
   AumaGST[1] := AumaGST141;
@@ -1278,20 +1285,20 @@ initialization
   AumaGST[6] := AumaGST351;
   AumaGST[7] := AumaGST401;
 
-  // R A 19 C 1 E B7 FLS
-  // R A 19 C 1 F B7 FLS
-  // R A 19 C 1 E B7 FLS seA
+  { R A 19 C 1 E B7 FLS
+    R A 19 C 1 F B7 FLS
+    R A 19 C 1 E B7 FLS seA }
 
   TramecR19[0] := TGearbox.Create(STramec, TGearboxType.TramecR,
-    'R A 19 C 1 E B7 FLS', Nm(35), 1, Kg(8.5), '', Mm(0), True);
+    'R A 19 C 1 E B7 FLS', Nm(35), 1, 1, Kg(8.5), '', Mm(0), True, 0);
   TramecR24[0] := TGearbox.Create(STramec, TGearboxType.TramecR,
-    'R A 24 C 1 E B7 FLS', Nm(73), 1, Kg(14), '', Mm(0), True);
+    'R A 24 C 1 E B7 FLS', Nm(73), 1, 1, Kg(14), '', Mm(0), True, 0);
   TramecR28[0] := TGearbox.Create(STramec, TGearboxType.TramecR,
-    'R A 28 C 1 E B7 FLS', Nm(146), 1, Kg(23), '', Mm(0), True);
+    'R A 28 C 1 E B7 FLS', Nm(146), 1, 1, Kg(23), '', Mm(0), True, 0);
   TramecR38[0] := TGearbox.Create(STramec, TGearboxType.TramecR,
-    'R A 38 C 1 E B7 FLS', Nm(291), 1, Kg(38), '', Mm(0), True);
+    'R A 38 C 1 E B7 FLS', Nm(291), 1, 1, Kg(38), '', Mm(0), True, 0);
   TramecR48[0] := TGearbox.Create(STramec, TGearboxType.TramecR,
-    'R A 48 C 1 E B7 FLS', Nm(596), 1, Kg(62), '', Mm(0), True);
+    'R A 48 C 1 E B7 FLS', Nm(596), 1, 1, Kg(62), '', Mm(0), True, 0);
 
   TramecR[0] := TramecR19;
   TramecR[1] := TramecR24;
@@ -1300,63 +1307,65 @@ initialization
   TramecR[4] := TramecR48;
 
   MechanicRZAM500[0] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
-    RZAM500, Nm(120), 7, Kg(8), F10, Mm(45), False);
+    RZAM500, Nm(250), 6, 4.2, Kg(8), F10, Mm(45), False, Mm(300));
   MechanicRZAM500[1] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
-    RZAM500, Nm(500), 7, Kg(8), F14, Mm(45), False);
+    RZAM500, Nm(500), 7, 4.8, Kg(8), F14, Mm(45), False, Mm(500));
 
   MechanicRZAM1000[0] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
-    RZAM1000, Nm(1000), 8, Kg(11), F14, Mm(60), False);
+    RZAM1000, Nm(800), 12, 7.8, Kg(11), F16, Mm(60), False, Mm(500));
+  MechanicRZAM1000[1] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
+    RZAM1000, Nm(1000), 17, 9.8, Kg(11), F16, Mm(60), False, Mm(500));
 
   MechanicRZAM2500[0] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
-    RZAM2500, Nm(2500), 19, Kg(28), F25, Mm(80), False);
+    RZAM2500, Nm(1500), 35, 13.8, Kg(28), F25, Mm(80), False, Mm(500));
 
-  MechanicRZAM10000[0] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
-    RZAM10000, Nm(4000), 40, Kg(80), F30, Mm(110), False);
-  MechanicRZAM10000[1] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
-    RZAM10000, Nm(10000), 40, Kg(80), F35, Mm(110), False);
+  MechanicRZAMS210000[0] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
+    RZAMS210000, Nm(4000), 154, 65.4, Kg(88), F30, Mm(110), False, Mm(300));
+  MechanicRZAMS210000[1] := TGearbox.Create(SMechanic, TGearboxType.MechanicRZAM,
+    RZAMS210000, Nm(10000), 330, 92, Kg(91), F35, Mm(110), False, Mm(500));
 
   MechanicRZAM[0] := MechanicRZAM500;
   MechanicRZAM[1] := MechanicRZAM1000;
   MechanicRZAM[2] := MechanicRZAM2500;
-  MechanicRZAM[3] := MechanicRZAM10000;
+  MechanicRZAM[3] := MechanicRZAMS210000;
 
   RotorkIB5[0] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN5, Nm(306), 2, Kg(20), F14, Mm(55), True);
+    IBN5, Nm(306), 2, 1.7, Kg(20), F14, Mm(55), True, 0);
   RotorkIB5[1] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN5, Nm(678), 3, Kg(20), F14, Mm(55), True);
+    IBN5, Nm(678), 3, 2.55, Kg(20), F14, Mm(55), True, 0);
   RotorkIB5[2] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN5, Nm(678), 4, Kg(20), F14, Mm(55), True);
+    IBN5, Nm(678), 4, 3.4, Kg(20), F14, Mm(55), True, 0);
   RotorkIB5[3] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN5, Nm(542), 6, Kg(20), F14, Mm(55), True);
+    IBN5, Nm(542), 6, 5.1, Kg(20), F14, Mm(55), True, 0);
 
   RotorkIB7[0] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN7, Nm(1355), 3, Kg(35), F16, Mm(73), True);
+    IBN7, Nm(1355), 3, 2.55, Kg(35), F16, Mm(73), True, 0);
   RotorkIB7[1] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN7, Nm(1355), 4, Kg(35), F16, Mm(73), True);
+    IBN7, Nm(1355), 4, 3.4, Kg(35), F16, Mm(73), True, 0);
   RotorkIB7[2] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN7, Nm(1084), 6, Kg(35), F16, Mm(73), True);
+    IBN7, Nm(1084), 6, 5.1, Kg(35), F16, Mm(73), True, 0);
 
   RotorkIB9[0] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN9, Nm(2033), 3, Kg(70), F25, Mm(86), True);
+    IBN9, Nm(2033), 3, 2.55, Kg(70), F25, Mm(86), True, 0);
   RotorkIB9[1] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN9, Nm(2033), 4, Kg(70), F25, Mm(86), True);
+    IBN9, Nm(2033), 4, 3.4, Kg(70), F25, Mm(86), True, 0);
   RotorkIB9[2] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN9, Nm(1627), 6, Kg(70), F25, Mm(86), True);
+    IBN9, Nm(1627), 6, 5.1, Kg(70), F25, Mm(86), True, 0);
 
   RotorkIB11[0] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN11, Nm(4067), 4, Kg(125), F30, Mm(100), True);
+    IBN11, Nm(4067), 4, 3.4, Kg(125), F30, Mm(100), True, 0);
   RotorkIB11[1] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN11, Nm(4067), 6, Kg(125), F30, Mm(100), True);
+    IBN11, Nm(4067), 6, 5.1, Kg(125), F30, Mm(100), True, 0);
 
   RotorkIB13[0] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN13, Nm(8135), 6, Kg(200), F35, Mm(120), True);
+    IBN13, Nm(8135), 6, 5.1, Kg(200), F35, Mm(120), True, 0);
   RotorkIB13[1] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN13, Nm(8135), 8, Kg(200), F35, Mm(120), True);
+    IBN13, Nm(8135), 8, 6.8, Kg(200), F35, Mm(120), True, 0);
 
   RotorkIB14[0] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN14, Nm(8135), 6, Kg(342), F40, Mm(150), True);
+    IBN14, Nm(8135), 6, 5.1, Kg(342), F40, Mm(150), True, 0);
   RotorkIB14[1] := TGearbox.Create(SRotork, TGearboxType.RotorkIB,
-    IBN14, Nm(8135), 8, Kg(342), F40, Mm(150), True);
+    IBN14, Nm(8135), 8, 6.8, Kg(342), F40, Mm(150), True, 0);
 
   RotorkIB[0] := RotorkIB5;
   RotorkIB[1] := RotorkIB7;

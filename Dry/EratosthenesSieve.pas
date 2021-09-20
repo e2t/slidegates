@@ -9,78 +9,60 @@ unit EratosthenesSieve;
 interface
 
 uses
-  Math;
+  Classes;
 
-type
-  TEightBits = bitpacked array [0..7] of Boolean;
-  TBitArray = array of TEightBits;
-
-  TEratosthenesSieve = class
-  private
-    FBitArray: TBitArray;
-    FMaxNumber: Integer;
-    procedure SetBit(const Index: SizeInt; const Value: Boolean);
-  public
-    property MaxNumber: Integer read FMaxNumber;
-    function IsPrime(const Index: SizeInt): Boolean;  // GetBit
-    constructor Create(const AMaxNumber: SizeInt);
-  end;
+procedure CalcSieve(var Bits: TBits);
 
 implementation
 
-constructor TEratosthenesSieve.Create(const AMaxNumber: SizeInt);
-var
-  I, J: SizeInt;
-begin
-  FMaxNumber := AMaxNumber;
-  SetLength(FBitArray, Ceil((FMaxNumber + 1) / 8));
-  FBitArray[0, 0] := False;  // 0 - не является простым числом.
-  if FMaxNumber = 0 then
-    Exit;
-  FBitArray[0, 1] := False;  // 1 - не является простым числом.
-  if FMaxNumber = 1 then
-    Exit;
-  FBitArray[0, 2] := True;   // 2 - простое число.
-  if FMaxNumber = 2 then
-    Exit;
-  FBitArray[0, 3] := True;   // 3 - простое число.
-  if FMaxNumber = 3 then
-    Exit;
-
-  I := 4;
-  while I < FMaxNumber do
-  begin
-    SetBit(I, False);
-    SetBit(I + 1, True);
-    Inc(I, 2);
+type
+  TSiever = class
+  private
+    FBits: TBits;
+    FMaxNumber: SizeInt;
+    procedure SetAll(const Value: Boolean; Number: SizeInt; const Step: SizeInt);
+  public
+    constructor Create(var Bits: TBits);
   end;
-  if I = FMaxNumber then
-    SetBit(I, False);
+
+constructor TSiever.Create(var Bits: TBits);
+var
+  I, Number, Step: SizeInt;
+begin
+  Bits.ClearAll;
+  if Bits.Size < 3 then
+    Exit;
+  FBits := Bits;
+  FMaxNumber := Bits.Size - 1;
+
+  Bits[2] := True;
+  SetAll(True, 3, 2);
 
   I := 3;
   while I <= Trunc(Sqrt(FMaxNumber)) do
   begin
-    if IsPrime(I) then
+    if Bits[I] then
     begin
-      J := I * I;
-      while J <= FMaxNumber do
-      begin
-        SetBit(J, False);
-        Inc(J, I);
-      end;
+      Number := Sqr(I);
+      Step := I + I;
+      SetAll(False, Number, Step);
     end;
     Inc(I, 2);
   end;
 end;
 
-procedure TEratosthenesSieve.SetBit(const Index: SizeInt; const Value: Boolean);
+procedure TSiever.SetAll(const Value: Boolean; Number: SizeInt; const Step: SizeInt);
 begin
-  FBitArray[Index div 8, Index mod 8] := Value;
+  while Number <= FMaxNumber do
+  begin
+    FBits[Number] := Value;
+    Inc(Number, Step);
+  end;
 end;
 
-function TEratosthenesSieve.IsPrime(const Index: SizeInt): Boolean;
+procedure CalcSieve(var Bits: TBits);
 begin
-  Result := FBitArray[Index div 8, Index mod 8];
+  TSiever.Create(Bits).Free;
 end;
 
 end.

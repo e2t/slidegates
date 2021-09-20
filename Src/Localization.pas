@@ -68,8 +68,8 @@ initialization
   L10n[14, Eng] := 'Bronze strip %S L=%G mm';
   L10n[14, Rus] := 'Полоса бронзовая %S L=%G мм';
 
-  L10n[15, Eng] := 'Screw %S, factor of safity %.1F';
-  L10n[15, Rus] := 'Винт %S, запас прочности %.1F';
+  L10n[15, Eng] := 'Screw %S (inner %S), factor of safity %S';
+  L10n[15, Rus] := 'Винт %S (внутр. %S), запас прочности %S';
 
   L10n[16, Eng] := 'Minimal inertia moment %.0F mm4';
   L10n[16, Rus] := 'Минимальный момент инерции %.0F мм4';
@@ -78,11 +78,11 @@ initialization
   L10n[17, Rus] :=
     'Коэффициент гибкости стержня %.0F (должен быть меньше 250)';
 
-  L10n[18, Eng] := 'Axial force in screw %.0F N';
-  L10n[18, Rus] := 'Осевая сила на винте %.0F Н';
+  L10n[18, Eng] := 'Axial force in screw %.0F…%.0F N';
+  L10n[18, Rus] := 'Осевое усилие на винте %.0F…%.0F Н';
 
-  L10n[19, Eng] := 'Torque in screw %.1F Nm';
-  L10n[19, Rus] := 'Крутящий момент на винте %.1F Нм';
+  L10n[19, Eng] := 'Torque in screw %.0F…%.0F Nm';
+  L10n[19, Rus] := 'Крутящий момент на винте %.0F…%.0F Nm';
 
   L10n[20, Eng] := 'It is not possible to select a standard screw.';
   L10n[20, Rus] := 'Невозможно подобрать стандартный винт.';
@@ -96,8 +96,8 @@ initialization
   L10n[23, Eng] := 'Wedges - %D pairs';
   L10n[23, Rus] := 'Клинья - %D пары';
 
-  L10n[24, Eng] := 'Minimum diameter of the nut axis %.1F mm';
-  L10n[24, Rus] := 'Минимальный диаметр осей гайки %.1F мм';
+  L10n[24, Eng] := 'Minimum diameter of the screw pins %.1F mm';
+  L10n[24, Rus] := 'Минимальный диаметр штифтов винта %.1F мм';
 
   L10n[25, Eng] := 'Hydrostatic load - %.0F N';
   L10n[25, Rus] := 'Гидростатическая нагрузка - %.0F Н';
@@ -108,12 +108,12 @@ initialization
   L10n[27, Eng] :=
     'It is impossible to select a standard gearbox. Minimum torque %.1F Nm.' +
     LineEnding +
-    'If the torque is within the permissible limits, try changing the gearbox brand.';
+    'If the torque is within the permissible limits, try changing the gearbox manufacturer.';
   L10n[27, Rus] :=
     'Невозможно подобрать стандартный редуктор. ' +
     'Минимальный крутящий момент %.1F Нм.' +
     LineEnding +
-    'Если крутящий момент в допустимых пределах, попробуйте поменять бренд редуктора.';
+    'Если крутящий момент в допустимых пределах, попробуйте поменять производителя редуктора.';
 
   L10n[28, Eng] :=
     'It is impossible to select a standard actuator. ' +
@@ -213,8 +213,8 @@ initialization
   L10n[56, Eng] := 'Spur gearbox %S %S';
   L10n[56, Rus] := 'Цилиндрический редуктор %S %S';
 
-  L10n[57, Eng] := 'Ratio %.1G';
-  L10n[57, Rus] := 'Передаточное отношение %.1G';
+  L10n[57, Eng] := 'Ratio %.1G (%.1G)';
+  L10n[57, Rus] := 'Передаточное отношение %.1G (%.1G)';
 
   L10n[58, Eng] := 'Right angle gearbox %S %S';
   L10n[58, Rus] := 'Угловой редуктор %S %S';
@@ -294,15 +294,32 @@ initialization
   L10n[82, Rus] :=
     'Кол-во анкеров m2r: М12 - не менее %D, М16 - не менее %D';
 
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
+  L10n[83, Eng] := 'With handwheel Ø%.0F';
+  L10n[83, Rus] := 'Со штурвалом Ø%.0F';
+  (*
+  L10n[84, Eng] := '';
+  L10n[84, Rus] := '';
+    *)
+  L10n[85, Eng] := ' small';
+  L10n[85, Rus] := ' малый';
 
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
+  (*
+  L10n[, Eng] := '';
+  L10n[, Rus] := '';
 
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
+  L10n[, Eng] := '';
+  L10n[, Rus] := '';
 
-  //L10n[, Eng] := '';
-  //L10n[, Rus] := '';
+  L10n[, Eng] := '';
+  L10n[, Rus] := '';
+
+  L10n[, Eng] := '';
+  L10n[, Rus] := '';
+
+  L10n[, Eng] := '';
+  L10n[, Rus] := '';
+
+  L10n[, Eng] := '';
+  L10n[, Rus] := '';
+  *)
 end.

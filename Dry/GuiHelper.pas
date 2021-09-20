@@ -132,6 +132,7 @@ type
       out Value: V; const MinValue, MaxValue: V): Boolean;
     class function GetValueMinEqMaxEq(const Control: T; const S: string;
       out Value: V; const MinValue, MaxValue: V): Boolean;
+    class procedure SelectIncorrectInput(const Control: T);
   end;
 
   TComboBoxReal = specialize TWinControlManager<TComboBox, Double>;
@@ -466,75 +467,93 @@ class function TWinControlManager.GetValue(const Control: T; const S: string;
 begin
   Result := TwiceTryStrToFloat(S, Value);
   if not Result then
-  begin
-    Control.SetFocus;
-    Control.SelectAll;
-  end;
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMin(const Control: T;
   const S: string; out Value: V; const MinValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := Value > MinValue;
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMinEq(const Control: T;
   const S: string; out Value: V; const MinValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := Value >= MinValue;
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMax(const Control: T;
   const S: string; out Value: V; const MaxValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := Value < MaxValue;
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMaxEq(const Control: T;
   const S: string; out Value: V; const MaxValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := Value <= MaxValue;
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMinMax(const Control: T;
   const S: string; out Value: V; const MinValue, MaxValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := (MinValue < Value) and (Value < MaxValue);
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMinEqMax(const Control: T;
   const S: string; out Value: V; const MinValue, MaxValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := (MinValue <= Value) and (Value < MaxValue);
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMinMaxEq(const Control: T;
   const S: string; out Value: V; const MinValue, MaxValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := (MinValue < Value) and
       (CompareValue(Value, MaxValue, CompAccuracy) <= 0);
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
 end;
 
 class function TWinControlManager.GetValueMinEqMaxEq(const Control: T;
   const S: string; out Value: V; const MinValue, MaxValue: V): Boolean;
 begin
-  Result := TWinControlManager.GetValue(Control, S, Value);
+  Result := TwiceTryStrToFloat(S, Value);
   if Result then
     Result := (MinValue <= Value) and (Value <= MaxValue);
+  if not Result then
+    TWinControlManager.SelectIncorrectInput(Control);
+end;
+
+class procedure TWinControlManager.SelectIncorrectInput(const Control: T);
+begin
+  Control.SetFocus;
 end;
 
 end.

@@ -49,7 +49,7 @@ function NutDesgination(const Nut: TNut; const IsRightHanded: Boolean;
 implementation
 
 uses
-  SysUtils, MathUtils, Measurements;
+  SysUtils, MathUtils, Measurements, CheckNum, Math;
 
 function CreateScrew(const MajorDiam, PitchDiam, MinorDiam, Pitch: Double;
   const SizeToStr, DesignationR, DesignationL: string): TScrew;
@@ -64,13 +64,27 @@ begin
   Result.ThreadAngle := Arctan(Pitch / Pi / PitchDiam);
 end;
 
+function CalcTrGap(const Pitch: Double): Double;
+begin
+  if CompareValue(Pitch, Mm(2), CompAccuracy) < 0 then
+    Result := Mm(0.15)
+  else if CompareValue(Pitch, Mm(6), CompAccuracy) < 0 then
+    Result := Mm(0.25)
+  else if CompareValue(Pitch, Mm(14), CompAccuracy) < 0 then
+    Result := Mm(0.5)
+  else
+    Result := Mm(1);
+end;
+
 function ScrewTr(const MajorDiam, Pitch: Double): TScrew;
 var
   ASizeToStr: string;
+  Gap: Double;
 begin
   ASizeToStr := FloatToStr(ToMm(MajorDiam)) + 'x' + FloatToStr(ToMm(Pitch));
+  Gap := CalcTrGap(Pitch);
   Result := CreateScrew(MajorDiam, MajorDiam - Pitch / 2, MajorDiam -
-    Pitch, Pitch, ASizeToStr, 'Tr' + ASizeToStr, 'Tr' + ASizeToStr + 'LH');
+    Pitch - 2 * Gap, Pitch, ASizeToStr, 'Tr' + ASizeToStr, 'Tr' + ASizeToStr + 'LH');
 end;
 
 function CreateNut(const DesignationR, DesignationL: string;
@@ -98,7 +112,7 @@ end;
 
 function SelfMadeNut(const MajorScrewDiam: Double): TNut;
 const
-  RoundBase = 0.01;  // 10 mm
+  RoundBase = 0.01;  { 10 mm }
 var
   RodFactor: Double;
 begin

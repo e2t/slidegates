@@ -106,7 +106,7 @@ begin
   MainForm.ActiveControl := MainForm.EditFrameWidth;
   MainForm.LabelHandWheel.Caption := LabelHandWheelText;
 
-  // Приводы Открыть-Закрыть
+  { Приводы Открыть-Закрыть }
   for I := 0 to ModelOpenCloseActuators.Count - 1 do
     MainForm.ComboBoxOpenCloseActuator.Items.Add(ModelOpenCloseActuators.Keys[I]);
 
@@ -129,7 +129,7 @@ begin
   SetLength(OpenCloseActuatorControlBlocks,
     MainForm.ComboBoxOpenCloseActuator.Items.Count);
 
-  // Регулирующие приводы
+  { Регулирующие приводы }
   for I := 0 to ModelRegulActuators.Count - 1 do
     MainForm.ComboBoxRegulActuator.Items.Add(ModelRegulActuators.Keys[I]);
 
@@ -151,7 +151,7 @@ begin
   SetLength(RegulActuators, MainForm.ComboBoxRegulActuator.Items.Count);
   SetLength(RegulActuatorControlBlocks, MainForm.ComboBoxRegulActuator.Items.Count);
 
-  // Угловые редукторы
+  { Угловые редукторы }
   for I := 0 to ModelBevelGearboxes.Count - 1 do
     MainForm.ComboBoxBevelGearbox.Items.Add(ModelBevelGearboxes.Keys[I]);
 
@@ -163,7 +163,7 @@ begin
   MainForm.ComboBoxBevelGearbox.ItemIndex := 0;
   SetLength(BevelGearboxes, MainForm.ComboBoxBevelGearbox.Items.Count);
 
-  // Цилиндрические редукторы
+  { Цилиндрические редукторы }
   for I := 0 to ModelSpurGearboxes.Count - 1 do
     MainForm.ComboBoxSpurGearbox.Items.Add(ModelSpurGearboxes.Keys[I]);
 
@@ -226,23 +226,23 @@ begin
   InputData := Default(TInputData);
   Result := nil;
 
-  if MainForm.EditFrameWidth.GetRealMin(Value, 0) then
+  if MainForm.EditFrameWidth.GetRealMinEqMaxEq(Value, MinFrameWidth, MaxFrameWidth) then
     InputData.FrameWidth := Metre(Value)
   else
     Exit(@ErrorIncorrectValue);
 
-  if MainForm.EditGateHeight.GetRealMin(Value, 0) then
+  if MainForm.EditGateHeight.GetRealMinEqMaxEq(Value, MinGateHeight, MaxGateHeight) then
     InputData.GateHeight := Metre(Value)
   else
     Exit(@ErrorIncorrectValue);
 
-  if MainForm.EditFrameHeight.GetRealMin(Value,
-    MinFrameHeight(InputData.GateHeight)) then
+  if MainForm.EditFrameHeight.GetRealMinEqMaxEq(Value,
+    MinFrameHeight(InputData.GateHeight), MaxFrameHeight) then
     InputData.FrameHeight := Metre(Value)
   else
     Exit(@ErrorIncorrectValue);
 
-  // Типы затворов и способы установки
+  { Типы затворов и способы установки }
   if MainForm.PageControlSlgKind.ActivePage = MainForm.TabSheetSurf then
   begin
     InputData.SlgKind := Surf;
@@ -257,7 +257,8 @@ begin
   begin
     InputData.SlgKind := Deep;
 
-    if MainForm.EditHydrHead.GetRealMinEq(Value, InputData.GateHeight) then
+    if MainForm.EditHydrHead.GetRealMinEqMaxEq(Value, InputData.GateHeight,
+      MaxHydrHead) then
       InputData.HydrHead.Value := Metre(Value)
     else
       Exit(@ErrorIncorrectValue);
@@ -304,7 +305,7 @@ begin
     end;
   end;
 
-  // Тип управления (приводы)
+  { Тип управления (приводы) }
   if MainForm.PageControlDriveKind.ActivePage = MainForm.TabSheetActuator then
   begin
     if MainForm.RadioButtonOpenClose.Checked then
@@ -377,8 +378,9 @@ begin
   else if MainForm.RadioButtonPullout.Checked then
     InputData.IsScrewPullout := True;
 
+  { 0 для горизонтальных затворов }
   InputData.TiltAngle := PI / 2;
-  // 0 для горизонтальных затворов
+
   if MainForm.EditLiquidDensity.GetRealMin(Value, 0) then
     InputData.LiquidDensity := KgPerM3(Value)
   else
@@ -431,7 +433,7 @@ begin
     InputData.RecommendMinSpeed := 0;
 
   if MainForm.EditFullWays.GetRealMin(Value, 0) then
-    InputData.FullWays := Value  // безразмерная величина
+    InputData.FullWays := Value  { безразмерная величина }
   else
     Exit(@ErrorIncorrectValue);
 
@@ -471,6 +473,8 @@ begin
     FormatFloat('0.0##', Slg.FrameWidth) + 'x' +
     FormatFloat('0.0##', Slg.FrameHeight) + '(' +
     FormatFloat('0.0##', Slg.GateHeight) + ')';
+  if Slg.IsSmall then
+    Result := Result + L10n[85, Lang];
 end;
 
 procedure OutputAumaActuator(var Put: TStringList; const Slg: TSlidegate;
@@ -488,9 +492,9 @@ begin
   Put.Append(Format(L10n[35, Lang], [Slg.Sleeve]));
   Put.Append(L10n[37, Lang]);
   if Slg.SlgKind = Flow then
-    Put.Append(Format(L10n[64, Lang], [Slg.Torque]))
+    Put.Append(Format(L10n[64, Lang], [Slg.OpenTorque]))
   else
-    Put.Append(Format(L10n[38, Lang], [Slg.Torque, Slg.CloseTorque]));
+    Put.Append(Format(L10n[38, Lang], [Slg.OpenTorque, Slg.CloseTorque]));
   Put.Append(Format(L10n[39, Lang], [ToMin(Slg.OpenTime), Slg.OpenTime, Slg.Revs]));
   Put.Append(Format(L10n[40, Lang], [Slg.MinDriveUnitTemperature,
     Slg.MaxDriveUnitTemperature]));
@@ -535,7 +539,9 @@ begin
   if ScrewsNumber > 1 then
     DriveName := DriveName + ' (x2)';
   Put.Append(DriveName);
-  Put.Append(Format(L10n[57, Lang], [Grb.Ratio]));
+  Put.Append(Format(L10n[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+  if Grb.HandWheelDiam > 0 then
+    Put.Append(Format(L10n[83, Lang], [ToMm(Grb.HandWheelDiam)]));
   Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
   Put.Append(Format(L10n[34, Lang], [Grb.Flange]));
   Put.Append(Format(L10n[35, Lang], [Sleeve]));
@@ -549,7 +555,9 @@ begin
   if Need2InputShaft then
     Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name +
       ' DUAL INPUT BEVEL GEARCASE (180)']));
-  Put.Append(Format(L10n[57, Lang], [Grb.Ratio]));
+  Put.Append(Format(L10n[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+  if Grb.HandWheelDiam > 0 then
+    Put.Append(Format(L10n[83, Lang], [ToMm(Grb.HandWheelDiam)]));
   Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
   Put.Append(Format(L10n[34, Lang], [Grb.Flange]));
   Put.Append(Format(L10n[35, Lang], [Sleeve]));
@@ -562,7 +570,9 @@ begin
   Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name]));
   if Need2InputShaft then
     Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name + ' seA']));
-  Put.Append(Format(L10n[57, Lang], [Grb.Ratio]));
+  Put.Append(Format(L10n[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+  if Grb.HandWheelDiam > 0 then
+    Put.Append(Format(L10n[83, Lang], [ToMm(Grb.HandWheelDiam)]));
   Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
   Put.Append('');
 end;
@@ -690,12 +700,13 @@ begin
   Result.Append(Header(L10n[77, Lang]));
   OutputOfficeMemo(Result, Slg, SheetWeights, Lang);
 
-  Result.Append(Format(L10n[15, Lang], [Slg.Screw.SizeToStr, Slg.ScrewFoS]));
+  Result.Append(Format(L10n[15, Lang], [Slg.Screw.SizeToStr,
+    FormatFloat('0.#', ToMm(Slg.Screw.MinorDiam)), FormatFloat('0.0##', Slg.ScrewFoS)]));
   Result.Append(Format(L10n[17, Lang], [Slg.ScrewSlenderness]));
   if Slg.MinScrewInertiaMoment > 0 then
     Result.Append(Format(L10n[16, Lang], [ToMm4(Slg.MinScrewInertiaMoment)]));
-  Result.Append(Format(L10n[18, Lang], [Slg.AxialForce]));
-  Result.Append(Format(L10n[19, Lang], [Slg.CloseScrewTorque]));
+  Result.Append(Format(L10n[18, Lang], [Slg.AxialForce, Slg.MaxAxialForce]));
+  Result.Append(Format(L10n[19, Lang], [Slg.MinScrewTorque, Slg.MaxScrewTorque]));
   Result.Append('');
 
   if Slg.HaveFrameNodes then
@@ -831,7 +842,8 @@ initialization
   LabelHandWheelText := Format(
     'Покупные штурвалы Ø%.0F...%.0F можно использовать:'
     + LineEnding +
-    '— при невысоком крутящем моменте,' + LineEnding +
+    '— при невысоком крутящем моменте,'
+    + LineEnding +
     '— с невыдвижными винтами любых размеров,' +
     LineEnding +
     '— с выдвижными винтами диаметром не более %.0F мм.'

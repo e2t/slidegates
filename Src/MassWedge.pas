@@ -15,7 +15,8 @@ procedure CalcMassWedged(out SgMass: Double; var SheetWeights: TSheetWeights;
 
 implementation
 
-uses MathUtils, Screws, Measurements, Math;
+uses
+  MathUtils, Screws, Measurements;
 
 type
   TWedgedDesign = record
@@ -36,9 +37,9 @@ type
   end;
 
 const
-  TopBalkShelf = 0.05;  // 50 mm
-  WallFlangeS = 0.008;  // 8 mm
-  PipeFlangeS = 0.02;  // 20 mm
+  TopBalkShelf = 0.05;  { 50 mm }
+  WallFlangeS = 0.008;  { 8 mm }
+  PipeFlangeS = 0.02;  { 20 mm }
 
 function CalcGateSheet(const Slg: TSlidegate): TSheetMetal;
 var
@@ -49,25 +50,25 @@ begin
   else
     MaxSizeFor3mm := Metre(0.8);
   if (Slg.FrameWidth <= MaxSizeFor3mm) and (Slg.GateHeight <= MaxSizeFor3mm) then
-    Result := StdSheet[1]   // 3 mm
+    Result := StdSheet[1]   { 3 mm }
   else if (Slg.FrameWidth <= 1.6) and (Slg.GateHeight <= 1.6) then
-    Result := StdSheet[2]   // 4 mm
+    Result := StdSheet[2]   { 4 mm }
   else if (Slg.FrameWidth <= 2.5) and (Slg.GateHeight <= 2.5) then
-    Result := StdSheet[3]   // 5 mm
+    Result := StdSheet[3]   { 5 mm }
   else
-    Result := StdSheet[4];  // 6 mm
+    Result := StdSheet[4];  { 6 mm }
 end;
 
 function FrameSheet(const Slg: TSlidegate; const GateSheet: TSheetMetal): TSheetMetal;
 begin
   if (Slg.FrameWidth <= 1.25) and (Slg.GateHeight <= 1.25) and
     (Slg.FrameHeight <= 3.0) then
-    Result := StdSheet[2]   // 4 mm
+    Result := StdSheet[2]   { 4 mm }
   else if (Slg.FrameWidth <= 2.5) and (Slg.GateHeight <= 2.5) and
     (Slg.FrameHeight <= 6.0) then
-    Result := StdSheet[3]   // 5 mm
+    Result := StdSheet[3]   { 5 mm }
   else
-    Result := StdSheet[4];  // 6 mm
+    Result := StdSheet[4];  { 6 mm }
   if Result.S < GateSheet.S then
     Result := GateSheet;
 end;
@@ -89,7 +90,7 @@ end;
 
 function GateWidth(const Slg: TSlidegate; const FrameSheet: TSheetMetal): Double;
 const
-  GapByOneSide = 0.01;  // 10 мм = ограничитель 8 мм + зазор 2 мм
+  GapByOneSide = 0.01;  { 10 мм = ограничитель 8 мм + зазор 2 мм }
 begin
   Result := Slg.FrameWidth - 2 * (FrameSheet.S + GapByOneSide);
 end;
@@ -97,7 +98,7 @@ end;
 function CalcHorizEdgeWidth(const GateSheet: TSheetMetal;
   const GateWidth: Double): Double;
 const
-  GapByOneSide = 0.001;  // 1 мм
+  GapByOneSide = 0.001;  { 1 мм }
 begin
   Result := GateWidth - 2 * (GateSheet.S + GapByOneSide);
 end;
@@ -106,7 +107,7 @@ function HorizEdgeArea(const Des: TWedgedDesign): Double;
 var
   HemV, HemH: Double;
 begin
-  HemV := Des.GateDepth - 2 * Des.GateSheet.S - 0.001;  // 1 mm gap
+  HemV := Des.GateDepth - 2 * Des.GateSheet.S - 0.001;  { 1 mm gap }
   HemH := Des.GateShelf - Des.GateSheet.S;
   Result := (Des.HorizEdgeWidth - 2 * HemH - Des.EdgeDepth + HemV) *
     (Des.EdgeDepth - HemV) + HemV * Des.HorizEdgeWidth - Des.CoverShelf * Des.CoverDepth;
@@ -115,10 +116,10 @@ end;
 function CalcEdgeHeight(const Slg: TSlidegate; const GateSheet: TSheetMetal;
   const CoverShelf: Double): Double;
 const
-  K2 = 0.002;  // 2 mm on every meter of hydr. head above gate
-  RoundBase = 0.005;  // 5 mm
+  K2 = 0.002;  { 2 mm on every meter of hydr. head above gate }
+  RoundBase = 0.005;  { 5 mm }
 begin
-  Result := CeilMultiple(CoverShelf + 0.015   // 15 mm above cover
+  Result := CeilMultiple(CoverShelf + 0.015   { 15 mm above cover }
     + K2 * (Slg.HydrHead - Slg.GateHeight) + GateSheet.S, RoundBase) - GateSheet.S;
 end;
 
@@ -131,7 +132,7 @@ begin
       Result := 1 + RoundMath(Slg.GateHeight / 0.25);
     else
       Assert(False, 'Неправильный тип затвора');
-      // только для клиновых затворов
+      { только для клиновых затворов }
   end;
 end;
 
@@ -143,7 +144,7 @@ end;
 function CalcClosedFrameEdgeHeight(const Slg: TSlidegate;
   const BigPipeDiam: Double): Double;
 begin
-  Result := Slg.FrameHeight - BigPipeDiam - 0.1;  // 100 mm from bellow to bigpipe
+  Result := Slg.FrameHeight - BigPipeDiam - 0.1;  { 100 mm from bellow to bigpipe }
 end;
 
 function FrameHorizEdgeCount(const Slg: TSlidegate; const Des: TWedgedDesign): Integer;
@@ -156,7 +157,7 @@ end;
 
 function FrameVertEdgeCount(const Slg: TSlidegate): Integer;
 begin
-  // 1 edge on every 0.5 meter
+  { 1 edge on every 0.5 meter }
   if Slg.IsFrameClosed then
     Result := RoundMath((Slg.FrameWidth - 0.5) / 0.5)
   else
@@ -178,7 +179,7 @@ begin
       Result := K * RoundMath(GateWidth);
     else
       Assert(False, 'Неправильный тип затвора');
-      // только для клиновых затворов
+      { только для клиновых затворов }
   end;
 end;
 
@@ -186,23 +187,23 @@ procedure CalcWedgedDesign(out Des: TWedgedDesign; const Slg: TSlideGate);
 var
   MinGateDepth, CoverShelf1, CoverShelf2: Double;
 const
-  // 11 мм - Расстояние от стенки щита до рамы (в зоне уплотнения)
+  { 11 мм - Расстояние от стенки щита до рамы (в зоне уплотнения) }
   DistCompress = 0.011;
-  // 3.5 mm - on every meter hydr. head above gate
+  { 3.5 mm - on every meter hydr. head above gate }
   K1 = 0.0035;
-  // 9 mm - minimal difference between size of gate's shelf and size of gate's depth
+  { 9 mm - minimal difference between size of gate's shelf and size of gate's depth }
   MinDiff = 0.009;
-  // 10 мм - Side distance between gate and frame including limiter = 2 + 8
+  { 10 мм - Side distance between gate and frame including limiter = 2 + 8 }
   DistLimiter = 0.010;
-  // 15 mm - толщина клина
+  { 15 mm - толщина клина }
   WedgeWidth = 0.015;
-  // 9 мм - зазор между клиньями
+  { 9 мм - зазор между клиньями }
   WedgesGap = 0.009;
-  // 45 мм - пространство от щита до рамы в зоне клиньев
+  { 45 мм - пространство от щита до рамы в зоне клиньев }
   DistBtwWedges = 0.045;
-  // Distance between centre of frame and ax of nut = 10 - 9
+  { Distance between centre of frame and ax of nut = 10 - 9 }
   DiffCentres = 0.001;
-  // Inside distance between nut and cover of gate
+  { Inside distance between nut and cover of gate }
   DiffSide = 0.001;
 begin
   Des := Default(TWedgedDesign);
@@ -253,7 +254,7 @@ begin
   Des.ClosedFrameEdgeHeight := CalcClosedFrameEdgeHeight(Slg, Des.BigPipeDiam);
 end;
 
-// only 90 degrees
+{ only 90 degrees }
 function SheetRadiusArea(const Sheet: TSheetMetal): Double;
 begin
   Result := RingSectorArea((Sheet.S + Sheet.R) * 2, Sheet.R * 2, Pi / 2);
@@ -271,7 +272,7 @@ begin
   Result := FlatLength * Sheet.S + (SidesCount - 1) * SheetRadiusArea(Sheet);
 end;
 
-// TODO: адаптировать для глубинных. Сейчас годится только для поверхностных.
+{ TODO: адаптировать для глубинных. Сейчас годится только для поверхностных. }
 function CalcBracketsMass(const Slg: TSlidegate): Double;
 const
   BracketMass = 0.32;
@@ -282,17 +283,17 @@ begin
     Result := BracketMass * 12;
 end;
 
-// The crossbar for the top sealing in the deep slidegates.
+{ The crossbar for the top sealing in the deep slidegates. }
 function Bar4DeepMass(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 const
-  Gap = 0.01;  // indent 10 mm at both sides
-  Height = 0.135;  // 135 mm height of channel
+  Gap = 0.01;  { indent 10 mm at both sides }
+  Height = 0.135;  { 135 mm height of channel }
 var
   Shelf: Double;
 begin
   if Slg.SlgKind = Deep then
   begin
-    // 50 mm ledge, 8 mm thickness of flange
+    { 50 mm ledge, 8 mm thickness of flange }
     Shelf := 0.05 - 0.008 + Des.FrameSheet.S;
     Result := (SheetMetalArea(Des.FrameSheet, [Shelf, Height, Shelf + 0.004]) *
       (Slg.FrameWidth - 2 * Gap) - 2 * (Height - 2 * Des.FrameSheet.S) *
@@ -305,7 +306,7 @@ end;
 function MassHorizChannelWithPlast(const Slg: TSlidegate;
   const Des: TWedgedDesign): Double;
 begin
-  // at 20 mm narrower of the frame, at 1 mm less of the channel (gap)
+  { at 20 mm narrower of the frame, at 1 mm less of the channel (gap) }
   Result := SheetMetalArea(Des.FrameSheet, [TopBalkShelf, Des.FrameDepth -
     2 * Des.FrameSheet.S - 0.001, TopBalkShelf]) * (Slg.FrameWidth - 0.02) *
     SteelDensity;
@@ -322,12 +323,12 @@ end;
 function MassHorizChannelWoPlastic(const Slg: TSlidegate;
   const Des: TWedgedDesign): Double;
 begin
-  // at 20 mm narrower of the frame, at 20 mm below of the channel
+  { at 20 mm narrower of the frame, at 20 mm below of the channel }
   Result := SheetMetalArea(Des.FrameSheet, [TopBalkShelf, Des.FrameDepth -
     0.02, TopBalkShelf]) * (Slg.FrameWidth - 0.02) * SteelDensity;
 end;
 
-// The crossbar in the very high frames.
+{ The crossbar in the very high frames. }
 function MassCrossbar(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 var
   Height: Double;
@@ -338,24 +339,24 @@ begin
     Height := Slg.GateHeight
   else
     Height := 0;
-  Result := MassHorizChannelWoPlastic(Slg, Des) * Floor((Slg.FrameHeight - Height) / 3);
+  Result := MassHorizChannelWoPlastic(Slg, Des) * Trunc((Slg.FrameHeight - Height) / 3);
 end;
 
-// square flanges s8, 100 mm from below, 140 mm from above
+{ square flanges s8, 100 mm from below, 140 mm from above }
 function MassWallFlange(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 begin
   Result := (Slg.FrameWidth * (0.1 + 0.14) + (Slg.GateHeight - 0.1 - 0.14) *
     2 * Des.FrameShelf) * WallFlangeS * SteelDensity;
 end;
 
-// round flanges s20, difference of the diameters 200 mm
+{ round flanges s20, difference of the diameters 200 mm }
 function MassPipeFlange(const Des: TWedgedDesign): Double;
 begin
   Result := (RingSectorArea(Des.BigPipeDiam + 0.2, Des.BigPipeDiam, 2 * Pi) *
     PipeFlangeS) * SteelDensity;
 end;
 
-// Масса пары вертикальных ребер закрытой рамы (с обеих сторон).
+{ Масса пары вертикальных ребер закрытой рамы (с обеих сторон). }
 function MassFrameVertEdge(const Des: TWedgedDesign): Double;
 var
   H: Double;
@@ -364,7 +365,7 @@ begin
   Result := H * Des.ClosedFrameEdgeHeight * Des.FrameSheet.S * SteelDensity;
 end;
 
-// Масса кольцевого горизонтального ребра закрытой рамы (со всех сторон).
+{ Масса кольцевого горизонтального ребра закрытой рамы (со всех сторон). }
 function MassFrameHorizEdge(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 var
   H: Double;
@@ -376,7 +377,7 @@ end;
 
 function MassCap(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 begin
-  // 50 mm of the top balk
+  { 50 mm of the top balk }
   if Slg.IsFrameClosed then
     Result := (Slg.FrameWidth + 0.1) * (Des.FrameDepth + 0.1) *
       Des.FrameSheet.S * SteelDensity
@@ -404,7 +405,7 @@ end;
 
 function MassBottomSegment(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 const
-  Height = 0.1;  // 100 mm from below to bigpipe
+  Height = 0.1;  { 100 mm from below to bigpipe }
 begin
   Result := MassSegment(Slg, Des, Height);
 end;
@@ -416,14 +417,14 @@ end;
 
 function MassTopChannel(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 begin
-  // at 20 mm narrower of the frame, at 20 mm below of the channel
+  { at 20 mm narrower of the frame, at 20 mm below of the channel }
   if Slg.IsScrewPullout then
     Result := MassHorizChannelWithPlast(Slg, Des)
   else
     Result := MassHorizChannelWoPlastic(Slg, Des);
 end;
 
-// The bottom support-corner.
+{ The bottom support-corner. }
 function MassSmallBottom(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 begin
   Result := SheetMetalArea(Des.FrameSheet, [0.035, 0.05 - Des.FrameSheet.S]) *
@@ -432,13 +433,13 @@ end;
 
 function MassBottom(const Slg: TSlidegate; const Des: TWedgedDesign): Double;
 const
-  SealingHeight = 0.075;  // 75 mm height seal pressing
+  SealingHeight = 0.075;  { 75 mm height seal pressing }
 var
-  TopShelf: Double;  // верхняя полка нижней опоры
+  TopShelf: Double;  { верхняя полка нижней опоры }
   DeletedArea: Double;
 begin
-  // 35 mm top shelf by default, 46+s for the flange to wall,
-  // don't exists with bigpipe
+  { 35 mm top shelf by default, 46+s for the flange to wall,
+    don't exists with bigpipe }
   if Des.BigPipeLength > 0 then
     TopShelf := 0
   else
@@ -449,7 +450,7 @@ begin
       TopShelf := 0.035;
   end;
   DeletedArea := SheetMetalArea(Des.FrameSheet, [SealingHeight, TopShelf]);
-  // 50 mm bottom shelf, 5 mm indent at channel
+  { 50 mm bottom shelf, 5 mm indent at channel }
   Result := SteelDensity * (SheetMetalArea(Des.FrameSheet,
     [0.05, Des.FrameDepth + 0.005, SealingHeight + Des.FrameSheet.S, TopShelf]) *
     Slg.FrameWidth - DeletedArea * Des.FrameSheet.S);
@@ -460,7 +461,7 @@ var
   FlangeShelfArea: Double;
 begin
   if Slg.InstallKind = Wall then
-    // 46 mm ledge of flange, 150 mm internal height of flange
+    { 46 mm ledge of flange, 150 mm internal height of flange }
     FlangeShelfArea := (0.046 + Des.FrameSheet.S) * (Slg.GateHeight - 0.15)
   else
     FlangeShelfArea := 0;
@@ -562,7 +563,7 @@ var
   BearingHouseCount: Integer;
 begin
   SectionArea := CircleSectorArea(Slg.Screw.MajorDiam, 2 * Pi);
-  // общая длина винта
+  { общая длина винта }
   RodLength := Slg.FrameHeight - Slg.GateHeight + NutHeight + AboveTheFrame;
   if Slg.IsScrewPullout then
     BearingHouseCount := 0
@@ -575,7 +576,6 @@ begin
   end;
   Result := SectionArea * RodLength * SteelDensity + MassPlate +
     BearingHouseMass * BearingHouseCount;
-  //writeln(result);
 end;
 
 procedure CalcMassWedged(out SgMass: Double; var SheetWeights: TSheetWeights;

@@ -24,17 +24,17 @@ procedure CalcFlowDesign(out Des: TFlowDesign);
 begin
   Des := Default(TFlowDesign);
 
-  Des.FrameSheet := StdSheet[3];  // 5mm
-  Des.GateSheet := StdSheet[3];  // 5mm
+  Des.FrameSheet := StdSheet[3];  { 5mm }
+  Des.GateSheet := StdSheet[3];  { 5mm }
 end;
 
 function CalcMassFrame(const Slg: TSlidegate): Double;
 var
-  //Вес рамы без направляющих.
+  { Вес рамы без направляющих. }
   PureFrame: Double;
-  //Вес одной направляющей.
+  { Вес одной направляющей. }
   Lead: Double;
-  //Неподвижный щит.
+  { Неподвижный щит. }
   FixedGate: Double;
 begin
   if Slg.InstallKind = Wall then

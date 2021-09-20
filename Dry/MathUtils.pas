@@ -8,6 +8,9 @@ unit MathUtils;
 
 interface
 
+const
+  GravAcc = 9.80665;  { Metre/sec2 }
+
 function RoundMath(const Value: Double): Integer;
 function RoundMultiple(const Value, Base: Double): Double;
 function CeilMultiple(const Value, Base: Double): Double;
