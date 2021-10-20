@@ -12,10 +12,11 @@ type
   generic TNullable<T> = object
   protected
     FValue: T;
+    FHasValue: Boolean;
     procedure SetValue(const Value: T);
     function GetValue(): T;
   public
-    HasValue: Boolean;
+    property HasValue: Boolean read FHasValue;
     property Value: T read GetValue write SetValue;
   end;
 
@@ -30,12 +31,12 @@ implementation
 procedure TNullable.SetValue(const Value: T);
 begin
   FValue := Value;
-  HasValue := True;
+  FHasValue := True;
 end;
 
 function TNullable.GetValue(): T;
 begin
-  Assert(HasValue);
+  Assert(FHasValue);
   Result := FValue;
 end;
 

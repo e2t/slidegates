@@ -213,7 +213,7 @@ begin
   end;
 end;
 
-function CreateInputData(out InputData: TInputData): TFuncInputDataError;
+procedure CreateInputData(out InputData: TInputData; out Error: TFuncInputDataError);
 const
   Delims: array [0..4] of string = ('x', 'X', 'х', 'Х', ' ');
 var
@@ -222,25 +222,38 @@ var
   I: Integer;
   Value, AMaxWay: Double;
   ActuatorWithControl: TActuatorWithControl;
+  IsValid: Boolean;
 begin
   InputData := Default(TInputData);
-  Result := nil;
+  Error := nil;
 
-  if MainForm.EditFrameWidth.GetRealMinEqMaxEq(Value, MinFrameWidth, MaxFrameWidth) then
+  MainForm.EditFrameWidth.GetRealMinEqMaxEq(MinFrameWidth, MaxFrameWidth, IsValid, Value);
+  if IsValid then
     InputData.FrameWidth := Metre(Value)
   else
-    Exit(@ErrorIncorrectValue);
+  begin
+    Error := @ErrorIncorrectValue;
+    Exit;
+  end;
 
-  if MainForm.EditGateHeight.GetRealMinEqMaxEq(Value, MinGateHeight, MaxGateHeight) then
+  MainForm.EditGateHeight.GetRealMinEqMaxEq(MinGateHeight, MaxGateHeight, IsValid, Value);
+  if IsValid then
     InputData.GateHeight := Metre(Value)
   else
-    Exit(@ErrorIncorrectValue);
+  begin
+    Error := @ErrorIncorrectValue;
+    Exit;
+  end;
 
-  if MainForm.EditFrameHeight.GetRealMinEqMaxEq(Value,
-    MinFrameHeight(InputData.GateHeight), MaxFrameHeight) then
+  MainForm.EditFrameHeight.GetRealMinEqMaxEq(MinFrameHeight(InputData.GateHeight),
+    MaxFrameHeight, IsValid, Value);
+  if IsValid then
     InputData.FrameHeight := Metre(Value)
   else
-    Exit(@ErrorIncorrectValue);
+  begin
+    Error := @ErrorIncorrectValue;
+    Exit;
+  end;
 
   { Типы затворов и способы установки }
   if MainForm.PageControlSlgKind.ActivePage = MainForm.TabSheetSurf then
@@ -257,11 +270,15 @@ begin
   begin
     InputData.SlgKind := Deep;
 
-    if MainForm.EditHydrHead.GetRealMinEqMaxEq(Value, InputData.GateHeight,
-      MaxHydrHead) then
+    MainForm.EditHydrHead.GetRealMinEqMaxEq(InputData.GateHeight, MaxHydrHead,
+      IsValid, Value);
+    if IsValid then
       InputData.HydrHead.Value := Metre(Value)
     else
-      Exit(@ErrorIncorrectValue);
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
 
     if MainForm.RadioButtonDeepConcrete.Checked then
       InputData.InstallKind := Concrete
@@ -283,10 +300,14 @@ begin
   begin
     InputData.SlgKind := Flow;
 
-    if MainForm.EditBethFrameTopAndGateTop.GetRealMin(Value, 0) then
+    MainForm.EditBethFrameTopAndGateTop.GetRealMin(0, IsValid, Value);
+    if IsValid then
       InputData.BethFrameTopAndGateTop.Value := Metre(Value)
     else
-      Exit(@ErrorIncorrectValue);
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
 
     if MainForm.RadioButtonRegulChannel.Checked then
     begin
@@ -357,19 +378,27 @@ begin
   else if MainForm.PageControlDriveLocation.ActivePage = MainForm.TabSheetOnRack then
   begin
     InputData.DriveLocation := OnRack;
-    if MainForm.EditBtwFrameTopAndGround.GetRealMin(Value, 0) then
+    MainForm.EditBtwFrameTopAndGround.GetRealMin(0, IsValid, Value);
+    if IsValid then
       InputData.BtwFrameTopAndDriveUnit := Metre(Value) + RackHeight
     else
-      Exit(@ErrorIncorrectValue);
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
     InputData.HavePipeNodes := not MainForm.CheckBoxRackWithoutPipeNodes.Checked;
   end
   else if MainForm.PageControlDriveLocation.ActivePage = MainForm.TabSheetOnBracket then
   begin
     InputData.DriveLocation := OnBracket;
-    if MainForm.EditBtwFrameTopAndDriveUnit.GetRealMin(Value, 0.1) then
+    MainForm.EditBtwFrameTopAndDriveUnit.GetRealMin(0.1, IsValid, Value);
+    if IsValid then
       InputData.BtwFrameTopAndDriveUnit := Metre(Value)
     else
-      Exit(@ErrorIncorrectValue);
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
     InputData.HavePipeNodes := not MainForm.CheckBoxBracketWithoutPipeNodes.Checked;
   end;
 
@@ -381,10 +410,14 @@ begin
   { 0 для горизонтальных затворов }
   InputData.TiltAngle := PI / 2;
 
-  if MainForm.EditLiquidDensity.GetRealMin(Value, 0) then
+  MainForm.EditLiquidDensity.GetRealMin(0, IsValid, Value);
+  if IsValid then
     InputData.LiquidDensity := KgPerM3(Value)
   else
-    Exit(@ErrorIncorrectValue);
+  begin
+    Error := @ErrorIncorrectValue;
+    Exit;
+  end;
 
   if MainForm.CheckBoxWithoutFrameNodes.Checked then
     InputData.HaveFrameNodes.Value := False;
@@ -395,10 +428,14 @@ begin
   if MainForm.EditWay.Text <> '' then
   begin
     AMaxWay := MaxWay(InputData.FrameHeight, InputData.GateHeight);
-    if MainForm.EditWay.GetRealMinMaxEq(Value, 0, AMaxWay) then
+    MainForm.EditWay.GetRealMinMaxEq(0, AMaxWay, IsValid, Value);
+    if IsValid then
       InputData.Way.Value := Metre(Value)
     else
-      Exit(@ErrorIncorrectValue);
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
   end;
 
   ScrewNote := MainForm.ComboBoxScrew.Text;
@@ -406,46 +443,90 @@ begin
   begin
     ScrewSize := ScrewNote.Split(Delims);
     if Length(ScrewSize) <> 2 then
-      Exit(@ErrorIncorrectValue)
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end
     else
     begin
-      if MainForm.ComboBoxScrew.GetRealMin(ScrewSize[0], Value, 0) then
+      MainForm.ComboBoxScrew.GetRealMin(ScrewSize[0], 0, IsValid, Value);
+      if IsValid then
         InputData.ScrewDiam.Value := Mm(Value)
       else
-        Exit(@ErrorIncorrectValue);
+      begin
+        Error := @ErrorIncorrectValue;
+        Exit;
+      end;
 
-      if MainForm.ComboBoxScrew.GetRealMinMax(ScrewSize[1], Value,
-        0, ToMm(InputData.ScrewDiam.Value / 2)) then
+      MainForm.ComboBoxScrew.GetRealMinMax(ScrewSize[1], 0,
+        ToMm(InputData.ScrewDiam.Value / 2), IsValid, Value);
+      if IsValid then
         InputData.ScrewPitch.Value := Mm(Value)
       else
-        Exit(@ErrorIncorrectValue);
+      begin
+        Error := @ErrorIncorrectValue;
+        Exit;
+      end;
     end;
   end;
 
-  if (MainForm.EditMinSpeed.Text <> '') then
+  if MainForm.EditMinSpeed.Text <> '' then
   begin
-    if MainForm.EditMinSpeed.GetRealMinEq(Value, 0) then
+    MainForm.EditMinSpeed.GetRealMinEq(0, IsValid, Value);
+    if IsValid then
       InputData.RecommendMinSpeed := Rpm(Value)
     else
-      Exit(@ErrorIncorrectValue);
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
   end
   else
     InputData.RecommendMinSpeed := 0;
 
-  if MainForm.EditFullWays.GetRealMin(Value, 0) then
-    InputData.FullWays := Value  { безразмерная величина }
-  else
-    Exit(@ErrorIncorrectValue);
+  MainForm.EditFullWays.GetRealMin(0, IsValid, InputData.FullWays);
+  if not IsValid then
+  begin
+    Error := @ErrorIncorrectValue;
+    Exit;
+  end;
 
   if MainForm.CheckBoxTwoScrews.Checked then
   begin
     if not MainForm.RadioButtonBevelGearbox.Checked then
-      Exit(@ErrorNonBevelGearboxWithTwoScrews);
+    begin
+      Error := @ErrorNonBevelGearboxWithTwoScrews;
+      Exit;
+    end;
     InputData.ScrewsNumber := 2;
     GetGearboxOrModel(InputData.ModelGearbox, InputData.Gearbox);
   end
   else
     InputData.ScrewsNumber := 1;
+
+  if MainForm.ComboBoxFrameSheet.Text <> '' then
+  begin
+    MainForm.ComboBoxFrameSheet.GetRealMin(0, IsValid, Value);
+    if IsValid then
+      InputData.FrameSheet.Value := Mm(Value)
+    else
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
+  end;
+
+  if MainForm.ComboBoxGateSheet.Text <> '' then
+  begin
+    MainForm.ComboBoxGateSheet.GetRealMin(0, IsValid, Value);
+    if IsValid then
+      InputData.GateSheet.Value := Mm(Value)
+    else
+    begin
+      Error := @ErrorIncorrectValue;
+      Exit;
+    end;
+  end;
 end;
 
 function Designation(const Slg: TSlidegate; const Lang: Integer): string;
@@ -644,8 +725,8 @@ begin
   Result := '[ ' + Line + ' ]' + LineEnding;
 end;
 
-function Output(const Slg: TSlidegate; const Mass: Double;
-  const SheetWeights: TSheetWeights; const Lang: TLang): TStringList;
+function Output(const Slg: TSlidegate; const Mass: TWeights;
+  const Lang: TLang): TStringList;
 var
   SInstallKind, SDriveLocation, ScrewDescription: string;
 begin
@@ -678,7 +759,7 @@ begin
     ScrewDescription := ScrewDescription + ' (x2)';
   Result.Append(ScrewDescription);
   Result.Append(Format(L10n[0, Lang], [Slg.HydrHead]));
-  Result.Append(Format(L10n[1, Lang], [Mass]));
+  Result.Append(Format(L10n[1, Lang], [Mass.Total, Mass.Frame, Mass.Gate]));
   Result.Append(Format(L10n[65, Lang], [Slg.Leakage]));
   Result.Append('');
 
@@ -698,7 +779,7 @@ begin
     OutputHandWheel(Result, Slg.HandWheel, Lang);
 
   Result.Append(Header(L10n[77, Lang]));
-  OutputOfficeMemo(Result, Slg, SheetWeights, Lang);
+  OutputOfficeMemo(Result, Slg, Mass.Sheet, Lang);
 
   Result.Append(Format(L10n[15, Lang], [Slg.Screw.SizeToStr,
     FormatFloat('0.#', ToMm(Slg.Screw.MinorDiam)), FormatFloat('0.0##', Slg.ScrewFoS)]));
@@ -728,9 +809,8 @@ begin
   end;
 end;
 
-procedure PrintResults(const Slg: TSlidegate; const Mass: Double;
-  const SheetWeights: TSheetWeights; const SlgError: TFuncSlidegateError;
-  const InputError: TFuncInputDataError);
+procedure PrintResults(const Slg: TSlidegate; const Mass: TWeights;
+  const SlgError: TFuncSlidegateError; const InputError: TFuncInputDataError);
 var
   Lang: TLang;
   Text: string;
@@ -741,41 +821,43 @@ begin
   else if SlgError <> nil then
     Text := SlgError(Slg, Lang)
   else
-    Text := Output(Slg, Mass, SheetWeights, Lang).Text;
+    Text := Output(Slg, Mass, Lang).Text;
   MainForm.MemoOutput.Text := Text;
   MainForm.MemoOutput.SelStart := 0;
 end;
 
 var
   Slidegate: TSlidegate;
-  Mass: Double;
   SlidegateError: TFuncSlidegateError;
   InputDataError: TFuncInputDataError;
-  SheetWeights: TSheetWeights;
+  Mass: TWeights;
 
 procedure RePrintResults();
 begin
   if MainForm.MemoOutput.Text <> '' then
-    PrintResults(Slidegate, Mass, SheetWeights, SlidegateError, InputDataError);
+    PrintResults(Slidegate, Mass, SlidegateError, InputDataError);
 end;
 
 procedure Run();
 var
   InputData: TInputData;
 begin
-  InputDataError := CreateInputData(InputData);
+  CreateInputData(InputData, InputDataError);
   if InputDataError = nil then
   begin
-    SlidegateError := CalcSlidegate(Slidegate, InputData);
-    CalcMass(Mass, SheetWeights, Slidegate);
+    CalcSlidegate(Slidegate, InputData, SlidegateError);
+    CalcMass(Mass, Slidegate, InputData);
   end;
-  PrintResults(Slidegate, Mass, SheetWeights, SlidegateError, InputDataError);
+  PrintResults(Slidegate, Mass, SlidegateError, InputDataError);
 end;
 
 var
   ActuatorWithControl: TActuatorWithControl;
 
 initialization
+  Mass := Default(TWeights);
+  Mass.Sheet := TSheetWeights.Create;
+
   ModelOpenCloseActuators := TChoiceModelActuator.Create;
 
   ActuatorWithControl.ModelActuator := AumaSADutyS215;

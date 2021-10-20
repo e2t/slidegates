@@ -21,12 +21,11 @@ var
 implementation
 
 initialization
-
   L10n[0, Eng] := 'Pressure head %.3G m H2O';
   L10n[0, Rus] := 'Гидростатический напор %.3G м вод. ст.';
 
-  L10n[1, Eng] := 'Weight of stainless steel %.1F kg';
-  L10n[1, Rus] := 'Масса нерж. стали %.1F кг';
+  L10n[1, Eng] := 'Weight of stainless steel %.0F kg  (frame %.0F kg, gate %.0F kg)';
+  L10n[1, Rus] := 'Масса нерж. стали %.0F кг  (рама %.0F кг, щит %.0F кг)';
 
   L10n[2, Eng] := 'S';
   L10n[2, Rus] := 'П';
@@ -82,7 +81,7 @@ initialization
   L10n[18, Rus] := 'Осевое усилие на винте %.0F…%.0F Н';
 
   L10n[19, Eng] := 'Torque in screw %.0F…%.0F Nm';
-  L10n[19, Rus] := 'Крутящий момент на винте %.0F…%.0F Nm';
+  L10n[19, Rus] := 'Крутящий момент на винте %.0F…%.0F Нм';
 
   L10n[20, Eng] := 'It is not possible to select a standard screw.';
   L10n[20, Rus] := 'Невозможно подобрать стандартный винт.';

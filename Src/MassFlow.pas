@@ -10,8 +10,8 @@ interface
 
 uses MassGeneral, StrengthCalculations;
 
-procedure CalcMassFlow(out SgMass: Double; var SheetWeights: TSheetWeights;
-  const Slg: TSlidegate);
+procedure CalcMassFlow(var Mass: TWeights; const Slg: TSlidegate;
+  const InputData: TInputData);
 
 implementation
 
@@ -20,12 +20,22 @@ type
     GateSheet, FrameSheet: TSheetMetal;
   end;
 
-procedure CalcFlowDesign(out Des: TFlowDesign);
+var
+  StdFrameSheet, StdGateSheet: TSheetMetal;
+
+procedure CalcFlowDesign(out Des: TFlowDesign; const InputData: TInputData);
 begin
   Des := Default(TFlowDesign);
 
-  Des.FrameSheet := StdSheet[3];  { 5mm }
-  Des.GateSheet := StdSheet[3];  { 5mm }
+  if InputData.FrameSheet.HasValue then
+    SetSheetMetal(Des.FrameSheet, InputData.FrameSheet.Value)
+  else
+    Des.FrameSheet := StdFrameSheet;
+
+  if InputData.GateSheet.HasValue then
+    SetSheetMetal(Des.GateSheet, InputData.GateSheet.Value)
+  else
+    Des.GateSheet := StdGateSheet;
 end;
 
 function CalcMassFrame(const Slg: TSlidegate): Double;
@@ -65,19 +75,21 @@ begin
   Result := 5.66 * Slg.ScrewLength + 0.816;
 end;
 
-procedure CalcMassFlow(out SgMass: Double; var SheetWeights: TSheetWeights;
-  const Slg: TSlidegate);
+procedure CalcMassFlow(var Mass: TWeights; const Slg: TSlidegate;
+  const InputData: TInputData);
 var
   Des: TFlowDesign;
-  MassGate, MassFrame: Double;
 begin
-  CalcFlowDesign(Des);
-  MassGate := CalcMassGate(Slg);
-  MassFrame := CalcMassFrame(Slg);
-  SgMass := MassGate + MassFrame + MassScrew(Slg) * Slg.ScrewsNumber + 3;
+  CalcFlowDesign(Des, InputData);
+  Mass.Gate := CalcMassGate(Slg) * Des.GateSheet.S / StdGateSheet.S;
+  Mass.Frame := CalcMassFrame(Slg) * Des.FrameSheet.S / StdFrameSheet.S;
+  Mass.Total := Mass.Gate + Mass.Frame + MassScrew(Slg) * Slg.ScrewsNumber + 3;
 
-  UpdateSheetWeight(SheetWeights, Des.GateSheet.S, MassGate);
-  UpdateSheetWeight(SheetWeights, Des.FrameSheet.S, MassFrame);
+  UpdateSheetWeight(Mass.Sheet, Des.GateSheet.S, Mass.Gate);
+  UpdateSheetWeight(Mass.Sheet, Des.FrameSheet.S, Mass.Frame);
 end;
 
+initialization
+  StdFrameSheet := StdSheet[3];  { 5mm }
+  StdGateSheet := StdSheet[3];  { 5mm }
 end.

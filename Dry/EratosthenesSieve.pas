@@ -11,58 +11,80 @@ interface
 uses
   Classes;
 
-procedure CalcSieve(var Bits: TBits);
+type
+  TSieve = class
+  private
+    FIsComposite: TBits;
+    FMaxNumber: SizeInt;
+    procedure SetAll(const Value: Boolean; Number: SizeInt; const Step: SizeInt);
+    procedure Resize(const AMaxNumber: SizeInt);
+  public
+    procedure Calc;
+    procedure Clear;
+    property MaxNumber: SizeInt read FMaxNumber write Resize;
+    function IsPrime(const Number: SizeInt): Boolean;
+    constructor Create(const AMaxNumber: SizeInt);
+  end;
 
 implementation
 
-type
-  TSiever = class
-  private
-    FBits: TBits;
-    FMaxNumber: SizeInt;
-    procedure SetAll(const Value: Boolean; Number: SizeInt; const Step: SizeInt);
-  public
-    constructor Create(var Bits: TBits);
-  end;
+{ False - простое, True - не простое }
+constructor TSieve.Create(const AMaxNumber: SizeInt);
+begin
+  FIsComposite := TBits.Create;
+  Resize(AMaxNumber);
+end;
 
-constructor TSiever.Create(var Bits: TBits);
+procedure TSieve.Calc;
 var
   I, Number, Step: SizeInt;
 begin
-  Bits.ClearAll;
-  if Bits.Size < 3 then
+  if FMaxNumber < 2 then
     Exit;
-  FBits := Bits;
-  FMaxNumber := Bits.Size - 1;
 
-  Bits[2] := True;
-  SetAll(True, 3, 2);
+  FIsComposite[0] := True; { 1 не является простым числом }
 
   I := 3;
   while I <= Trunc(Sqrt(FMaxNumber)) do
   begin
-    if Bits[I] then
+    if not FIsComposite[I div 2] then
     begin
       Number := Sqr(I);
       Step := I + I;
-      SetAll(False, Number, Step);
+      SetAll(True, Number, Step);
     end;
     Inc(I, 2);
   end;
 end;
 
-procedure TSiever.SetAll(const Value: Boolean; Number: SizeInt; const Step: SizeInt);
+procedure TSieve.Clear;
+begin
+  FIsComposite.ClearAll;
+end;
+
+procedure TSieve.SetAll(const Value: Boolean; Number: SizeInt; const Step: SizeInt);
 begin
   while Number <= FMaxNumber do
   begin
-    FBits[Number] := Value;
+    FIsComposite[Number div 2] := Value;
     Inc(Number, Step);
   end;
 end;
 
-procedure CalcSieve(var Bits: TBits);
+procedure TSieve.Resize(const AMaxNumber: SizeInt);
 begin
-  TSiever.Create(Bits).Free;
+  FMaxNumber := AMaxNumber;
+  FIsComposite.Size := (AMaxNumber + 1) div 2;
+end;
+
+function TSieve.IsPrime(const Number: SizeInt): Boolean;
+begin
+  if Number = 2 then
+    Result := True
+  else if (Number mod 2) = 0 then
+    Result := False
+  else
+    Result := not FIsComposite[Number div 2];
 end;
 
 end.

@@ -10,8 +10,8 @@ interface
 
 uses MassGeneral, StrengthCalculations;
 
-procedure CalcMassWedged(out SgMass: Double; var SheetWeights: TSheetWeights;
-  const Slg: TSlidegate);
+procedure CalcMassWedged(var Mass: TWeights; const Slg: TSlidegate;
+  const InputData: TInputData);
 
 implementation
 
@@ -183,7 +183,8 @@ begin
   end;
 end;
 
-procedure CalcWedgedDesign(out Des: TWedgedDesign; const Slg: TSlideGate);
+procedure CalcWedgedDesign(out Des: TWedgedDesign; const Slg: TSlideGate;
+  const InputData: TInputData);
 var
   MinGateDepth, CoverShelf1, CoverShelf2: Double;
 const
@@ -208,10 +209,22 @@ const
 begin
   Des := Default(TWedgedDesign);
 
-  Des.GateSheet := CalcGateSheet(Slg);
-  Des.EdgeSheet := EdgeSheet(Slg, Des.GateSheet);
-  Des.FrameSheet := FrameSheet(Slg, Des.GateSheet);
-  Des.EdgeSheet := Des.GateSheet;
+  if InputData.GateSheet.HasValue then
+  begin
+    SetSheetMetal(Des.GateSheet, InputData.GateSheet.Value);
+    Des.EdgeSheet := Des.GateSheet;
+  end
+  else
+  begin
+    Des.GateSheet := CalcGateSheet(Slg);
+    Des.EdgeSheet := EdgeSheet(Slg, Des.GateSheet);
+  end;
+
+  if InputData.FrameSheet.HasValue then
+    SetSheetMetal(Des.FrameSheet, InputData.FrameSheet.Value)
+  else
+    Des.FrameSheet := FrameSheet(Slg, Des.GateSheet);
+
   Des.GateShelf := CeilMultiple(Des.GateSheet.S + Des.GateSheet.R +
     WedgeWidth * Slg.WedgePairsCount + WedgesGap * (Slg.WedgePairsCount - 1), Mm(2));
 
@@ -578,16 +591,15 @@ begin
     BearingHouseMass * BearingHouseCount;
 end;
 
-procedure CalcMassWedged(out SgMass: Double; var SheetWeights: TSheetWeights;
-  const Slg: TSlidegate);
+procedure CalcMassWedged(var Mass: TWeights; const Slg: TSlidegate;
+  const InputData: TInputData);
 var
   Des: TWedgedDesign;
-  MassGate, MassFrame: Double;
 begin
-  CalcWedgedDesign(Des, Slg);
-  CalcMassGate(MassGate, SheetWeights, Slg, Des);
-  CalcMassFrame(MassFrame, SheetWeights, Slg, Des);
-  SgMass := MassGate + MassFrame + MassScrew(Slg) * Slg.ScrewsNumber;
+  CalcWedgedDesign(Des, Slg, InputData);
+  CalcMassGate(Mass.Gate, Mass.Sheet, Slg, Des);
+  CalcMassFrame(Mass.Frame, Mass.Sheet, Slg, Des);
+  Mass.Total := Mass.Gate + Mass.Frame + MassScrew(Slg) * Slg.ScrewsNumber;
 end;
 
 end.

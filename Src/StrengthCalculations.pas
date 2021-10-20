@@ -48,6 +48,8 @@ type
     BtwFrameTopAndDriveUnit: Double;
     HavePipeNodes: Boolean;
     ScrewsNumber: Integer;
+    FrameSheet: TNullableReal;
+    GateSheet: TNullableReal;
   end;
 
   TSlidegate = record
@@ -111,8 +113,8 @@ type
 
   TFuncSlidegateError = function(const Slg: TSlidegate; const Lang: TLang): string;
 
-function CalcSlidegate(out Slg: TSlidegate;
-  const InputData: TInputData): TFuncSlidegateError;
+procedure CalcSlidegate(out Slg: TSlidegate; const InputData: TInputData;
+  out Error: TFuncSlidegateError);
 
 function MinFrameHeight(const GateHeight: Double): Double;
 function MaxWay(const FrameHeight, GateHeight: Double): Double;
@@ -137,7 +139,7 @@ uses
 
 const
   TopBalkHeight = 0.2;  { Metre }
-  ScrewElast = 2.1e11;  { Pa }
+  ScrewElast = 2.0e11;  { Pa }
   ScrewFriction = 0.12;
   WedgeFriction = 0.12;
   SealingFriction = 0.5;
@@ -642,12 +644,12 @@ begin
     (ScrewDiam <= Mm(30));
 end;
 
-function CalcScrewAndDrive(var Slg: TSlidegate;
-  const InputData: TInputData): TFuncSlidegateError;
+procedure CalcScrewAndDrive(var Slg: TSlidegate; const InputData: TInputData;
+  out Error: TFuncSlidegateError);
 var
   MinActuatorTorque, BearingDiam, SlidingCoeff: Double;
 begin
-  Result := nil;
+  Error := nil;
 
   Slg.IsSmall := CalcIsSmall(Slg.SlgKind, Slg.FrameWidth, Slg.GateHeight,
     Slg.Screw.MajorDiam);
@@ -667,7 +669,10 @@ begin
     if (Slg.Gearbox = nil) and not ChooseGearbox(Slg.Gearbox,
       Slg.MinScrewTorque, Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox,
       Slg.GearboxNeed2InputShaft) then
-      Exit(@ErrorCantChooseGearbox);
+    begin
+      Error := @ErrorCantChooseGearbox;
+      Exit;
+    end;
     Slg.Revs := Slg.Revs * Slg.GearBox.Ratio;
   end;
 
@@ -677,7 +682,10 @@ begin
       if (Slg.Gearbox = nil) and not ChooseGearbox(Slg.Gearbox,
         Slg.MinScrewTorque, Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox,
         Slg.GearboxNeed2InputShaft) then
-        Exit(@ErrorCantChooseGearbox);
+      begin
+        Error := @ErrorCantChooseGearbox;
+        Exit;
+      end;
       Slg.CloseTorque := Slg.MinScrewTorque / Slg.Gearbox.Ratio * Slg.ScrewsNumber;
       Slg.OpenTorque := Slg.CloseTorque;
 
@@ -716,7 +724,10 @@ begin
         if not ChooseActuator(Slg.Actuator, MinActuatorTorque +
           DeltaOpen, Slg.IsScrewPullout, Slg.Screw, InputData.ModelActuator,
           Slg.SlgKind, Slg.MinSpeed, InputData.RecommendMinSpeed) then
-          Exit(@ErrorCantChooseActuator);
+        begin
+          Error := @ErrorCantChooseActuator;
+          Exit;
+        end;
       end;
       Slg.OpenTime := Slg.Revs / Slg.Actuator.Speed;
       Slg.CloseTorque := Max(Slg.Actuator.MinTorque, MinActuatorTorque);
@@ -774,7 +785,7 @@ begin
       Tmp := Raw;
       Inc(StdScrewIndex);
       SetScrewAndNut(Tmp.Screw, Tmp.Nut, StdScrewIndex, Tmp.IsScrewPullout);
-      Error := CalcScrewAndDrive(Tmp, InputData);
+      CalcScrewAndDrive(Tmp, InputData, Error);
       IsFounded := (Error = nil) and
         (CompareValue(Tmp.ScrewFoS, RecommendFoS, CompAccuracy) >= 0);
       if IsFounded then
@@ -797,7 +808,7 @@ begin
       Tmp := Raw;
       Dec(StdScrewIndex);
       SetScrewAndNut(Tmp.Screw, Tmp.Nut, StdScrewIndex, Tmp.IsScrewPullout);
-      Error := CalcScrewAndDrive(Tmp, InputData);
+      CalcScrewAndDrive(Tmp, InputData, Error);
       IsFounded := (Error = nil) and
         (CompareValue(Tmp.ScrewFoS, RecommendFoS, CompAccuracy) >= 0);
       if IsFounded then
@@ -811,14 +822,14 @@ begin
   Result := Ceil(Force / Anchor.RecomendShearLoad);
 end;
 
-function CalcSlidegate(out Slg: TSlidegate;
-  const InputData: TInputData): TFuncSlidegateError;
+procedure CalcSlidegate(out Slg: TSlidegate; const InputData: TInputData;
+  out Error: TFuncSlidegateError);
 var
   Raw: TSlidegate;
   StdScrewIndex: Integer;
 begin
   Slg := Default(TSlidegate);
-  Result := nil;
+  Error := nil;
 
   Slg.FrameWidth := InputData.FrameWidth;
   Slg.GateHeight := InputData.GateHeight;
@@ -910,7 +921,10 @@ begin
     StdScrewIndex := ChooseScrewByMinDiam(Slg.Screw, Slg.Nut,
       Slg.MinScrewMinorDiam, Slg.IsScrewPullout);
     if StdScrewIndex < 0 then
-      Exit(@ErrorCantChooseScrew);
+    begin
+      Error := @ErrorCantChooseScrew;
+      Exit;
+    end;
 
     (* if ((Slg.DriveKind = OpenCloseActuator) or (Slg.DriveKind = RegulActuator)) and
       (InputData.Actuator <> nil) then
@@ -933,8 +947,8 @@ begin
   end;
 
   Raw := Slg;
-  Result := CalcScrewAndDrive(Slg, InputData);
-  if Result <> nil then
+  CalcScrewAndDrive(Slg, InputData, Error);
+  if Error <> nil then
     Exit;
   if not (InputData.ScrewDiam.HasValue and InputData.ScrewPitch.HasValue) then
   begin

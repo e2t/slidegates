@@ -8,10 +8,6 @@ unit StrConvert;
 
 interface
 
-function TwiceTryStrToFloat(const S: string; out Value: Double): Boolean;
-
-implementation
-
 uses SysUtils;
 
 const
@@ -40,11 +36,21 @@ const
     'Thursday', 'Friday', 'Saturday');
     TwoDigitYearCenturyWindow: 50; );
 
-function TwiceTryStrToFloat(const S: string; out Value: Double): Boolean;
+procedure ConvertStrToFloat(const S: string; out IsNumber: Boolean; out Value: Double);
+procedure ConvertStrToInt(const S: string; out IsNumber: Boolean; out Value: Integer);
+
+implementation
+
+procedure ConvertStrToFloat(const S: string; out IsNumber: Boolean; out Value: Double);
 begin
-  Result := TryStrToFloat(S, Value);
-  if not Result then
-    Result := TryStrToFloat(S, Value, TrueDefaultFormatSettings);
+  IsNumber := TryStrToFloat(S, Value);
+  if not IsNumber then
+    IsNumber := TryStrToFloat(S, Value, TrueDefaultFormatSettings);
+end;
+
+procedure ConvertStrToInt(const S: string; out IsNumber: Boolean; out Value: Integer);
+begin
+  IsNumber := TryStrToInt(S, Value);
 end;
 
 end.

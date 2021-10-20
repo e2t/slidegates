@@ -26,6 +26,8 @@ type
     CheckBoxBracketWithoutPipeNodes: TCheckBox;
     ComboBoxRegulActuator: TComboBox;
     ComboBoxBevelGearbox: TComboBox;
+    ComboBoxFrameSheet: TComboBox;
+    ComboBoxGateSheet: TComboBox;
     ComboBoxSpurGearbox: TComboBox;
     ComboBoxOpenCloseActuator: TComboBox;
     ComboBoxScrew: TComboBox;
@@ -52,6 +54,8 @@ type
     Label20: TLabel;
     Label21: TLabel;
     Label22: TLabel;
+    Label23: TLabel;
+    Label24: TLabel;
     Label5: TLabel;
     LabelHandWheel: TLabel;
     Label10: TLabel;

@@ -20,8 +20,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="2"/>
-      <MinorVersionNr Value="3"/>
-      <BuildNr Value="6"/>
+      <MinorVersionNr Value="4"/>
+      <BuildNr Value="7"/>
       <Language Value="0419"/>
       <StringTable FileDescription="Расчет щитовых затворов" InternalName="Slidegate" LegalCopyright="Zero-Clause BSD (0BSD)" OriginalFilename="Slidegate.exe" ProductName="Slidegate"/>
     </VersionInfo>
@@ -154,11 +154,6 @@
       <Debugging>
         <UseExternalDbgSyms Value="True"/>
       </Debugging>
-      <Options>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
-      </Options>
     </Linking>
     <Other>
       <CompilerMessages>

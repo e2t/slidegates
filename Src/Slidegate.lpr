@@ -26,6 +26,9 @@ uses {$IFDEF UNIX} {$IFDEF UseCThreads}
 
 begin
   RequireDerivedFormResource := True;
+  {$IFDEF WINDOWS} {$WARNINGS OFF}
+  Application.MainFormOnTaskBar := True;
+  {$WARNINGS ON} {$ENDIF}
   Application.Scaled := True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
