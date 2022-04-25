@@ -74,3 +74,4 @@ lib/
 *.dbg
 Dry/*
 !Dry/*.pas
+*.ini

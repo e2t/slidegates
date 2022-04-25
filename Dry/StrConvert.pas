@@ -8,7 +8,8 @@ unit StrConvert;
 
 interface
 
-uses SysUtils;
+uses
+  SysUtils, LazUnicode;
 
 const
   TrueDefaultFormatSettings: TFormatSettings = (
@@ -38,6 +39,7 @@ const
 
 procedure ConvertStrToFloat(const S: string; out IsNumber: Boolean; out Value: Double);
 procedure ConvertStrToInt(const S: string; out IsNumber: Boolean; out Value: Integer);
+function FirstLetterUpperCase(const S: string): string;
 
 implementation
 
@@ -51,6 +53,15 @@ end;
 procedure ConvertStrToInt(const S: string; out IsNumber: Boolean; out Value: Integer);
 begin
   IsNumber := TryStrToInt(S, Value);
+end;
+
+function FirstLetterUpperCase(const S: string): string;
+var
+  FirstLetter: string;
+begin
+  FirstLetter := CodePointCopy(S, 1, 1);
+  Result := Format('%s%s', [UnicodeUpperCase(unicodestring(FirstLetter)),
+    CodePointCopy(S, 2, CodePointLength(S) - 1)]);
 end;
 
 end.

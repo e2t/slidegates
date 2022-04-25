@@ -142,9 +142,9 @@ function NutDesgination(const Nut: TNut; const IsRightHanded: Boolean;
   const Lang: TLang): string;
 begin
   if IsRightHanded then
-    Result := Nut.DesignationR + L10n[78, Lang]
+    Result := Nut.DesignationR + L10nOut[78, Lang]
   else
-    Result := Nut.DesignationL + L10n[79, Lang];
+    Result := Nut.DesignationL + L10nOut[79, Lang];
 end;
 
 initialization

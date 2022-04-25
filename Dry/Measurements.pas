@@ -22,6 +22,7 @@ function KgPerM3(const KilogramPerMetre3: Double): Double;
 function kN(const KiloNewton: Double): Double;
 function MPa(const MegaPascals: Double): Double;
 function Deg(const Degrees: Double): Double;
+function LitrePerSec(const Lps: Double): Double;
 
 { Output }
 function ToMm(const Meter: Double): Double;
@@ -30,6 +31,9 @@ function ToKw(const Watt: Double): Double;
 function ToRpm(const RevPerSec: Double): Double;
 function ToMin(const Second: Double): Double;
 function ToKgf(const Newton: Double): Double;
+function ToDeg(const Radians: Double): Double;
+function ToPct(const Value: Double): Double;
+function ToMPa(const Pascals: Double): Double;
 
 implementation
 
@@ -126,10 +130,29 @@ begin
   Result := Newton / GravAcc;
 end;
 
+function ToDeg(const Radians: Double): Double;
+begin
+  Result := RadToDeg(Radians);
+end;
+
+function ToPct(const Value: Double): Double;
+begin
+  Result := Value * 100;
+end;
+
+function LitrePerSec(const Lps: Double): Double;
+begin
+  Result := Lps / 1e3;
+end;
+
 function kN(const KiloNewton: Double): Double; { to newton }
 begin
   Result := KiloNewton * 1e3;
 end;
 
-end.
+function ToMPa(const Pascals: Double): Double;
+begin
+  Result := Pascals / 1e6;
+end;
 
+end.

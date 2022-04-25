@@ -24,6 +24,8 @@ type
     CheckBoxThreeWedgePairs: TCheckBox;
     CheckBoxRackWithoutPipeNodes: TCheckBox;
     CheckBoxBracketWithoutPipeNodes: TCheckBox;
+    Combobox1: Tcombobox;
+    Combobox2: Tcombobox;
     ComboBoxRegulActuator: TComboBox;
     ComboBoxBevelGearbox: TComboBox;
     ComboBoxFrameSheet: TComboBox;
@@ -79,7 +81,6 @@ type
     PageControlSlgKind: TPageControl;
     Panel1: TPanel;
     RadioButtonOpenClose: TRadioButton;
-    RadioButtonLangEng: TRadioButton;
     RadioButtonRegulConcrete: TRadioButton;
     RadioButtonRegulChannel: TRadioButton;
     RadioButtonRegulWall: TRadioButton;
@@ -95,7 +96,6 @@ type
     RadioButtonNonPullout: TRadioButton;
     RadioButtonRegul: TRadioButton;
     RadioButtonPullout: TRadioButton;
-    RadioButtonLangRus: TRadioButton;
     TabSheetOnFrame: TTabSheet;
     TabSheetOnRack: TTabSheet;
     TabSheetOnBracket: TTabSheet;
@@ -106,9 +106,10 @@ type
     TabSheetDeep: TTabSheet;
     TabSheetFlow: TTabSheet;
     procedure ButtonRunClick(Sender: TObject);
+    procedure Combobox1change(Sender: TObject);
+    procedure Combobox2change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure RadioButtonLangRusChange(Sender: TObject);
   private
 
   public
@@ -138,14 +139,19 @@ begin
     Run();
 end;
 
-procedure TMainForm.RadioButtonLangRusChange(Sender: TObject);
-begin
-  RePrintResults();
-end;
-
 procedure TMainForm.ButtonRunClick(Sender: TObject);
 begin
   Run();
+end;
+
+procedure Tmainform.Combobox1change(Sender: TObject);
+begin
+  ReTranslateGui;
+end;
+
+procedure Tmainform.Combobox2change(Sender: TObject);
+begin
+  RePrintResults;
 end;
 
 end.

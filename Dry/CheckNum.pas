@@ -20,6 +20,8 @@ function IsLessEq(const Smaller, Larger: Double; const Accuracy: Double = CompAc
 function IsThis(const Condition: Boolean; const Message: string): Boolean;
 function IsPositiveInt(const Value: Integer): Boolean;
 function IsPositiveFloat(const Value: Double): Boolean;
+function IsPositiveOrZeroFloat(const Value: Double): Boolean;
+function IsNonZeroFloat(const Value: Double): Boolean;
 
 implementation
 
@@ -43,12 +45,12 @@ end;
 
 function IsLess(const Smaller, Larger: Double; const Accuracy: Double = CompAccuracy): Boolean;
 begin
-  Result := CompareValue(Larger, Smaller, Accuracy) < 0;
+  Result := CompareValue(Smaller, Larger, Accuracy) < 0;
 end;
 
 function IsLessEq(const Smaller, Larger: Double; const Accuracy: Double = CompAccuracy): Boolean;
 begin
-  Result := CompareValue(Larger, Smaller, Accuracy) <= 0;
+  Result := CompareValue(Smaller, Larger, Accuracy) <= 0;
 end;
 
 function IsThis(const Condition: Boolean; const Message: string): Boolean;
@@ -60,13 +62,22 @@ end;
 
 function IsPositiveInt(const Value: Integer): Boolean;
 begin
-  Result := IsThis(Value > 0,
-    'Ожидается целое число больше нуля.');
+  Result := IsThis(Value > 0, 'Ожидается целое число больше нуля.');
 end;
 
 function IsPositiveFloat(const Value: Double): Boolean;
 begin
   Result := IsThis(IsMore(Value, 0), 'Ожидается число больше нуля.');
+end;
+
+function IsPositiveOrZeroFloat(const Value: Double): Boolean;
+begin
+  Result := IsThis(IsMoreEq(Value, 0), 'Ожидается число не меньше нуля.');
+end;
+
+function IsNonZeroFloat(const Value: Double): Boolean;
+begin
+  Result := IsThis(not IsEqual(Value, 0), 'Ожидается число, не равное нулю.');
 end;
 
 end.

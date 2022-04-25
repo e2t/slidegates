@@ -20,7 +20,7 @@ uses {$IFDEF UNIX} {$IFDEF UseCThreads}
   MassFlow,
   ProgramInfo,
   Equations,
-  Anchors;
+  Anchors, IniFileUtils;
 
 {$R *.res}
 

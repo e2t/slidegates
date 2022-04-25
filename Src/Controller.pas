@@ -8,15 +8,19 @@ unit Controller;
 
 interface
 
+uses
+  Localization;
+
 procedure Run();
 procedure MainFormInit();
 procedure RePrintResults();
+procedure ReTranslateGui();
 
 implementation
 
 uses
   DriveUnits, GuiMainForm, Screws, Measurements, StrengthCalculations,
-  Localization, SysUtils, Nullable, StdCtrls, Classes, Controls,
+  SysUtils, Nullable, StdCtrls, Classes, Controls, IniFileUtils,
   GuiHelper, MassGeneral, ProgramInfo, Equations, Fgl;
 
 type
@@ -29,6 +33,7 @@ type
   end;
   TChoiceModelActuator = specialize TFPGMap<string, TActuatorWithControl>;
   TChoiceModelGearbox = specialize TFPGMap<string, TModelGearbox>;
+  TChoiceLang = specialize TFPGMap<string, TLang>;
 
 var
   ModelOpenCloseActuators, ModelRegulActuators: TChoiceModelActuator;
@@ -36,7 +41,94 @@ var
   ModelBevelGearboxes, ModelSpurGearboxes: TChoiceModelGearbox;
   BevelGearboxes, SpurGearboxes: TArrayGearbox;
   OpenCloseActuatorControlBlocks, RegulActuatorControlBlocks: TArrayControlBlock;
-  LabelHandWheelText: string;
+  GuiLangs, OutLangs: TChoiceLang;
+
+procedure ReTranslateGui();
+var
+  Lang: TLang;
+begin
+  with MainForm do
+  begin
+    Lang := GuiLangs[ComboBox1.Text];
+
+    TabSheetSurf.Caption := L10nGui[0, Lang];
+    Label10.Caption := L10nGui[1, Lang];
+    Label7.Caption := L10nGui[2, Lang];
+    GroupBox3.Caption := L10nGui[3, Lang];
+    RadioButtonSurfConcrete.Caption := L10nGui[4, Lang];
+    RadioButtonSurfChannel.Caption := L10nGui[5, Lang];
+    RadioButtonSurfWall.Caption := L10nGui[6, Lang];
+
+    TabSheetDeep.Caption := L10nGui[7, Lang];
+    Label11.Caption := L10nGui[8, Lang];
+    Label8.Caption := L10nGui[9, Lang];
+    GroupBox4.Caption := L10nGui[3, Lang];
+    RadioButtonDeepWall.Caption := L10nGui[6, Lang];
+    RadioButtonDeepConcrete.Caption := L10nGui[10, Lang];
+    RadioButtonDeepFlange.Caption := L10nGui[11, Lang];
+    CheckBoxCounterFlange.Caption := L10nGui[12, Lang];
+    RadioButtonDeepTwoFlange.Caption := L10nGui[13, Lang];
+
+    TabSheetFlow.Caption := L10nGui[14, Lang];
+    Label12.Caption := L10nGui[15, Lang];
+    Label9.Caption := L10nGui[2, Lang];
+    GroupBox2.Caption := L10nGui[3, Lang];
+    RadioButtonRegulConcrete.Caption := L10nGui[16, Lang];
+    RadioButtonRegulChannel.Caption := L10nGui[17, Lang];
+    RadioButtonRegulWall.Caption := L10nGui[6, Lang];
+    Label13.Caption := L10nGui[18, Lang];
+
+    GroupBox6.Caption := L10nGui[19, Lang];
+    Label2.Caption := L10nGui[20, Lang];
+    Label3.Caption := L10nGui[21, Lang];
+    Label4.Caption := L10nGui[22, Lang];
+    Label6.Caption := L10nGui[23, Lang];
+    GroupBox5.Caption := L10nGui[24, Lang];
+    RadioButtonNonPullout.Caption := L10nGui[25, Lang];
+    RadioButtonPullout.Caption := L10nGui[26, Lang];
+    CheckBoxTwoScrews.Caption := L10nGui[27, Lang];
+
+    TabSheetActuator.Caption := L10nGui[35, Lang];
+    RadioButtonOpenClose.Caption := L10nGui[36, Lang];
+    RadioButtonRegul.Caption := L10nGui[37, Lang];
+    Label18.Caption := L10nGui[38, Lang];
+    Label17.Caption := L10nGui[39, Lang];
+
+    TabSheetGearbox.Caption := L10nGui[40, Lang];
+    RadioButtonBevelGearbox.Caption := L10nGui[41, Lang];
+    RadioButtonSpurGearbox.Caption := L10nGui[42, Lang];
+    Label16.Caption := L10nGui[43, Lang];
+
+    TabSheetHandWheel.Caption := L10nGui[44, Lang];
+    LabelHandWheel.Caption := Format(L10nGui[45, Lang], [ToMm(HandWheels[0].Diameter),
+      ToMm(HandWheels[High(HandWheels)].Diameter), ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
+
+    Label1.Caption := L10nGui[46, Lang];
+    TabSheetOnFrame.Caption := L10nGui[47, Lang];
+    Label19.Caption := L10nGui[48, Lang];
+
+    TabSheetOnRack.Caption := L10nGui[49, Lang];
+    Label21.Caption := L10nGui[50, Lang];
+    Label5.Caption := L10nGui[51, Lang];
+    CheckBoxRackWithoutPipeNodes.Caption := L10nGui[52, Lang];
+
+    TabSheetOnBracket.Caption := L10nGui[53, Lang];
+    Label22.Caption := L10nGui[54, Lang];
+    Label20.Caption := L10nGui[51, Lang];
+    CheckBoxBracketWithoutPipeNodes.Caption := L10nGui[52, Lang];
+
+    GroupBox7.Caption := L10nGui[28, Lang];
+    Label14.Caption := L10nGui[29, Lang];
+    Label15.Caption := L10nGui[30, Lang];
+    Label23.Caption := L10nGui[31, Lang];
+    Label24.Caption := L10nGui[32, Lang];
+    CheckBoxWithoutFrameNodes.Caption := L10nGui[33, Lang];
+    CheckBoxThreeWedgePairs.Caption := L10nGui[34, Lang];
+
+    ButtonRun.Caption := L10nGui[55, Lang];
+  end;
+  SetLangGui(Lang);
+end;
 
 function ActuatorName(const Actuator: TActuator;
   const ControlBlock: TControlBlock): string;
@@ -51,7 +143,7 @@ end;
 function ItemActuator(const Actuator: TActuator;
   const ControlBlock: TControlBlock): string;
 begin
-  Result := Format('%S (%S)  %S об/мин  %S кВт',
+  Result := Format('%S (%S)  %S rpm  %S kW',
     [ActuatorName(Actuator, ControlBlock), Actuator.Duty,
     FormatFloat('0.###', ToRpm(Actuator.Speed)), FormatFloat('0.0##',
     ToKw(Actuator.Power))]);
@@ -97,6 +189,20 @@ begin
     end;
 end;
 
+procedure ComboBoxLangFill(
+  const ComboBox: TComboBox; const ChoiceLang: TChoiceLang; const Lang: TLang);
+var
+  I, Index: Integer;
+begin
+  for I := 0 to ChoiceLang.Count - 1 do
+    ComboBox.Items.Add(ChoiceLang.Keys[I]);
+
+  Index := ChoiceLang.IndexOfData(Lang);
+  if Index < 0 then
+    Index := 0;
+  ComboBox.ItemIndex := Index;
+end;
+
 procedure MainFormInit();
 var
   ScrewSet: TBuyableScrewSet;
@@ -104,7 +210,12 @@ var
 begin
   MainForm.Caption := GetProgramTitle;
   MainForm.ActiveControl := MainForm.EditFrameWidth;
-  MainForm.LabelHandWheel.Caption := LabelHandWheelText;
+  MainForm.Constraints.MinHeight := MainForm.Height;
+  MainForm.Constraints.MinWidth := MainForm.Width;
+
+  ComboBoxLangFill(MainForm.ComboBox1, GuiLangs, GetLangGui);
+  ReTranslateGui;
+  ComboBoxLangFill(MainForm.ComboBox2, OutLangs, GetLangOut);
 
   { Приводы Открыть-Закрыть }
   for I := 0 to ModelOpenCloseActuators.Count - 1 do
@@ -179,20 +290,17 @@ end;
 
 function DefineLang(): TLang;
 begin
-  if MainForm.RadioButtonLangRus.Checked then
-    Result := Rus
-  else if MainForm.RadioButtonLangEng.Checked then
-    Result := Eng;
+  Result := OutLangs[MainForm.ComboBox2.Text];
 end;
 
 function ErrorIncorrectValue(const Lang: TLang): string;
 begin
-  Result := L10n[62, Lang];
+  Result := L10nOut[62, Lang];
 end;
 
 function ErrorNonBevelGearboxWithTwoScrews(const Lang: TLang): string;
 begin
-  Result := L10n[74, Lang];
+  Result := L10nOut[74, Lang];
 end;
 
 procedure GetGearboxOrModel(var ModelGearbox: TModelGearbox; var Gearbox: TGearbox);
@@ -529,70 +637,70 @@ begin
   end;
 end;
 
-function Designation(const Slg: TSlidegate; const Lang: Integer): string;
+function Designation(const Slg: TSlidegate; const Lang: TLang): string;
 var
   DsgKind, DsgControl: string;
 begin
   case Slg.SlgKind of
-    Deep: DsgKind := L10n[3, Lang];
-    Surf: DsgKind := L10n[2, Lang];
+    Deep: DsgKind := L10nOut[3, Lang];
+    Surf: DsgKind := L10nOut[2, Lang];
     else
       if Slg.InstallKind = Wall then
-        DsgKind := L10n[5, Lang]
+        DsgKind := L10nOut[5, Lang]
       else
-        DsgKind := L10n[4, Lang]
+        DsgKind := L10nOut[4, Lang]
   end;
 
   case Slg.DriveKind of
     OpenCloseActuator, RegulActuator:
-      DsgControl := L10n[6, Lang];
+      DsgControl := L10nOut[6, Lang];
     else
-      DsgControl := L10n[7, Lang];
+      DsgControl := L10nOut[7, Lang];
   end;
 
-  Result := L10n[8, Lang] + DsgKind + DsgControl + ' ' +
+  Result := L10nOut[8, Lang] + DsgKind + DsgControl + ' ' +
     FormatFloat('0.0##', Slg.FrameWidth) + 'x' +
     FormatFloat('0.0##', Slg.FrameHeight) + '(' +
     FormatFloat('0.0##', Slg.GateHeight) + ')';
   if Slg.IsSmall then
-    Result := Result + L10n[85, Lang];
+    Result := Result + L10nOut[85, Lang];
 end;
 
 procedure OutputAumaActuator(var Put: TStringList; const Slg: TSlidegate;
   const Lang: TLang);
 begin
-  Put.Append(Format(L10n[30, Lang], [ActuatorName(Slg.Actuator, Slg.ControlBlock)]));
+  Put.Append(Format(L10nOut[30, Lang], [ActuatorName(Slg.Actuator, Slg.ControlBlock)]));
   if Slg.ControlBlock <> NoBlock then
-    Put.Append(Format(L10n[55, Lang],
+    Put.Append(Format(L10nOut[55, Lang],
       [Slg.Actuator.ControlBlockNames[Slg.ControlBlock]]));
-  Put.Append(Format(L10n[31, Lang], [ToRpm(Slg.Actuator.Speed)]));
-  Put.Append(Format(L10n[32, Lang], [ToKw(Slg.Actuator.Power)]));
-  Put.Append(Format(L10n[36, Lang], [Slg.Actuator.Duty]));
-  Put.Append(Format(L10n[33, Lang], [Slg.Actuator.MinTorque, Slg.Actuator.MaxTorque]));
-  Put.Append(Format(L10n[34, Lang], [Slg.Actuator.Flange]));
-  Put.Append(Format(L10n[35, Lang], [Slg.Sleeve]));
-  Put.Append(L10n[37, Lang]);
+  Put.Append(Format(L10nOut[31, Lang], [ToRpm(Slg.Actuator.Speed)]));
+  Put.Append(Format(L10nOut[32, Lang], [ToKw(Slg.Actuator.Power)]));
+  Put.Append(Format(L10nOut[36, Lang], [Slg.Actuator.Duty]));
+  Put.Append(Format(L10nOut[33, Lang], [Slg.Actuator.MinTorque, Slg.Actuator.MaxTorque]));
+  Put.Append(Format(L10nOut[34, Lang], [Slg.Actuator.Flange]));
+  Put.Append(Format(L10nOut[35, Lang], [Slg.Sleeve]));
+  Put.Append(L10nOut[37, Lang]);
   if Slg.SlgKind = Flow then
-    Put.Append(Format(L10n[64, Lang], [Slg.OpenTorque]))
+    Put.Append(Format(L10nOut[64, Lang], [Slg.OpenTorque]))
   else
-    Put.Append(Format(L10n[38, Lang], [Slg.OpenTorque, Slg.CloseTorque]));
-  Put.Append(Format(L10n[39, Lang], [ToMin(Slg.OpenTime), Slg.OpenTime, Slg.Revs]));
-  Put.Append(Format(L10n[40, Lang], [Slg.MinDriveUnitTemperature,
+    Put.Append(Format(L10nOut[38, Lang], [Slg.OpenTorque, Slg.CloseTorque]));
+  Put.Append(Format(L10nOut[39, Lang], [ToMin(Slg.OpenTime), Slg.OpenTime, Slg.Revs]));
+  Put.Append(Format(L10nOut[40, Lang], [Slg.MinDriveUnitTemperature,
     Slg.MaxDriveUnitTemperature]));
-  Put.Append(L10n[41, Lang]);
-  Put.Append(L10n[42, Lang]);
-  Put.Append(L10n[43, Lang]);
-  Put.Append(L10n[44, Lang]);
-  Put.Append(L10n[45, Lang]);
-  Put.Append(L10n[46, Lang]);
-  Put.Append(L10n[47, Lang]);
-  Put.Append(L10n[48, Lang]);
-  Put.Append(L10n[49, Lang]);
-  Put.Append(L10n[50, Lang]);
-  Put.Append(L10n[51, Lang]);
-  Put.Append(L10n[52, Lang]);
-  Put.Append(L10n[53, Lang]);
-  Put.Append(L10n[54, Lang]);
+  Put.Append(L10nOut[41, Lang]);
+  Put.Append(L10nOut[42, Lang]);
+  Put.Append(L10nOut[43, Lang]);
+  Put.Append(L10nOut[44, Lang]);
+  Put.Append(L10nOut[45, Lang]);
+  Put.Append(L10nOut[46, Lang]);
+  Put.Append(L10nOut[47, Lang]);
+  Put.Append(L10nOut[48, Lang]);
+  Put.Append(L10nOut[49, Lang]);
+  Put.Append(L10nOut[50, Lang]);
+  Put.Append(L10nOut[51, Lang]);
+  Put.Append(L10nOut[52, Lang]);
+  Put.Append(L10nOut[53, Lang]);
+  Put.Append(L10nOut[54, Lang]);
   Put.Append('');
 end;
 
@@ -600,9 +708,9 @@ procedure OutputHandWheel(var Put: TStringList; const HandWheel: THandWheel;
   const Lang: TLang);
 begin
   if HandWheel.Name = '' then
-    Put.Append(Format(L10n[60, Lang], [ToMm(HandWheel.Diameter)]))
+    Put.Append(Format(L10nOut[60, Lang], [ToMm(HandWheel.Diameter)]))
   else
-    Put.Append(Format(L10n[61, Lang], [HandWheel.Name]));
+    Put.Append(Format(L10nOut[61, Lang], [HandWheel.Name]));
   Put.Append('');
 end;
 
@@ -612,49 +720,73 @@ var
   DriveName: string;
 begin
   case Grb.GearboxType of
-    TGearboxType.AumaGK, TGearboxType.MechanicRZAM:
-      DriveName := Format(L10n[58, Lang], [Grb.Brand, Grb.Name]);
+    TGearboxType.AumaGK:
+      DriveName := Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name]);
     TGearboxType.AumaGST:
-      DriveName := Format(L10n[56, Lang], [Grb.Brand, Grb.Name]);
+      DriveName := Format(L10nOut[56, Lang], [Grb.Brand, Grb.Name]);
   end;
   if ScrewsNumber > 1 then
     DriveName := DriveName + ' (x2)';
   Put.Append(DriveName);
-  Put.Append(Format(L10n[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+  Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
   if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10n[83, Lang], [ToMm(Grb.HandWheelDiam)]));
-  Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
-  Put.Append(Format(L10n[34, Lang], [Grb.Flange]));
-  Put.Append(Format(L10n[35, Lang], [Sleeve]));
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
+  Put.Append(Format(L10nOut[34, Lang], [Grb.Flange]));
+  Put.Append(Format(L10nOut[35, Lang], [Sleeve]));
+  Put.Append('');
+end;
+
+procedure OutputRZAMGearbox(var Put: TStringList; const Grb: TGearbox;
+  const Lang: TLang; const Sleeve: string; const ScrewsNumber: Integer;
+  const IsScrewPullout: Boolean);
+var
+  DriveName: string;
+begin
+  DriveName := Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name]);
+  if ScrewsNumber > 1 then
+    DriveName := DriveName + ' (x2)';
+  Put.Append(DriveName);
+  Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+  if Grb.HandWheelDiam > 0 then
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
+  Put.Append(Format(L10nOut[34, Lang], [Grb.Flange]));
+  Put.Append(Format(L10nOut[35, Lang], [Sleeve]));
+  if not IsScrewPullout then
+    Put.Append(L10nOut[84, Lang]);
+  Put.Append(L10nOut[86, Lang]);
+  Put.Append(L10nOut[87, Lang]);
+  Put.Append(L10nOut[88, Lang]);
   Put.Append('');
 end;
 
 procedure OutputRotorkGearbox(var Put: TStringList; const Grb: TGearbox;
   const Lang: TLang; const Sleeve: string; const Need2InputShaft: Boolean);
 begin
-  Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name]));
+  Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name]));
   if Need2InputShaft then
-    Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name +
+    Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name +
       ' DUAL INPUT BEVEL GEARCASE (180)']));
-  Put.Append(Format(L10n[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+  Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
   if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10n[83, Lang], [ToMm(Grb.HandWheelDiam)]));
-  Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
-  Put.Append(Format(L10n[34, Lang], [Grb.Flange]));
-  Put.Append(Format(L10n[35, Lang], [Sleeve]));
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
+  Put.Append(Format(L10nOut[34, Lang], [Grb.Flange]));
+  Put.Append(Format(L10nOut[35, Lang], [Sleeve]));
   Put.Append('');
 end;
 
 procedure OutputTramecGearbox(var Put: TStringList; const Grb: TGearbox;
   const Lang: TLang; const Need2InputShaft: Boolean);
 begin
-  Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name]));
+  Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name]));
   if Need2InputShaft then
-    Put.Append(Format(L10n[58, Lang], [Grb.Brand, Grb.Name + ' seA']));
-  Put.Append(Format(L10n[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
+    Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name + ' seA']));
+  Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
   if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10n[83, Lang], [ToMm(Grb.HandWheelDiam)]));
-  Put.Append(Format(L10n[59, Lang], [Grb.MaxTorque]));
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
   Put.Append('');
 end;
 
@@ -662,10 +794,10 @@ procedure OutputScrew(var Put: TStringList; const IsRightHandedScrew: Boolean;
   const Screw: TScrew; const ThreadLength: Double; const Lang: TLang);
 begin
   if IsRightHandedScrew then
-    Put.Append(Format(L10n[11, Lang], [L10n[9, Lang], Screw.DesignationR,
+    Put.Append(Format(L10nOut[11, Lang], [L10nOut[9, Lang], Screw.DesignationR,
       ToMm(Screw.MajorDiam), ThreadLength]))
   else
-    Put.Append(Format(L10n[11, Lang], [L10n[10, Lang], Screw.DesignationL,
+    Put.Append(Format(L10nOut[11, Lang], [L10nOut[10, Lang], Screw.DesignationL,
       ToMm(Screw.MajorDiam), ThreadLength]));
 end;
 
@@ -675,7 +807,7 @@ var
   I: Integer;
 begin
   for I := 0 to SheetWeights.Count - 1 do
-    Put.Append(Format(L10n[63, Lang], [ToMm(SheetWeights.Keys[I]),
+    Put.Append(Format(L10nOut[63, Lang], [ToMm(SheetWeights.Keys[I]),
       SheetWeights.Data[I]]));
 
   OutputScrew(Put, Slg.IsRightHandedScrew, Slg.Screw, Slg.ThreadLength, Lang);
@@ -685,27 +817,27 @@ begin
   if (not Slg.IsScrewPullout) or (Slg.DriveKind = HandWheel) then
   begin
     if Slg.Nut.DesignationL = '' then
-      Put.Append(L10n[13, Lang])
+      Put.Append(L10nOut[13, Lang])
     else
     begin
       if Slg.Nut.IsSquare then
       begin
-        Put.Append(Format(L10n[12, Lang],
+        Put.Append(Format(L10nOut[12, Lang],
           [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew, Lang),
           ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
         if (Slg.ScrewsNumber > 1) then
-          Put.Append(Format(L10n[12, Lang],
+          Put.Append(Format(L10nOut[12, Lang],
             [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew2, Lang),
             ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.SectionSize),
             ToMm(Slg.Nut.Length)]));
       end
       else
       begin
-        Put.Append(Format(L10n[66, Lang],
+        Put.Append(Format(L10nOut[66, Lang],
           [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew, Lang),
           ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
         if (Slg.ScrewsNumber > 1) then
-          Put.Append(Format(L10n[66, Lang],
+          Put.Append(Format(L10nOut[66, Lang],
             [NutDesgination(Slg.Nut, Slg.IsRightHandedScrew2, Lang),
             ToMm(Slg.Nut.SectionSize), ToMm(Slg.Nut.Length)]));
       end;
@@ -713,10 +845,10 @@ begin
   end;
 
   if Slg.BronzeWedgeStripLength > 0 then
-    Put.Append(Format(L10n[14, Lang], [Slg.BronzeWedgeStrip,
+    Put.Append(Format(L10nOut[14, Lang], [Slg.BronzeWedgeStrip,
       ToMm(Slg.BronzeWedgeStripLength)]));
 
-  Put.Append(Format(L10n[75, Lang], [Slg.SealingLength]));
+  Put.Append(Format(L10nOut[75, Lang], [Slg.SealingLength]));
   Put.Append('');
 end;
 
@@ -734,33 +866,33 @@ begin
   Result.Append(Designation(Slg, Lang));
   case Slg.InstallKind of
     Concrete:
-      SInstallKind := L10n[67, Lang];
+      SInstallKind := L10nOut[67, Lang];
     Channel:
-      SInstallKind := L10n[68, Lang];
+      SInstallKind := L10nOut[68, Lang];
     Wall:
-      SInstallKind := L10n[69, Lang];
+      SInstallKind := L10nOut[69, Lang];
     Flange:
-      SInstallKind := L10n[70, Lang];
+      SInstallKind := L10nOut[70, Lang];
     TwoFlange:
-      SInstallKind := L10n[71, Lang];
+      SInstallKind := L10nOut[71, Lang];
   end;
   case Slg.DriveLocation of
     OnRack:
-      SDriveLocation := L10n[80, Lang];
+      SDriveLocation := L10nOut[80, Lang];
     OnBracket:
-      SDriveLocation := L10n[81, Lang];
+      SDriveLocation := L10nOut[81, Lang];
   end;
   Result.Append(SInstallKind + SDriveLocation);
   if Slg.IsScrewPullout then
-    ScrewDescription := L10n[73, Lang]
+    ScrewDescription := L10nOut[73, Lang]
   else
-    ScrewDescription := L10n[72, Lang];
+    ScrewDescription := L10nOut[72, Lang];
   if Slg.ScrewsNumber > 1 then
     ScrewDescription := ScrewDescription + ' (x2)';
   Result.Append(ScrewDescription);
-  Result.Append(Format(L10n[0, Lang], [Slg.HydrHead]));
-  Result.Append(Format(L10n[1, Lang], [Mass.Total, Mass.Frame, Mass.Gate]));
-  Result.Append(Format(L10n[65, Lang], [Slg.Leakage]));
+  Result.Append(Format(L10nOut[0, Lang], [Slg.HydrHead]));
+  Result.Append(Format(L10nOut[1, Lang], [Mass.Total, Mass.Frame, Mass.Gate]));
+  Result.Append(Format(L10nOut[65, Lang], [Slg.Leakage]));
   Result.Append('');
 
   if Slg.Actuator <> nil then
@@ -772,39 +904,42 @@ begin
     else if Slg.Gearbox.GearboxType = TGearboxType.RotorkIB then
       OutputRotorkGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve,
         Slg.GearboxNeed2InputShaft)
+    else if Slg.Gearbox.GearboxType = TGearboxType.MechanicRZAM then
+      OutputRZAMGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber,
+        Slg.IsScrewPullout)
     else
       OutputAumaGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber);
   end;
   if Slg.HandWheel <> nil then
     OutputHandWheel(Result, Slg.HandWheel, Lang);
 
-  Result.Append(Header(L10n[77, Lang]));
+  Result.Append(Header(L10nOut[77, Lang]));
   OutputOfficeMemo(Result, Slg, Mass.Sheet, Lang);
 
-  Result.Append(Format(L10n[15, Lang], [Slg.Screw.SizeToStr,
+  Result.Append(Format(L10nOut[15, Lang], [Slg.Screw.SizeToStr,
     FormatFloat('0.#', ToMm(Slg.Screw.MinorDiam)), FormatFloat('0.0##', Slg.ScrewFoS)]));
-  Result.Append(Format(L10n[17, Lang], [Slg.ScrewSlenderness]));
+  Result.Append(Format(L10nOut[17, Lang], [Slg.ScrewSlenderness]));
   if Slg.MinScrewInertiaMoment > 0 then
-    Result.Append(Format(L10n[16, Lang], [ToMm4(Slg.MinScrewInertiaMoment)]));
-  Result.Append(Format(L10n[18, Lang], [Slg.AxialForce, Slg.MaxAxialForce]));
-  Result.Append(Format(L10n[19, Lang], [Slg.MinScrewTorque, Slg.MaxScrewTorque]));
+    Result.Append(Format(L10nOut[16, Lang], [ToMm4(Slg.MinScrewInertiaMoment)]));
+  Result.Append(Format(L10nOut[18, Lang], [Slg.AxialForce, Slg.MaxAxialForce]));
+  Result.Append(Format(L10nOut[19, Lang], [Slg.MinScrewTorque, Slg.MaxScrewTorque]));
   Result.Append('');
 
   if Slg.HaveFrameNodes then
-    Result.Append(L10n[21, Lang])
+    Result.Append(L10nOut[21, Lang])
   else
-    Result.Append(L10n[22, Lang]);
+    Result.Append(L10nOut[22, Lang]);
   if Slg.WedgePairsCount > 0 then
-    Result.Append(Format(L10n[23, Lang], [Slg.WedgePairsCount]));
-  Result.Append(Format(L10n[24, Lang], [ToMm(Slg.NutAxe)]));
+    Result.Append(Format(L10nOut[23, Lang], [Slg.WedgePairsCount]));
+  Result.Append(Format(L10nOut[24, Lang], [ToMm(Slg.NutAxe)]));
   if (Slg.InstallKind = Channel) or (Slg.InstallKind = Wall) then
-    Result.Append(Format(L10n[82, Lang], [Slg.Anchor12Numbers, Slg.Anchor16Numbers]));
-  Result.Append(Format(L10n[25, Lang], [Slg.HydrForce]));
+    Result.Append(Format(L10nOut[82, Lang], [Slg.Anchor12Numbers, Slg.Anchor16Numbers]));
+  Result.Append(Format(L10nOut[25, Lang], [Slg.HydrForce]));
 
   if Slg.IsSmall then
   begin
     Result.Append('');
-    Result.Append(Header(L10n[76, Lang]));
+    Result.Append(Header(L10nOut[76, Lang]));
     Result.Append(CreateSmallSgEquations(Slg));
   end;
 end;
@@ -816,6 +951,7 @@ var
   Text: string;
 begin
   Lang := DefineLang;
+  SetLangOut(Lang);
   if InputError <> nil then
     Text := InputError(Lang)
   else if SlgError <> nil then
@@ -921,16 +1057,13 @@ initialization
 
   ModelSpurGearboxes.add(SAumaGST, AumaGST);
 
-  LabelHandWheelText := Format(
-    'Покупные штурвалы Ø%.0F...%.0F можно использовать:'
-    + LineEnding +
-    '— при невысоком крутящем моменте,'
-    + LineEnding +
-    '— с невыдвижными винтами любых размеров,' +
-    LineEnding +
-    '— с выдвижными винтами диаметром не более %.0F мм.'
-    + LineEnding +
-    'В остальных случаях необходимо использовать двуплечую рукоятку собственного изготовления.',
-    [ToMm(HandWheels[0].Diameter), ToMm(HandWheels[High(HandWheels)].Diameter),
-    ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
+  GuiLangs := TChoiceLang.Create;
+  GuiLangs.Add('Українська', Ukr);
+  GuiLangs.Add('Русский', Rus);
+  GuiLangs.Add('English', Eng);
+
+  OutLangs := TChoiceLang.Create;
+  //OutLangs.Add('Українська', Ukr);
+  OutLangs.Add('Русский', Rus);
+  OutLangs.Add('English', Eng);
 end.

@@ -124,10 +124,10 @@ const
   SteelDensity = 8000;  { kg/m3 }
 
   MinFrameWidth = 0.3;
-  MaxFrameWidth = 3.5;
+  MaxFrameWidth = 4;
 
   MinGateHeight = 0.3;
-  MaxGateHeight = 3.5;
+  MaxGateHeight = 4;
 
   MaxFrameHeight = 15.0;
   MaxHydrHead = 15.0;
@@ -139,12 +139,12 @@ uses
 
 const
   TopBalkHeight = 0.2;  { Metre }
-  ScrewElast = 2.0e11;  { Pa }
+  ScrewElast = SteelElast;
   ScrewFriction = 0.12;
   WedgeFriction = 0.12;
   SealingFriction = 0.5;
   DeltaOpen = 5.0;  { N*Metre }
-  LimitShearStress = 80e6;  { Pa }
+  LimitShearStress = LimitShearStressAISI304;
   SpecificLeakage = 0.02;  { l/m/s }
 
   { Перешел с 1.0  - 10.01.2019 }
@@ -521,8 +521,8 @@ var
   IsThroughWheel: Boolean;
 begin
   Result := nil;
-  I := 0;
   IsThroughWheel := IsScrewPullout and (DriveKind = HandWheel) and (ScrewsNumber = 1);
+  I := 0;
   while (I <= High(HandWheels)) and (Result = nil) do
   begin
     if (CompareValue(Diam, HandWheels[I].Diameter, CompAccuracy) <= 0) then
@@ -575,7 +575,7 @@ end;
 
 function CalcSlendernessRatio(const ScrewLength: Double; const RodDiam: Double): Double;
 begin
-  Result := ScrewLength / (RodDiam / 4);
+  Result := ScrewLength / CircleInertiaRadius(RodDiam);
 end;
 
 { Участвует в силовом расчете (не добавлять запас). }
@@ -596,20 +596,20 @@ end;
 function ErrorCantChooseScrew(const Slg: TSlidegate; const Lang: TLang): string;
 begin
   if Slg.MinScrewMinorDiam > 0 then
-    Result := L10n[20, Lang] + ' ' + Format(L10n[26, Lang],
+    Result := L10nOut[20, Lang] + ' ' + Format(L10nOut[26, Lang],
       [ToMm(Slg.MinScrewMinorDiam)])
   else
-    Result := L10n[20, Lang];
+    Result := L10nOut[20, Lang];
 end;
 
 function ErrorCantChooseGearbox(const Slg: TSlidegate; const Lang: TLang): string;
 begin
-  Result := Format(L10n[27, Lang], [Slg.MinScrewTorque]);
+  Result := Format(L10nOut[27, Lang], [Slg.MinScrewTorque]);
 end;
 
 function ErrorCantChooseActuator(const Slg: TSlidegate; const Lang: TLang): string;
 begin
-  Result := Format(L10n[28, Lang], [Slg.MinScrewTorque, ToRpm(Slg.MinSpeed)]);
+  Result := Format(L10nOut[28, Lang], [Slg.MinScrewTorque, ToRpm(Slg.MinSpeed)]);
 end;
 
 function CalcAnchorsNumberByTension(const Force: Double; const Anchor: TAnchor): Integer;

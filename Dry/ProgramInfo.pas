@@ -23,7 +23,7 @@ begin
   Info := TFileVersionInfo.Create(nil);
   Info.ReadFileInfo;
   Versions := Info.VersionStrings.Values['FileVersion'].Split('.');
-  Result := Format('%s v%s.%s.%s', [Info.VersionStrings.Values['FileDescription'],
+  Result := Format('%s v%s.%s.%s', [Info.VersionStrings.Values['ProductName'],
     Versions[0], Versions[1], Versions[2]]);
   Info.Free;
 end;

@@ -11,31 +11,31 @@ interface
 uses
   DCPcrypt2;
 
-function PBKDF2(pass, salt: Ansistring; Count, kLen: Integer;
-  hash: TDCP_hashclass): Ansistring;
+function PBKDF2(Pass, Salt: Ansistring; Count, kLen: Integer;
+  Hash: TDCP_hashclass): Ansistring;
 
 implementation
 
 uses
   Math;
 
-function RPad(x: string; c: Char; s: Integer): string;
+function RPad(X: string; C: Char; S: Integer): string;
 var
-  i: Integer;
+  I: Integer;
 begin
-  Result := x;
-  if Length(x) < s then
-    for i := 1 to s - Length(x) do
-      Result := Result + c;
+  Result := X;
+  if Length(X) < S then
+    for I := 1 to S - Length(X) do
+      Result := Result + C;
 end;
 
 function XorBlock(s, x: Ansistring): Ansistring; inline;
 var
-  i: Integer;
+  I: Integer;
 begin
   SetLength(Result, Length(s));
-  for i := 1 to Length(s) do
-    Result[i] := Char(Byte(s[i]) xor Byte(x[i]));
+  for I := 1 to Length(s) do
+    Result[I] := Char(Byte(s[I]) xor Byte(x[I]));
 end;
 
 function CalcDigest(Text: string; dig: TDCP_hashclass): string;
@@ -76,8 +76,8 @@ begin
     Result := CalcDigest(Result, hash);
 end;
 
-function PBKDF2(pass, salt: Ansistring; Count, kLen: Integer;
-  hash: TDCP_hashclass): Ansistring;
+function PBKDF2(Pass, Salt: Ansistring; Count, kLen: Integer;
+  Hash: TDCP_hashclass): Ansistring;
 
   function IntX(i: Integer): Ansistring; inline;
   begin
@@ -89,14 +89,14 @@ var
   T, F, U: Ansistring;
 begin
   T := '';
-  D := Ceil(kLen / (hash.GetHashSize div 8));
+  D := Ceil(kLen / (Hash.GetHashSize div 8));
   for i := 1 to D do
   begin
-    F := CalcHMAC(salt + IntX(i), pass, hash);
+    F := CalcHMAC(Salt + IntX(i), Pass, Hash);
     U := F;
     for j := 2 to Count do
     begin
-      U := CalcHMAC(U, pass, hash);
+      U := CalcHMAC(U, Pass, Hash);
       F := XorBlock(F, U);
     end;
     T := T + F;
