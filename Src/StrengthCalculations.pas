@@ -124,13 +124,13 @@ const
   SteelDensity = 8000;  { kg/m3 }
 
   MinFrameWidth = 0.3;
-  MaxFrameWidth = 4;
+  MaxFrameWidth = 5;
 
   MinGateHeight = 0.3;
   MaxGateHeight = 4;
 
   MaxFrameHeight = 15.0;
-  MaxHydrHead = 15.0;
+  MaxHydrHead = 20.0;
 
 implementation
 

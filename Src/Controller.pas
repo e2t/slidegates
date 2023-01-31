@@ -1058,12 +1058,12 @@ initialization
   ModelSpurGearboxes.add(SAumaGST, AumaGST);
 
   GuiLangs := TChoiceLang.Create;
+  GuiLangs.Add('English', Eng);
   GuiLangs.Add('Українська', Ukr);
   GuiLangs.Add('Русский', Rus);
-  GuiLangs.Add('English', Eng);
 
   OutLangs := TChoiceLang.Create;
-  //OutLangs.Add('Українська', Ukr);
-  OutLangs.Add('Русский', Rus);
   OutLangs.Add('English', Eng);
+  OutLangs.Add('Українська', Ukr);
+  OutLangs.Add('Русский', Rus);
 end.
