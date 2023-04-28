@@ -10,9 +10,9 @@ interface
 
 type
   TAnchor = record
-    Diameter: Double;
-    RecomendTensionLoad: Double;
-    RecomendShearLoad: Double;
+    Diameter: ValReal;
+    RecomendTensionLoad: ValReal;
+    RecomendShearLoad: ValReal;
   end;
 
 var

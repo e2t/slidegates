@@ -13,40 +13,40 @@ uses
 
 type
   TComboBoxHelper = class helper for TComboBox
-    procedure GetReal(out IsValid: Boolean; out Value: Double);
-    procedure GetReal(const S: string; out IsValid: Boolean; out Value: Double);
-    procedure GetRealMin(const MinValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMin(const S: string; const MinValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEq(const MinValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMinEq(const S: string; const MinValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMax(const MaxValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMax(const S: string; const MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMaxEq(const MaxValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMaxEq(const S: string; const MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMax(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMax(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMax(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMax(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMaxEq(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMaxEq(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMaxEq(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMaxEq(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
+    procedure GetReal(out IsValid: Boolean; out Value: ValReal);
+    procedure GetReal(const S: string; out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMin(const MinValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMin(const S: string; const MinValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEq(const MinValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMinEq(const S: string; const MinValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMax(const MaxValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMax(const S: string; const MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMaxEq(const MaxValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMaxEq(const S: string; const MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMax(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMax(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMax(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMax(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMaxEq(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMaxEq(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMaxEq(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMaxEq(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
 
     procedure GetInt(out IsValid: Boolean; out Value: Integer);
     procedure GetInt(const S: string; out IsValid: Boolean; out Value: Integer);
@@ -86,40 +86,40 @@ type
 
 
   TEditHelper = class helper for TEdit
-    procedure GetReal(out IsValid: Boolean; out Value: Double);
-    procedure GetReal(const S: string; out IsValid: Boolean; out Value: Double);
-    procedure GetRealMin(const MinValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMin(const S: string; const MinValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEq(const MinValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMinEq(const S: string; const MinValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMax(const MaxValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMax(const S: string; const MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMaxEq(const MaxValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMaxEq(const S: string; const MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMax(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMax(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMax(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMax(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMaxEq(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMaxEq(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMaxEq(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMaxEq(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
+    procedure GetReal(out IsValid: Boolean; out Value: ValReal);
+    procedure GetReal(const S: string; out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMin(const MinValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMin(const S: string; const MinValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEq(const MinValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMinEq(const S: string; const MinValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMax(const MaxValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMax(const S: string; const MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMaxEq(const MaxValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMaxEq(const S: string; const MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMax(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMax(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMax(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMax(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMaxEq(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMaxEq(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMaxEq(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMaxEq(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
 
     procedure GetInt(out IsValid: Boolean; out Value: Integer);
     procedure GetInt(const S: string; out IsValid: Boolean; out Value: Integer);
@@ -158,40 +158,40 @@ type
   end;
 
   TLabeledEditHelper = class helper for TLabeledEdit
-    procedure GetReal(out IsValid: Boolean; out Value: Double);
-    procedure GetReal(const S: string; out IsValid: Boolean; out Value: Double);
-    procedure GetRealMin(const MinValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMin(const S: string; const MinValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEq(const MinValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMinEq(const S: string; const MinValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMax(const MaxValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMax(const S: string; const MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMaxEq(const MaxValue: Double; out IsValid: Boolean;
-      out Value: Double);
-    procedure GetRealMaxEq(const S: string; const MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMax(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMax(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMax(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMax(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMaxEq(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinMaxEq(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMaxEq(const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
-    procedure GetRealMinEqMaxEq(const S: string; const MinValue, MaxValue: Double;
-      out IsValid: Boolean; out Value: Double);
+    procedure GetReal(out IsValid: Boolean; out Value: ValReal);
+    procedure GetReal(const S: string; out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMin(const MinValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMin(const S: string; const MinValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEq(const MinValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMinEq(const S: string; const MinValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMax(const MaxValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMax(const S: string; const MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMaxEq(const MaxValue: ValReal; out IsValid: Boolean;
+      out Value: ValReal);
+    procedure GetRealMaxEq(const S: string; const MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMax(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMax(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMax(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMax(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMaxEq(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinMaxEq(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMaxEq(const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
+    procedure GetRealMinEqMaxEq(const S: string; const MinValue, MaxValue: ValReal;
+      out IsValid: Boolean; out Value: ValReal);
 
     procedure GetInt(out IsValid: Boolean; out Value: Integer);
     procedure GetInt(const S: string; out IsValid: Boolean; out Value: Integer);
@@ -255,11 +255,11 @@ type
     class procedure SelectIncorrectInput(const Control: T);
   end;
 
-  TComboBoxReal = specialize TWinControlManager<TComboBox, Double>;
+  TComboBoxReal = specialize TWinControlManager<TComboBox, ValReal>;
   TComboBoxInt = specialize TWinControlManager<TComboBox, Integer>;
-  TEditReal = specialize TWinControlManager<TEdit, Double>;
+  TEditReal = specialize TWinControlManager<TEdit, ValReal>;
   TEditInt = specialize TWinControlManager<TEdit, Integer>;
-  TLabeledEditReal = specialize TWinControlManager<TLabeledEdit, Double>;
+  TLabeledEditReal = specialize TWinControlManager<TLabeledEdit, ValReal>;
   TLabeledEditInt = specialize TWinControlManager<TLabeledEdit, Integer>;
 
 implementation
@@ -269,109 +269,109 @@ uses
 
 { TComboBoxHelper }
 
-procedure TComboBoxHelper.GetReal(out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetReal(out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValue(Self, Self.Text, IsValid, Value);
 end;
 
 procedure TComboBoxHelper.GetReal(const S: string; out IsValid: Boolean;
-  out Value: Double);
+  out Value: ValReal);
 begin
   TComboBoxReal.GetValue(Self, S, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMin(const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMin(const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMin(Self, Self.Text, MinValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMin(const S: string; const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMin(const S: string; const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMin(Self, S, MinValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMinEq(const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMinEq(const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinEq(Self, Self.Text, MinValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMinEq(const S: string; const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMinEq(const S: string; const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinEq(Self, S, MinValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMax(const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMax(const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMax(Self, Self.Text, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMax(const S: string; const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMax(const S: string; const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMax(Self, S, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMaxEq(const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMaxEq(const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMaxEq(Self, Self.Text, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMaxEq(const S: string; const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMaxEq(const S: string; const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMaxEq(Self, S, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMinMax(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMinMax(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinMax(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TComboBoxHelper.GetRealMinMax(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinMax(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMinEqMax(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMinEqMax(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinEqMax(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TComboBoxHelper.GetRealMinEqMax(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinEqMax(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMinMaxEq(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMinMaxEq(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinMaxEq(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TComboBoxHelper.GetRealMinMaxEq(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinMaxEq(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TComboBoxHelper.GetRealMinEqMaxEq(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TComboBoxHelper.GetRealMinEqMaxEq(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinEqMaxEq(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TComboBoxHelper.GetRealMinEqMaxEq(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TComboBoxReal.GetValueMinEqMaxEq(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
@@ -485,109 +485,109 @@ end;
 
 { TEditHelper }
 
-procedure TEditHelper.GetReal(out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetReal(out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValue(Self, Self.Text, IsValid, Value);
 end;
 
 procedure TEditHelper.GetReal(const S: string; out IsValid: Boolean;
-  out Value: Double);
+  out Value: ValReal);
 begin
   TEditReal.GetValue(Self, S, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMin(const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMin(const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMin(Self, Self.Text, MinValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMin(const S: string; const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMin(const S: string; const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMin(Self, S, MinValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMinEq(const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMinEq(const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinEq(Self, Self.Text, MinValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMinEq(const S: string; const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMinEq(const S: string; const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinEq(Self, S, MinValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMax(const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMax(const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMax(Self, Self.Text, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMax(const S: string; const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMax(const S: string; const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMax(Self, S, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMaxEq(const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMaxEq(const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMaxEq(Self, Self.Text, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMaxEq(const S: string; const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMaxEq(const S: string; const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMaxEq(Self, S, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMinMax(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMinMax(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinMax(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TEditHelper.GetRealMinMax(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinMax(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMinEqMax(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMinEqMax(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinEqMax(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TEditHelper.GetRealMinEqMax(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinEqMax(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMinMaxEq(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMinMaxEq(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinMaxEq(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TEditHelper.GetRealMinMaxEq(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinMaxEq(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TEditHelper.GetRealMinEqMaxEq(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TEditHelper.GetRealMinEqMaxEq(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinEqMaxEq(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TEditHelper.GetRealMinEqMaxEq(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TEditReal.GetValueMinEqMaxEq(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
@@ -701,109 +701,109 @@ end;
 
 { TLabeledEditHelper }
 
-procedure TLabeledEditHelper.GetReal(out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetReal(out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValue(Self, Self.Text, IsValid, Value);
 end;
 
 procedure TLabeledEditHelper.GetReal(const S: string; out IsValid: Boolean;
-  out Value: Double);
+  out Value: ValReal);
 begin
   TLabeledEditReal.GetValue(Self, S, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMin(const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMin(const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMin(Self, Self.Text, MinValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMin(const S: string; const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMin(const S: string; const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMin(Self, S, MinValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMinEq(const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMinEq(const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinEq(Self, Self.Text, MinValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMinEq(const S: string; const MinValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMinEq(const S: string; const MinValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinEq(Self, S, MinValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMax(const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMax(const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMax(Self, Self.Text, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMax(const S: string; const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMax(const S: string; const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMax(Self, S, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMaxEq(const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMaxEq(const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMaxEq(Self, Self.Text, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMaxEq(const S: string; const MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMaxEq(const S: string; const MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMaxEq(Self, S, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMinMax(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMinMax(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinMax(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TLabeledEditHelper.GetRealMinMax(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinMax(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMinEqMax(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMinEqMax(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinEqMax(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TLabeledEditHelper.GetRealMinEqMax(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinEqMax(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMinMaxEq(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMinMaxEq(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinMaxEq(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TLabeledEditHelper.GetRealMinMaxEq(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinMaxEq(Self, S, MinValue, MaxValue, IsValid, Value);
 end;
 
-procedure TLabeledEditHelper.GetRealMinEqMaxEq(const MinValue, MaxValue: Double;
-  out IsValid: Boolean; out Value: Double);
+procedure TLabeledEditHelper.GetRealMinEqMaxEq(const MinValue, MaxValue: ValReal;
+  out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinEqMaxEq(Self, Self.Text, MinValue, MaxValue, IsValid, Value);
 end;
 
 procedure TLabeledEditHelper.GetRealMinEqMaxEq(const S: string;
-  const MinValue, MaxValue: Double; out IsValid: Boolean; out Value: Double);
+  const MinValue, MaxValue: ValReal; out IsValid: Boolean; out Value: ValReal);
 begin
   TLabeledEditReal.GetValueMinEqMaxEq(Self, S, MinValue, MaxValue, IsValid, Value);
 end;

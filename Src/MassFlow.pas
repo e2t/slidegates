@@ -38,14 +38,14 @@ begin
     Des.GateSheet := StdGateSheet;
 end;
 
-function CalcMassFrame(const Slg: TSlidegate): Double;
+function CalcMassFrame(const Slg: TSlidegate): ValReal;
 var
   { Вес рамы без направляющих. }
-  PureFrame: Double;
+  PureFrame: ValReal;
   { Вес одной направляющей. }
-  Lead: Double;
+  Lead: ValReal;
   { Неподвижный щит. }
-  FixedGate: Double;
+  FixedGate: ValReal;
 begin
   if Slg.InstallKind = Wall then
   begin
@@ -63,14 +63,14 @@ begin
   Assert(Result > 0);
 end;
 
-function CalcMassGate(const Slg: TSlidegate): Double;
+function CalcMassGate(const Slg: TSlidegate): ValReal;
 begin
   Result := 112 * Slg.FrameWidth * Slg.GateHeight - 23 * Slg.FrameWidth -
     61 * Slg.GateHeight + 10;
   Assert(Result > 0);
 end;
 
-function MassScrew(const Slg: TSlidegate): Double;
+function MassScrew(const Slg: TSlidegate): ValReal;
 begin
   Result := 5.66 * Slg.ScrewLength + 0.816;
 end;

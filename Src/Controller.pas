@@ -11,17 +11,21 @@ interface
 uses
   Localization;
 
+type
+  TNetwork = (Net380V50Hz, Net400V50Hz);
+
 procedure Run();
 procedure MainFormInit();
 procedure RePrintResults();
 procedure ReTranslateGui();
+procedure ChangeNetwork();
 
 implementation
 
 uses
   DriveUnits, GuiMainForm, Screws, Measurements, StrengthCalculations,
   SysUtils, Nullable, StdCtrls, Classes, Controls, IniFileUtils,
-  GuiHelper, MassGeneral, ProgramInfo, Equations, Fgl;
+  GuiHelper, MassGeneral, ProgramInfo, Equations, Fgl, CheckNum;
 
 type
   TArrayControlBlock = array of TControlBlock;
@@ -34,6 +38,7 @@ type
   TChoiceModelActuator = specialize TFPGMap<string, TActuatorWithControl>;
   TChoiceModelGearbox = specialize TFPGMap<string, TModelGearbox>;
   TChoiceLang = specialize TFPGMap<string, TLang>;
+  TChoiceNetwork = specialize TFPGMap<string, TNetwork>;
 
 var
   ModelOpenCloseActuators, ModelRegulActuators: TChoiceModelActuator;
@@ -42,6 +47,7 @@ var
   BevelGearboxes, SpurGearboxes: TArrayGearbox;
   OpenCloseActuatorControlBlocks, RegulActuatorControlBlocks: TArrayControlBlock;
   GuiLangs, OutLangs: TChoiceLang;
+  Networks: TChoiceNetwork;
 
 procedure ReTranslateGui();
 var
@@ -49,7 +55,7 @@ var
 begin
   with MainForm do
   begin
-    Lang := GuiLangs[ComboBox1.Text];
+    Lang := GuiLangs[ComboBoxGuiLang.Text];
 
     TabSheetSurf.Caption := L10nGui[0, Lang];
     Label10.Caption := L10nGui[1, Lang];
@@ -101,7 +107,8 @@ begin
 
     TabSheetHandWheel.Caption := L10nGui[44, Lang];
     LabelHandWheel.Caption := Format(L10nGui[45, Lang], [ToMm(HandWheels[0].Diameter),
-      ToMm(HandWheels[High(HandWheels)].Diameter), ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
+      ToMm(HandWheels[High(HandWheels)].Diameter),
+      ToMm(HandWheels[High(HandWheels)].MaxScrew)]);
 
     Label1.Caption := L10nGui[46, Lang];
     TabSheetOnFrame.Caption := L10nGui[47, Lang];
@@ -162,15 +169,20 @@ var
   ArrayActuator: TArrayActuator;
   Actuator: TActuator;
   I: Integer;
+  Items: TStringList;
 begin
+  Items := TStringList.Create;
+  I := ComboBox.Items.Count;
   for ArrayActuator in ModelActuator do
     for Actuator in ArrayActuator do
     begin
-      ComboBox.Items.Add(ItemActuator(Actuator, ControlBlock));
-      I := ComboBox.Items.Count - 1;
+      Items.Add(ItemActuator(Actuator, ControlBlock));
       LinearArrayActuator[I] := Actuator;
       LinearArrayControlBlocks[I] := ControlBlock;
+      Inc(I);
     end;
+  ComboBox.Items.AddStrings(Items, False);
+  Items.Free;
 end;
 
 procedure ComboBoxGearboxFill(const ComboBox: TComboBox;
@@ -189,18 +201,146 @@ begin
     end;
 end;
 
-procedure ComboBoxLangFill(
-  const ComboBox: TComboBox; const ChoiceLang: TChoiceLang; const Lang: TLang);
+generic procedure FillComboBoxIni<T>(const ComboBox: TComboBox;
+  const Choices: specialize TFPGMap<string, T>; const InitValue: T);
 var
   I, Index: Integer;
 begin
-  for I := 0 to ChoiceLang.Count - 1 do
-    ComboBox.Items.Add(ChoiceLang.Keys[I]);
+  for I := 0 to Choices.Count - 1 do
+    ComboBox.Items.Add(Choices.Keys[I]);
 
-  Index := ChoiceLang.IndexOfData(Lang);
+  Index := Choices.IndexOfData(InitValue);
   if Index < 0 then
     Index := 0;
   ComboBox.ItemIndex := Index;
+end;
+
+procedure ComboBoxNetworkFill();
+begin
+  specialize FillComboBoxIni<TNetwork>(MainForm.ComboBoxNetwork, Networks, GetNetwork);
+end;
+
+procedure ComboBoxGuiLangFill();
+begin
+  specialize FillComboBoxIni<TLang>(MainForm.ComboBoxGuiLang, GuiLangs, GetLangGui);
+end;
+
+procedure ComboBoxOutLangFill();
+begin
+  specialize FillComboBoxIni<TLang>(MainForm.ComboBoxOutLang, OutLangs, GetLangOut);
+end;
+
+procedure AddModelActuator(const ComboBox: TComboBox;
+  const ModelActuators: TChoiceModelActuator; const Choice: string;
+  const ModelActuator: TModelActuator; const ControlBlock: TControlBlock);
+var
+  Awc: TActuatorWithControl;
+begin
+  Awc.ModelActuator := ModelActuator;
+  Awc.ControlBlock := ControlBlock;
+  ModelActuators.Add(Choice, Awc);
+  ComboBox.Items.Add(Choice);
+end;
+
+procedure AddModelOpenCloseActuator(const Choice: string;
+  const ModelActuator: TModelActuator; const ControlBlock: TControlBlock);
+begin
+  AddModelActuator(MainForm.ComboBoxOpenCloseActuator, ModelOpenCloseActuators,
+    Choice, ModelActuator, ControlBlock);
+end;
+
+procedure AddModelRegulActuator(const Choice: string;
+  const ModelActuator: TModelActuator; const ControlBlock: TControlBlock);
+begin
+  AddModelActuator(MainForm.ComboBoxRegulActuator, ModelRegulActuators,
+    Choice, ModelActuator, ControlBlock);
+end;
+
+procedure FillOpenCloseActuators(const ModelActuator: TModelActuator;
+  const ControlBlock: TControlBlock);
+begin
+  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
+    ModelActuator, OpenCloseActuatorControlBlocks, ControlBlock);
+end;
+
+procedure FillRegulActuators(const ModelActuator: TModelActuator;
+  const ControlBlock: TControlBlock);
+begin
+  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
+    ModelActuator, RegulActuatorControlBlocks, ControlBlock);
+end;
+
+procedure ChangeNetwork();
+var
+  Network: TNetwork;
+  AumaSA_S215, AumaSA_S230, AumaSAR_S425, AumaSAR_S450: TModelActuator;
+  OldOpenClose, OldRegul: string;
+  Index: Integer;
+begin
+  with MainForm do
+  begin
+    Network := Networks[ComboBoxNetwork.Text];
+    if Network = Net380V50Hz then
+    begin
+      AumaSA_S215 := AumaSA_S215_380V50Hz;
+      AumaSA_S230 := AumaSA_S230_380V50Hz;
+      AumaSAR_S425 := AumaSAR_S425_380V50Hz;
+      AumaSAR_S450 := AumaSAR_S450_380V50Hz;
+    end
+    else if Network = Net400V50Hz then
+    begin
+      AumaSA_S215 := AumaSA_S215_400V50Hz;
+      AumaSA_S230 := AumaSA_S230_400V50Hz;
+      AumaSAR_S425 := AumaSAR_S425_400V50Hz;
+      AumaSAR_S450 := AumaSAR_S450_400V50Hz;
+    end;
+
+    OldOpenClose := ComboBoxOpenCloseActuator.Text;
+    OldRegul := ComboBoxRegulActuator.Text;
+
+    { Приводы Открыть-Закрыть }
+    ComboBoxOpenCloseActuator.Clear;
+    ModelOpenCloseActuators.Clear;
+    AddModelOpenCloseActuator(SAumaSAS215, AumaSA_S215, NoBlock);
+    AddModelOpenCloseActuator(SAumaSAS215AM, AumaSA_S215, AumaAM);
+    AddModelOpenCloseActuator(SAumaSAS215AC, AumaSA_S215, AumaAC);
+    AddModelOpenCloseActuator(SAumaSAS230, AumaSA_S230, NoBlock);
+    AddModelOpenCloseActuator(SAumaSAS230AM, AumaSA_S230, AumaAM);
+    AddModelOpenCloseActuator(SAumaSAS230AC, AumaSA_S230, AumaAC);
+    FillOpenCloseActuators(AumaSA_S215, NoBlock);
+    FillOpenCloseActuators(AumaSA_S215, AumaAM);
+    FillOpenCloseActuators(AumaSA_S215, AumaAC);
+    FillOpenCloseActuators(AumaSA_S230, NoBlock);
+    FillOpenCloseActuators(AumaSA_S230, AumaAM);
+    FillOpenCloseActuators(AumaSA_S230, AumaAC);
+
+    Index := ComboBoxOpenCloseActuator.Items.IndexOf(OldOpenClose);
+    if Index < 0 then
+      Index := 0;
+    ComboBoxOpenCloseActuator.ItemIndex := Index;
+
+    { Регулирующие приводы }
+    ComboBoxRegulActuator.Clear;
+    ModelRegulActuators.Clear;
+    AddModelRegulActuator(SAumaSARS425, AumaSAR_S425, NoBlock);
+    AddModelRegulActuator(SAumaSARS425AM, AumaSAR_S425, AumaAM);
+    AddModelRegulActuator(SAumaSARS425AC, AumaSAR_S425, AumaAC);
+    AddModelRegulActuator(SAumaSARS450, AumaSAR_S450, NoBlock);
+    AddModelRegulActuator(SAumaSARS450AM, AumaSAR_S450, AumaAM);
+    AddModelRegulActuator(SAumaSARS450AC, AumaSAR_S450, AumaAC);
+    FillRegulActuators(AumaSAR_S425, NoBlock);
+    FillRegulActuators(AumaSAR_S425, AumaAM);
+    FillRegulActuators(AumaSAR_S425, AumaAC);
+    FillRegulActuators(AumaSAR_S450, NoBlock);
+    FillRegulActuators(AumaSAR_S450, AumaAM);
+    FillRegulActuators(AumaSAR_S450, AumaAC);
+
+    Index := ComboBoxRegulActuator.Items.IndexOf(OldRegul);
+    if Index < 0 then
+      Index := 0;
+    ComboBoxRegulActuator.ItemIndex := Index;
+  end;
+  SetNetwork(Network);
 end;
 
 procedure MainFormInit();
@@ -213,54 +353,12 @@ begin
   MainForm.Constraints.MinHeight := MainForm.Height;
   MainForm.Constraints.MinWidth := MainForm.Width;
 
-  ComboBoxLangFill(MainForm.ComboBox1, GuiLangs, GetLangGui);
+  ComboBoxGuiLangFill;
   ReTranslateGui;
-  ComboBoxLangFill(MainForm.ComboBox2, OutLangs, GetLangOut);
+  ComboBoxOutLangFill;
 
-  { Приводы Открыть-Закрыть }
-  for I := 0 to ModelOpenCloseActuators.Count - 1 do
-    MainForm.ComboBoxOpenCloseActuator.Items.Add(ModelOpenCloseActuators.Keys[I]);
-
-  SetLength(OpenCloseActuators, 1024);
-  SetLength(OpenCloseActuatorControlBlocks, 1024);
-  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
-    AumaSADutyS215, OpenCloseActuatorControlBlocks, NoBlock);
-  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
-    AumaSADutyS215, OpenCloseActuatorControlBlocks, AumaAM);
-  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
-    AumaSADutyS215, OpenCloseActuatorControlBlocks, AumaAC);
-  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
-    AumaSADutyS230, OpenCloseActuatorControlBlocks, NoBlock);
-  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
-    AumaSADutyS230, OpenCloseActuatorControlBlocks, AumaAM);
-  ComboBoxActuatorFill(MainForm.ComboBoxOpenCloseActuator, OpenCloseActuators,
-    AumaSADutyS230, OpenCloseActuatorControlBlocks, AumaAC);
-  MainForm.ComboBoxOpenCloseActuator.ItemIndex := 0;
-  SetLength(OpenCloseActuators, MainForm.ComboBoxOpenCloseActuator.Items.Count);
-  SetLength(OpenCloseActuatorControlBlocks,
-    MainForm.ComboBoxOpenCloseActuator.Items.Count);
-
-  { Регулирующие приводы }
-  for I := 0 to ModelRegulActuators.Count - 1 do
-    MainForm.ComboBoxRegulActuator.Items.Add(ModelRegulActuators.Keys[I]);
-
-  SetLength(RegulActuators, 1024);
-  SetLength(RegulActuatorControlBlocks, 1024);
-  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
-    AumaSARDutyS425, RegulActuatorControlBlocks, NoBlock);
-  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
-    AumaSARDutyS425, RegulActuatorControlBlocks, AumaAM);
-  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
-    AumaSARDutyS425, RegulActuatorControlBlocks, AumaAC);
-  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
-    AumaSARDutyS450, RegulActuatorControlBlocks, NoBlock);
-  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
-    AumaSARDutyS450, RegulActuatorControlBlocks, AumaAM);
-  ComboBoxActuatorFill(MainForm.ComboBoxRegulActuator, RegulActuators,
-    AumaSARDutyS450, RegulActuatorControlBlocks, AumaAC);
-  MainForm.ComboBoxRegulActuator.ItemIndex := 0;
-  SetLength(RegulActuators, MainForm.ComboBoxRegulActuator.Items.Count);
-  SetLength(RegulActuatorControlBlocks, MainForm.ComboBoxRegulActuator.Items.Count);
+  ComboBoxNetworkFill;
+  ChangeNetwork;
 
   { Угловые редукторы }
   for I := 0 to ModelBevelGearboxes.Count - 1 do
@@ -290,7 +388,7 @@ end;
 
 function DefineLang(): TLang;
 begin
-  Result := OutLangs[MainForm.ComboBox2.Text];
+  Result := OutLangs[MainForm.ComboBoxOutLang.Text];
 end;
 
 function ErrorIncorrectValue(const Lang: TLang): string;
@@ -328,14 +426,15 @@ var
   ScrewSize: array of string;
   ScrewNote, Choice: string;
   I: Integer;
-  Value, AMaxWay: Double;
+  Value, AMaxWay: ValReal;
   ActuatorWithControl: TActuatorWithControl;
   IsValid: Boolean;
 begin
   InputData := Default(TInputData);
   Error := nil;
 
-  MainForm.EditFrameWidth.GetRealMinEqMaxEq(MinFrameWidth, MaxFrameWidth, IsValid, Value);
+  MainForm.EditFrameWidth.GetRealMinEqMaxEq(MinFrameWidth, MaxFrameWidth,
+    IsValid, Value);
   if IsValid then
     InputData.FrameWidth := Metre(Value)
   else
@@ -344,7 +443,8 @@ begin
     Exit;
   end;
 
-  MainForm.EditGateHeight.GetRealMinEqMaxEq(MinGateHeight, MaxGateHeight, IsValid, Value);
+  MainForm.EditGateHeight.GetRealMinEqMaxEq(MinGateHeight, MaxGateHeight,
+    IsValid, Value);
   if IsValid then
     InputData.GateHeight := Metre(Value)
   else
@@ -676,7 +776,8 @@ begin
   Put.Append(Format(L10nOut[31, Lang], [ToRpm(Slg.Actuator.Speed)]));
   Put.Append(Format(L10nOut[32, Lang], [ToKw(Slg.Actuator.Power)]));
   Put.Append(Format(L10nOut[36, Lang], [Slg.Actuator.Duty]));
-  Put.Append(Format(L10nOut[33, Lang], [Slg.Actuator.MinTorque, Slg.Actuator.MaxTorque]));
+  Put.Append(Format(L10nOut[33, Lang], [Slg.Actuator.MinTorque,
+    Slg.Actuator.MaxTorque]));
   Put.Append(Format(L10nOut[34, Lang], [Slg.Actuator.Flange]));
   Put.Append(Format(L10nOut[35, Lang], [Slg.Sleeve]));
   Put.Append(L10nOut[37, Lang]);
@@ -687,7 +788,7 @@ begin
   Put.Append(Format(L10nOut[39, Lang], [ToMin(Slg.OpenTime), Slg.OpenTime, Slg.Revs]));
   Put.Append(Format(L10nOut[40, Lang], [Slg.MinDriveUnitTemperature,
     Slg.MaxDriveUnitTemperature]));
-  Put.Append(L10nOut[41, Lang]);
+  Put.Append(Format(L10nOut[41, Lang], [Slg.Actuator.Voltage, Slg.Actuator.Frequency]));
   Put.Append(L10nOut[42, Lang]);
   Put.Append(L10nOut[43, Lang]);
   Put.Append(L10nOut[44, Lang]);
@@ -791,7 +892,7 @@ begin
 end;
 
 procedure OutputScrew(var Put: TStringList; const IsRightHandedScrew: Boolean;
-  const Screw: TScrew; const ThreadLength: Double; const Lang: TLang);
+  const Screw: TScrew; const ThreadLength: ValReal; const Lang: TLang);
 begin
   if IsRightHandedScrew then
     Put.Append(Format(L10nOut[11, Lang], [L10nOut[9, Lang], Screw.DesignationR,
@@ -844,17 +945,16 @@ begin
     end;
   end;
 
-  if Slg.BronzeWedgeStripLength > 0 then
-    Put.Append(Format(L10nOut[14, Lang], [Slg.BronzeWedgeStrip,
-      ToMm(Slg.BronzeWedgeStripLength)]));
+  if Slg.BronzePadCount > 0 then
+    Put.Append(Format(L10nOut[14, Lang], [Slg.BronzePadCount]));
 
   Put.Append(Format(L10nOut[75, Lang], [Slg.SealingLength]));
   Put.Append('');
 end;
 
-function Header(const Line: string): string;
+function Highlight(const Line: string): string;
 begin
-  Result := '[ ' + Line + ' ]' + LineEnding;
+  Result := '[ ' + Line + ' ]';
 end;
 
 function Output(const Slg: TSlidegate; const Mass: TWeights;
@@ -891,8 +991,11 @@ begin
     ScrewDescription := ScrewDescription + ' (x2)';
   Result.Append(ScrewDescription);
   Result.Append(Format(L10nOut[0, Lang], [Slg.HydrHead]));
-  Result.Append(Format(L10nOut[1, Lang], [Mass.Total, Mass.Frame, Mass.Gate]));
   Result.Append(Format(L10nOut[65, Lang], [Slg.Leakage]));
+  if IsLessEq(Slg.HydrForce, Kgf(20e3)) then
+    Result.Append(Format(L10nOut[1, Lang], [Mass.Total, Mass.Frame, Mass.Gate]))
+  else
+    Result.Append(Highlight(L10nOut[89, Lang]));
   Result.Append('');
 
   if Slg.Actuator <> nil then
@@ -913,7 +1016,8 @@ begin
   if Slg.HandWheel <> nil then
     OutputHandWheel(Result, Slg.HandWheel, Lang);
 
-  Result.Append(Header(L10nOut[77, Lang]));
+  Result.Append(Highlight(L10nOut[77, Lang]));
+  Result.Append('');
   OutputOfficeMemo(Result, Slg, Mass.Sheet, Lang);
 
   Result.Append(Format(L10nOut[15, Lang], [Slg.Screw.SizeToStr,
@@ -939,7 +1043,8 @@ begin
   if Slg.IsSmall then
   begin
     Result.Append('');
-    Result.Append(Header(L10nOut[76, Lang]));
+    Result.Append(Highlight(L10nOut[76, Lang]));
+    Result.Append('');
     Result.Append(CreateSmallSgEquations(Slg));
   end;
 end;
@@ -951,7 +1056,6 @@ var
   Text: string;
 begin
   Lang := DefineLang;
-  SetLangOut(Lang);
   if InputError <> nil then
     Text := InputError(Lang)
   else if SlgError <> nil then
@@ -970,6 +1074,7 @@ var
 
 procedure RePrintResults();
 begin
+  SetLangOut(DefineLang);
   if MainForm.MemoOutput.Text <> '' then
     PrintResults(Slidegate, Mass, SlidegateError, InputDataError);
 end;
@@ -987,64 +1092,17 @@ begin
   PrintResults(Slidegate, Mass, SlidegateError, InputDataError);
 end;
 
-var
-  ActuatorWithControl: TActuatorWithControl;
-
 initialization
   Mass := Default(TWeights);
   Mass.Sheet := TSheetWeights.Create;
 
+  SetLength(OpenCloseActuators, 1024);
+  SetLength(OpenCloseActuatorControlBlocks, 1024);
+  SetLength(RegulActuators, 1024);
+  SetLength(RegulActuatorControlBlocks, 1024);
+
   ModelOpenCloseActuators := TChoiceModelActuator.Create;
-
-  ActuatorWithControl.ModelActuator := AumaSADutyS215;
-  ActuatorWithControl.ControlBlock := NoBlock;
-  ModelOpenCloseActuators.Add(SAumaSAS215, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSADutyS215;
-  ActuatorWithControl.ControlBlock := AumaAM;
-  ModelOpenCloseActuators.Add(SAumaSAS215AM, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSADutyS215;
-  ActuatorWithControl.ControlBlock := AumaAC;
-  ModelOpenCloseActuators.Add(SAumaSAS215AC, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSADutyS230;
-  ActuatorWithControl.ControlBlock := NoBlock;
-  ModelOpenCloseActuators.Add(SAumaSAS230, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSADutyS230;
-  ActuatorWithControl.ControlBlock := AumaAM;
-  ModelOpenCloseActuators.Add(SAumaSAS230AM, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSADutyS230;
-  ActuatorWithControl.ControlBlock := AumaAC;
-  ModelOpenCloseActuators.Add(SAumaSAS230AC, ActuatorWithControl);
-
   ModelRegulActuators := TChoiceModelActuator.Create;
-
-  ActuatorWithControl.ModelActuator := AumaSARDutyS425;
-  ActuatorWithControl.ControlBlock := NoBlock;
-  ModelRegulActuators.Add(SAumaSARS425, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSARDutyS425;
-  ActuatorWithControl.ControlBlock := AumaAM;
-  ModelRegulActuators.Add(SAumaSARS425AM, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSARDutyS425;
-  ActuatorWithControl.ControlBlock := AumaAC;
-  ModelRegulActuators.Add(SAumaSARS425AC, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSARDutyS450;
-  ActuatorWithControl.ControlBlock := NoBlock;
-  ModelRegulActuators.Add(SAumaSARS450, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSARDutyS450;
-  ActuatorWithControl.ControlBlock := AumaAM;
-  ModelRegulActuators.Add(SAumaSARS450AM, ActuatorWithControl);
-
-  ActuatorWithControl.ModelActuator := AumaSARDutyS450;
-  ActuatorWithControl.ControlBlock := AumaAC;
-  ModelRegulActuators.Add(SAumaSARS450AC, ActuatorWithControl);
 
   ModelBevelGearboxes := TChoiceModelGearbox.Create;
 
@@ -1066,4 +1124,8 @@ initialization
   OutLangs.Add('English', Eng);
   OutLangs.Add('Українська', Ukr);
   OutLangs.Add('Русский', Rus);
+
+  Networks := TChoiceNetwork.Create;
+  Networks.Add('380 V/50 Hz', Net380V50Hz);
+  Networks.Add('400 V/50 Hz', Net400V50Hz);
 end.

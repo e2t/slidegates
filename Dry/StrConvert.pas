@@ -8,8 +8,16 @@ unit StrConvert;
 
 interface
 
+procedure ConvertStrToFloat(const S: string; out IsValid: Boolean; out Value: ValReal);
+procedure ConvertStrToInt(const S: string; out IsValid: Boolean; out Value: Integer);
+function FStr(const Value: ValReal; Prec: Byte = 3): string;
+procedure UTF8OverWrite(const Source: string; var S: string; const StartCharIndex: PtrInt);
+function UTF8FirstLetterUpperCase(const S: string): string;
+
+implementation
+
 uses
-  SysUtils, LazUnicode;
+  LazUTF8, SysUtils;
 
 const
   TrueDefaultFormatSettings: TFormatSettings = (
@@ -37,31 +45,54 @@ const
     'Thursday', 'Friday', 'Saturday');
     TwoDigitYearCenturyWindow: 50; );
 
-procedure ConvertStrToFloat(const S: string; out IsNumber: Boolean; out Value: Double);
-procedure ConvertStrToInt(const S: string; out IsNumber: Boolean; out Value: Integer);
-function FirstLetterUpperCase(const S: string): string;
-
-implementation
-
-procedure ConvertStrToFloat(const S: string; out IsNumber: Boolean; out Value: Double);
+function FStr(const Value: ValReal; Prec: Byte = 3): string;
+const
+  IntPart = '#,##0';
+var
+  FracPart: string;
 begin
-  IsNumber := TryStrToFloat(S, Value);
-  if not IsNumber then
-    IsNumber := TryStrToFloat(S, Value, TrueDefaultFormatSettings);
+  case Prec of
+    0: FracPart := '';
+    1: FracPart := '.#';
+    2: FracPart := '.##';
+    3: FracPart := '.###';
+    4: FracPart := '.####';
+    5: FracPart := '.#####';
+    6: FracPart := '.######';
+    else
+      raise Exception.Create('Too much precision');
+  end;
+  Result := FormatFloat(IntPart + FracPart, Value);
 end;
 
-procedure ConvertStrToInt(const S: string; out IsNumber: Boolean; out Value: Integer);
+procedure ConvertStrToFloat(const S: string; out IsValid: Boolean; out Value: ValReal);
 begin
-  IsNumber := TryStrToInt(S, Value);
+  IsValid := TryStrToFloat(S, Value);
+  if not IsValid then
+    IsValid := TryStrToFloat(S, Value, TrueDefaultFormatSettings);
 end;
 
-function FirstLetterUpperCase(const S: string): string;
+procedure ConvertStrToInt(const S: string; out IsValid: Boolean; out Value: Integer);
+begin
+  IsValid := TryStrToInt(S, Value);
+end;
+
+function UTF8FirstLetterUpperCase(const S: string): string;
 var
   FirstLetter: string;
 begin
-  FirstLetter := CodePointCopy(S, 1, 1);
-  Result := Format('%s%s', [UnicodeUpperCase(unicodestring(FirstLetter)),
-    CodePointCopy(S, 2, CodePointLength(S) - 1)]);
+  FirstLetter := UTF8Copy(S, 1, 1);
+  Result := Format('%s%s', [UTF8UpperCase(FirstLetter),
+    UTF8Copy(S, 2, UTF8LengthFast(S) - 1)]);
+end;
+
+procedure UTF8OverWrite(const Source: string; var S: string; const StartCharIndex: PtrInt);
+var
+  CharCount: Integer;
+begin
+  CharCount := UTF8LengthFast(Source);
+  UTF8Delete(S, StartCharIndex, CharCount);
+  UTF8Insert(Source, S, StartCharIndex);
 end;
 
 end.

@@ -24,8 +24,9 @@ type
     CheckBoxThreeWedgePairs: TCheckBox;
     CheckBoxRackWithoutPipeNodes: TCheckBox;
     CheckBoxBracketWithoutPipeNodes: TCheckBox;
-    Combobox1: Tcombobox;
-    Combobox2: Tcombobox;
+    ComboBoxGuiLang: Tcombobox;
+    ComboBoxOutLang: Tcombobox;
+    ComboBoxNetwork: TComboBox;
     ComboBoxRegulActuator: TComboBox;
     ComboBoxBevelGearbox: TComboBox;
     ComboBoxFrameSheet: TComboBox;
@@ -106,8 +107,9 @@ type
     TabSheetDeep: TTabSheet;
     TabSheetFlow: TTabSheet;
     procedure ButtonRunClick(Sender: TObject);
-    procedure Combobox1change(Sender: TObject);
-    procedure Combobox2change(Sender: TObject);
+    procedure ComboBoxGuiLangChange(Sender: TObject);
+    procedure ComboBoxNetworkChange(Sender: TObject);
+    procedure ComboBoxOutLangChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
   private
@@ -144,12 +146,17 @@ begin
   Run();
 end;
 
-procedure Tmainform.Combobox1change(Sender: TObject);
+procedure Tmainform.ComboBoxGuiLangChange(Sender: TObject);
 begin
   ReTranslateGui;
 end;
 
-procedure Tmainform.Combobox2change(Sender: TObject);
+procedure TMainForm.ComboBoxNetworkChange(Sender: TObject);
+begin
+  ChangeNetwork;
+end;
+
+procedure Tmainform.ComboBoxOutLangChange(Sender: TObject);
 begin
   RePrintResults;
 end;

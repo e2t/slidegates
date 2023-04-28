@@ -18,7 +18,7 @@ implementation
 uses
   Classes, Measurements, SysUtils;
 
-function RoundCount(const Number: Double): Integer;
+function RoundCount(const Number: ValReal): Integer;
 begin
   if Frac(Number) >= 0.7 then
     Result := Trunc(Number) + 1
@@ -31,7 +31,7 @@ const
   HorizScrewStep = 0.1;  // 100 mm
   VertScrewStep = 0.1;   // 100 mm
 var
-  RollerStep: Double;
+  RollerStep: ValReal;
   RollerCount, HorizScrewCount, VertScrewCount: Integer;
   Lines: TStringList;
 begin

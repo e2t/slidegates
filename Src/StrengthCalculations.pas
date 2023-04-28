@@ -18,8 +18,8 @@ type
   TDriveLocation = (OnFrame, OnRack, OnBracket);
 
   TInputData = record
-    FrameWidth: Double;
-    GateHeight: Double;
+    FrameWidth: ValReal;
+    GateHeight: ValReal;
     HydrHead: TNullableReal;
     SlgKind: TSlgKind;
     DriveKind: TDriveKind;
@@ -27,10 +27,10 @@ type
     IsFrameClosed: Boolean;
     DriveLocation: TDriveLocation;
     IsScrewPullout: Boolean;
-    TiltAngle: Double;
-    LiquidDensity: Double;
+    TiltAngle: ValReal;
+    LiquidDensity: ValReal;
     HaveFixedGate: Boolean;
-    FrameHeight: Double;
+    FrameHeight: ValReal;
     HaveFrameNodes: TNullableBool;
     WedgePairsCount: TNullableInt;
     Way: TNullableReal;
@@ -42,10 +42,10 @@ type
     ModelGearbox: TModelGearbox;
     ModelActuator: TModelActuator;
     ControlBlock: TControlBlock;
-    RecommendMinSpeed: Double;
-    FullWays: Double;
+    RecommendMinSpeed: ValReal;
+    FullWays: ValReal;
     HaveCounterFlange: Boolean;
-    BtwFrameTopAndDriveUnit: Double;
+    BtwFrameTopAndDriveUnit: ValReal;
     HavePipeNodes: Boolean;
     ScrewsNumber: Integer;
     FrameSheet: TNullableReal;
@@ -53,28 +53,28 @@ type
   end;
 
   TSlidegate = record
-    ThreadLength: Double;
-    MinScrewTorque: Double;
-    MaxScrewTorque: Double;
-    OpenTorque: Double;
-    CloseTorque: Double;
-    OpenTime: Double;
-    Revs: Double;
+    ThreadLength: ValReal;
+    MinScrewTorque: ValReal;
+    MaxScrewTorque: ValReal;
+    OpenTorque: ValReal;
+    CloseTorque: ValReal;
+    OpenTime: ValReal;
+    Revs: ValReal;
     Gearbox: TGearbox;
     HandWheel: THandWheel;
-    MinSpeed: Double;
+    MinSpeed: ValReal;
     Actuator: TActuator;
-    MaxDriveUnitTemperature: Double;
-    MinDriveUnitTemperature: Double;
-    ScrewFoS: Double;
+    MaxDriveUnitTemperature: ValReal;
+    MinDriveUnitTemperature: ValReal;
+    ScrewFoS: ValReal;
     Screw: TScrew;
-    FrameWidth: Double;
-    GateHeight: Double;
-    HydrHead: Double;
+    FrameWidth: ValReal;
+    GateHeight: ValReal;
+    HydrHead: ValReal;
     IsScrewPullout: Boolean;
     SlgKind: TSlgKind;
     DriveKind: TDriveKind;
-    LiquidDensity: Double;
+    LiquidDensity: ValReal;
     InstallKind: TInstallKind;
     IsFrameClosed: Boolean;
     DriveLocation: TDriveLocation;
@@ -82,33 +82,32 @@ type
     WedgePairsCount: Integer;
     IsRightHandedScrew: Boolean;
     IsRightHandedScrew2: Boolean;
-    FrameHeight: Double;
-    Way: Double;
-    BethFrameTopAndGateTop: Double;
+    FrameHeight: ValReal;
+    Way: ValReal;
+    BethFrameTopAndGateTop: ValReal;
     HaveFrameNodes: Boolean;
-    HydrForce: Double;
-    ScrewLength: Double;
-    MinScrewInertiaMoment: Double;
-    MinScrewMinorDiam: Double;
+    HydrForce: ValReal;
+    ScrewLength: ValReal;
+    MinScrewInertiaMoment: ValReal;
+    MinScrewMinorDiam: ValReal;
     Nut: TNut;
     Sleeve: string;
-    NutAxe: Double;
-    ScrewSlenderness: Double;
-    BronzeWedgeStrip: string;
-    BronzeWedgeStripLength: Double;
+    NutAxe: ValReal;
+    ScrewSlenderness: ValReal;
+    BronzePadCount: ValReal;
     ControlBlock: TControlBlock;
-    Leakage: Double;
+    Leakage: ValReal;
     HaveCounterFlange: Boolean;
     HavePipeNodes: Boolean;
-    BtwFrameTopAndDriveUnit: Double;
+    BtwFrameTopAndDriveUnit: ValReal;
     IsSmall: Boolean;
     ScrewsNumber: Integer;
     GearboxNeed2InputShaft: Boolean;
-    SealingLength: Double;
+    SealingLength: ValReal;
     Anchor12Numbers: Integer;
     Anchor16Numbers: Integer;
-    AxialForce: Double;
-    MaxAxialForce: Double;
+    AxialForce: ValReal;
+    MaxAxialForce: ValReal;
   end;
 
   TFuncSlidegateError = function(const Slg: TSlidegate; const Lang: TLang): string;
@@ -116,18 +115,18 @@ type
 procedure CalcSlidegate(out Slg: TSlidegate; const InputData: TInputData;
   out Error: TFuncSlidegateError);
 
-function MinFrameHeight(const GateHeight: Double): Double;
-function MaxWay(const FrameHeight, GateHeight: Double): Double;
+function MinFrameHeight(const GateHeight: ValReal): ValReal;
+function MaxWay(const FrameHeight, GateHeight: ValReal): ValReal;
 
 const
   RackHeight = 0.76;  { m }
   SteelDensity = 8000;  { kg/m3 }
 
   MinFrameWidth = 0.3;
-  MaxFrameWidth = 5;
+  MaxFrameWidth = 8;
 
   MinGateHeight = 0.3;
-  MaxGateHeight = 4;
+  MaxGateHeight = 8;
 
   MaxFrameHeight = 15.0;
   MaxHydrHead = 20.0;
@@ -165,10 +164,10 @@ const
   RecommendFoS = 1.26;
 
 var
-  ScrewFricAngle, WedgeFricAngle: Double;
+  ScrewFricAngle, WedgeFricAngle: ValReal;
 
-function CalcWedgePairsCount(const HydrHead: Double; const FrameWidth: Double;
-  const GateHeight: Double): Integer;
+function CalcWedgePairsCount(const HydrHead: ValReal; const FrameWidth: ValReal;
+  const GateHeight: ValReal): Integer;
 begin
   if (HydrHead >= 4) and ((FrameWidth >= 1.9) or (GateHeight >= 1.9)) then
     Result := 3
@@ -176,29 +175,29 @@ begin
     Result := 2;
 end;
 
-function CalcOptimalFrameHeight(const GateHeight, Way: Double): Double;
+function CalcOptimalFrameHeight(const GateHeight, Way: ValReal): ValReal;
 begin
   Result := MinFrameHeight(GateHeight) + Way;
 end;
 
-function MinFrameHeight(const GateHeight: Double): Double;
+function MinFrameHeight(const GateHeight: ValReal): ValReal;
 begin
   Result := GateHeight + TopBalkHeight;
 end;
 
-function MaxWay(const FrameHeight, GateHeight: Double): Double;
+function MaxWay(const FrameHeight, GateHeight: ValReal): ValReal;
 begin
   Result := FrameHeight - MinFrameHeight(GateHeight);
 end;
 
-function CalcWay(const FrameHeight, GateHeight: Double): Double;
+function CalcWay(const FrameHeight, GateHeight: ValReal): ValReal;
 begin
   Result := MaxWay(FrameHeight, GateHeight);
   if Result > GateHeight then
     Result := GateHeight;
 end;
 
-function CalcMinimalFrameHeightForNodes(const GateHeight, Way: Double): Double;
+function CalcMinimalFrameHeightForNodes(const GateHeight, Way: ValReal): ValReal;
 begin
   Result := GateHeight + Way + 0.5;
 end;
@@ -208,23 +207,23 @@ end;
   H is the maximum differential head at the centre of the door – metres.
   This should be the worst case which could occur.
   A is the door area in square metres }
-function CalcHydrForce(const FrameWidth: Double; const GateHeight: Double;
-  const HydrHead: Double; const LiquidDensity: Double): Double;
+function CalcHydrForce(const FrameWidth: ValReal; const GateHeight: ValReal;
+  const HydrHead: ValReal; const LiquidDensity: ValReal): ValReal;
 var
-  HeadCentre: Double;
+  HeadCentre: ValReal;
 begin
   HeadCentre := HydrHead - GateHeight / 2;
   Result := (LiquidDensity * GravAcc) * HeadCentre * (FrameWidth * GateHeight);
 end;
 
-function CalcClosingAxialForce(const HydrForce, SealingLength: Double;
+function CalcClosingAxialForce(const HydrForce, SealingLength: ValReal;
   const SlgKind: TSlgKind; const ScrewsNumber: Integer;
-  const FrameWidth, GateHeight: Double): Double;
+  const FrameWidth, GateHeight: ValReal): ValReal;
 const
   { Условная толщина щита }
   CondThickness = 0.008;
 var
-  SealingForce, WedgeAngle, ApproxGateWeight: Double;
+  SealingForce, WedgeAngle, ApproxGateWeight: ValReal;
 begin
   SealingForce := SealingLength * SealingCompress;
   if SlgKind = Flow then
@@ -238,10 +237,10 @@ begin
 end;
 
 function CalcScrewLength(const HaveFrameNodes, IsScrewPullout, HavePipeNodes: Boolean;
-  const FrameHeight, Way, GateHeight, BtwFrameTopAndDriveUnit: Double;
-  const DriveLocation: TDriveLocation): Double;
+  const FrameHeight, Way, GateHeight, BtwFrameTopAndDriveUnit: ValReal;
+  const DriveLocation: TDriveLocation): ValReal;
 var
-  NormalLength: Double;
+  NormalLength: ValReal;
 begin
   if HaveFrameNodes then
     NormalLength := Way + 0.05
@@ -254,12 +253,12 @@ begin
     Result := NormalLength;
 end;
 
-function CalcThreadLength(const FrameHeight, Way, GateHeight: Double;
-  const Nut: TNut; const IsScrewPullout: Boolean): Double;
+function CalcThreadLength(const FrameHeight, Way, GateHeight: ValReal;
+  const Nut: TNut; const IsScrewPullout: Boolean): ValReal;
 const
   MaxThreadLength = 6.0;
 var
-  WorkLength: Double;
+  WorkLength: ValReal;
 begin
   WorkLength := FrameHeight - GateHeight;
   if (WorkLength - Way) > 1.0 then
@@ -278,29 +277,29 @@ end;
 
 { Return minimal rod inertia moment by axial force and its elasticity
   0.5 <= mju <= 2.0 }
-function CalcMinInertiaMoment(const AxialForce: Double; const FoS: Double;
-  const RodLength: Double): Double;
+function CalcMinInertiaMoment(const AxialForce: ValReal; const FoS: ValReal;
+  const RodLength: ValReal): ValReal;
 begin
   Result := AxialForce * FoS * (ScrewMju * RodLength / Pi) ** 2 / ScrewElast;
 end;
 
 { The calculation of cross-section diameter by its moment of inertia. }
-function CalcDiamByInertiaMoment(const MomentIner: Double): Double;
+function CalcDiamByInertiaMoment(const MomentIner: ValReal): ValReal;
 begin
   Result := (MomentIner * 64 / Pi) ** 0.25;
 end;
 
-function CalcScrewTorque(const AxialForce: Double; const Screw: TScrew;
-  const BearingDiam, SlidingCoeff: Double): Double;
+function CalcScrewTorque(const AxialForce: ValReal; const Screw: TScrew;
+  const BearingDiam, SlidingCoeff: ValReal): ValReal;
 begin
   Result := AxialForce * Tan(ScrewFricAngle + Screw.ThreadAngle) *
     Screw.PitchDiam / 2 + SlidingCoeff * AxialForce * ScrewFriction * BearingDiam / 2;
 end;
 
 function CalcMaxScrewTorque(const Screw: TScrew;
-  const RodLength, BearingDiam, SlidingCoeff: Double): Double;
+  const RodLength, BearingDiam, SlidingCoeff: ValReal): ValReal;
 var
-  InertiaMoment, MaxAxialForce: Double;
+  InertiaMoment, MaxAxialForce: ValReal;
 begin
   InertiaMoment := Pi * Screw.MinorDiam ** 4 / 64;
   MaxAxialForce := InertiaMoment * ScrewElast / RecommendFoS /
@@ -309,21 +308,21 @@ begin
 end;
 
 { Return axial inertia moment of circular section by its diameter }
-function CalcCircleAxialInertiaMoment(const Diam: Double): Double;
+function CalcCircleAxialInertiaMoment(const Diam: ValReal): ValReal;
 begin
   Result := Pi * Diam ** 4 / 64;
 end;
 
 { Calculation factor of safity in screw by axial force }
-function CalcFoS(const ScrewMinorDiam: Double; const ScrewLength: Double;
-  const ScrewElast: Double; const AxialForce: Double; const Mju: Double): Double;
+function CalcFoS(const ScrewMinorDiam: ValReal; const ScrewLength: ValReal;
+  const ScrewElast: ValReal; const AxialForce: ValReal; const Mju: ValReal): ValReal;
 begin
   Result := CalcCircleAxialInertiaMoment(ScrewMinorDiam) * ScrewElast * Sqr(Pi) /
     AxialForce / Sqr(Mju * ScrewLength);
 end;
 
-function CalcAxialForce(const Torque: Double; const Screw: TScrew;
-  const BearingDiam, SlidingCoeff: Double): Double;
+function CalcAxialForce(const Torque: ValReal; const Screw: TScrew;
+  const BearingDiam, SlidingCoeff: ValReal): ValReal;
 begin
   Result := 2 * Torque / (Screw.PitchDiam * Tan(ScrewFricAngle + Screw.ThreadAngle) +
     SlidingCoeff * ScrewFriction * BearingDiam);
@@ -337,7 +336,7 @@ begin
 end;
 
 function ChooseScrewByMinDiam(var Screw: TScrew; var Nut: TNut;
-  const MinRod: Double; const IsScrewPullout: Boolean): Integer;
+  const MinRod: ValReal; const IsScrewPullout: Boolean): Integer;
 const
   NotFound = -1;
 var
@@ -356,7 +355,7 @@ begin
   end;
 end;
 
-function ChooseGearbox(var Gearbox: TGearbox; const RequiredTorque: Double;
+function ChooseGearbox(var Gearbox: TGearbox; const RequiredTorque: ValReal;
   const IsScrewPullout: Boolean; const Screw: TScrew;
   const ModelGearbox: TModelGearbox; const Need2InputShaft: Boolean): Boolean;
 var
@@ -384,7 +383,7 @@ begin
 end;
 
 procedure ChooseScrewByMatch(var Screw: TScrew; var Nut: TNut;
-  const MajorDiam, Pitch: Double; const IsScrewPullout: Boolean);
+  const MajorDiam, Pitch: ValReal; const IsScrewPullout: Boolean);
 var
   I: Integer;
   IsStdFound: Boolean;
@@ -409,7 +408,7 @@ begin
   end;
 end;
 
-procedure CalcActuatorTemperatureRange(var MinTemperature, MaxTemperature: Double;
+procedure CalcActuatorTemperatureRange(var MinTemperature, MaxTemperature: ValReal;
   const Actuator: TActuator; const ControlBlock: TControlBlock);
 begin
   case Actuator.ActuatorType of
@@ -456,10 +455,10 @@ begin
   end;
 end;
 
-function CalcMinSpeed(const Revs: Double; const Duty: string;
-  const FullWays: Double): Double;
+function CalcMinSpeed(const Revs: ValReal; const Duty: string;
+  const FullWays: ValReal): ValReal;
 var
-  OpenTimeForFullWays: Double;
+  OpenTimeForFullWays: ValReal;
 begin
   case Duty of
     S215, S425:
@@ -472,10 +471,10 @@ begin
   Result := Revs / OpenTimeForFullWays * FullWays;
 end;
 
-function ChooseActuator(var Actuator: TActuator; const RequiredTorque: Double;
+function ChooseActuator(var Actuator: TActuator; const RequiredTorque: ValReal;
   const IsScrewPullout: Boolean; const Screw: TScrew;
   const ModelActuator: array of TArrayActuator; const SlgKind: TSlgKind;
-  const MinSpeed: Double; const RecommendMinSpeed: Double): Boolean;
+  const MinSpeed: ValReal; const RecommendMinSpeed: ValReal): Boolean;
 var
   I, J: Integer;
   IsSpeedNormal: Boolean;
@@ -508,12 +507,12 @@ begin
   end;
 end;
 
-function CalcHandWheelDiam(const RequiredTorque, HandForce: Double): Double;
+function CalcHandWheelDiam(const RequiredTorque, HandForce: ValReal): ValReal;
 begin
   Result := 2 * RequiredTorque / HandForce;
 end;
 
-function TryChooseHandWheelByDiam(const Diam, ScrewDiam: Double;
+function TryChooseHandWheelByDiam(const Diam, ScrewDiam: ValReal;
   const IsScrewPullout: Boolean; const DriveKind: TDriveKind;
   const ScrewsNumber: Integer): THandWheel;
 var
@@ -533,11 +532,11 @@ begin
   end;
 end;
 
-procedure ChooseHandWheel(var HandWheel: THandWheel; const RequiredTorque: Double;
-  const IsScrewPullout: Boolean; const ScrewDiam: Double;
+procedure ChooseHandWheel(var HandWheel: THandWheel; const RequiredTorque: ValReal;
+  const IsScrewPullout: Boolean; const ScrewDiam: ValReal;
   const DriveKind: TDriveKind; const ScrewsNumber: Integer);
 var
-  MinDiam: Double;
+  MinDiam: ValReal;
 begin
   MinDiam := CalcHandWheelDiam(RequiredTorque, MaxHandForce);
   HandWheel := TryChooseHandWheelByDiam(MinDiam, ScrewDiam, IsScrewPullout,
@@ -555,11 +554,11 @@ begin
     Result := B1;
 end;
 
-function CalcNutAxe(const AxialForce, Torque, ShaftDiam: Double): Double;
+function CalcNutAxe(const AxialForce, Torque, ShaftDiam: ValReal): ValReal;
 const
   AxesNumber = 2;
 var
-  P1, P2, PRes: Double;
+  P1, P2, PRes: ValReal;
 begin
   P1 := AxialForce / AxesNumber;
   P2 := Torque * 2 / ShaftDiam / AxesNumber;
@@ -568,19 +567,19 @@ begin
 end;
 
 { Для полного круга Angle = 2 * Pi }
-function CalcAreaCircleOfDiam(const Diam: Double; const Angle: Double): Double;
+function CalcAreaCircleOfDiam(const Diam: ValReal; const Angle: ValReal): ValReal;
 begin
   Result := Angle * Sqr(Diam) / 8;
 end;
 
-function CalcSlendernessRatio(const ScrewLength: Double; const RodDiam: Double): Double;
+function CalcSlendernessRatio(const ScrewLength: ValReal; const RodDiam: ValReal): ValReal;
 begin
   Result := ScrewLength / CircleInertiaRadius(RodDiam);
 end;
 
 { Участвует в силовом расчете (не добавлять запас). }
 function CalcSealingLength(const Kind: TSlgKind;
-  const FrameWidth, GateHeight: Double): Double;
+  const FrameWidth, GateHeight: ValReal): ValReal;
 begin
   if Kind = Deep then
     Result := GateHeight * 2 + FrameWidth * 2
@@ -588,7 +587,7 @@ begin
     Result := GateHeight * 2 + FrameWidth;
 end;
 
-function CalcLeakage(const SealingLength: Double): Double;
+function CalcLeakage(const SealingLength: ValReal): ValReal;
 begin
   Result := SpecificLeakage * SealingLength * 60;  { l/min }
 end;
@@ -612,13 +611,13 @@ begin
   Result := Format(L10nOut[28, Lang], [Slg.MinScrewTorque, ToRpm(Slg.MinSpeed)]);
 end;
 
-function CalcAnchorsNumberByTension(const Force: Double; const Anchor: TAnchor): Integer;
+function CalcAnchorsNumberByTension(const Force: ValReal; const Anchor: TAnchor): Integer;
 begin
   Result := Ceil(Force / Anchor.RecomendTensionLoad);
 end;
 
-function CalcMaxScrewTorqueByHand(const HandWheelDiam, Ratio, HandForce: Double;
-  const ScrewsNumber: Integer): Double;
+function CalcMaxScrewTorqueByHand(const HandWheelDiam, Ratio, HandForce: ValReal;
+  const ScrewsNumber: Integer): ValReal;
 begin
   Result := HandForce * HandWheelDiam / 2 * Ratio / ScrewsNumber;
 end;
@@ -632,13 +631,13 @@ begin
     Result := IsSmall;
 end;
 
-function CalcHandForce(const Torque, Diam: Double): Double;
+function CalcHandForce(const Torque, Diam: ValReal): ValReal;
 begin
   Result := 2 * Torque / Diam;
 end;
 
 function CalcIsSmall(const SlgKind: TSlgKind;
-  const FrameWidth, GateHeight, ScrewDiam: Double): Boolean;
+  const FrameWidth, GateHeight, ScrewDiam: ValReal): Boolean;
 begin
   Result := (SlgKind = Surf) and (FrameWidth <= 1.5) and (GateHeight <= 1.5) and
     (ScrewDiam <= Mm(30));
@@ -647,7 +646,7 @@ end;
 procedure CalcScrewAndDrive(var Slg: TSlidegate; const InputData: TInputData;
   out Error: TFuncSlidegateError);
 var
-  MinActuatorTorque, BearingDiam, SlidingCoeff: Double;
+  MinActuatorTorque, BearingDiam, SlidingCoeff: ValReal;
 begin
   Error := nil;
 
@@ -703,6 +702,10 @@ begin
 
     OpenCloseActuator, RegulActuator:
     begin
+      MinActuatorTorque := Slg.MinScrewTorque * ActuatorTorqueReserve;
+      if Slg.ScrewsNumber > 1 then
+        MinActuatorTorque := MinActuatorTorque / Slg.Gearbox.Ratio * Slg.ScrewsNumber;
+
       if InputData.Actuator <> nil then
       begin
         Slg.MinSpeed := CalcMinSpeed(Slg.Revs, InputData.Actuator.Duty,
@@ -713,13 +716,6 @@ begin
       begin
         Slg.MinSpeed := CalcMinSpeed(Slg.Revs, InputData.ModelActuator[0, 0].Duty,
           InputData.FullWays);
-
-        if Slg.ScrewsNumber > 1 then
-          MinActuatorTorque :=
-            Slg.MinScrewTorque * ActuatorTorqueReserve / Slg.Gearbox.Ratio *
-            Slg.ScrewsNumber
-        else
-          MinActuatorTorque := Slg.MinScrewTorque * ActuatorTorqueReserve;
 
         if not ChooseActuator(Slg.Actuator, MinActuatorTorque +
           DeltaOpen, Slg.IsScrewPullout, Slg.Screw, InputData.ModelActuator,
@@ -817,7 +813,7 @@ begin
   until not IsFounded;
 end;
 
-function CalcAnchorsNumberByShear(const Force: Double; const Anchor: TAnchor): Integer;
+function CalcAnchorsNumberByShear(const Force: ValReal; const Anchor: TAnchor): Integer;
 begin
   Result := Ceil(Force / Anchor.RecomendShearLoad);
 end;
@@ -959,10 +955,7 @@ begin
   end;
 
   if (Slg.SlgKind <> Flow) and (not Slg.IsSmall) then
-  begin
-    Slg.BronzeWedgeStrip := '22x12';
-    Slg.BronzeWedgeStripLength := 0.055 * Slg.WedgePairsCount * 2;
-  end;
+    Slg.BronzePadCount := Slg.WedgePairsCount * 2;
 
   Slg.NutAxe := CalcNutAxe(Slg.MaxAxialForce, Slg.MaxScrewTorque, Slg.Screw.MinorDiam);
   Slg.ScrewSlenderness := CalcSlendernessRatio(Slg.ScrewLength, Slg.Screw.MinorDiam);

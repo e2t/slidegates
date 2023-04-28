@@ -15,20 +15,20 @@ type
   TNut = record
     DesignationR: string;
     DesignationL: string;
-    SectionSize: Double;
-    Length: Double;
+    SectionSize: ValReal;
+    Length: ValReal;
     IsSquare: Boolean;
   end;
 
   TScrew = record
-    MajorDiam: Double;
-    PitchDiam: Double;
-    MinorDiam: Double;
-    Pitch: Double;
+    MajorDiam: ValReal;
+    PitchDiam: ValReal;
+    MinorDiam: ValReal;
+    Pitch: ValReal;
     SizeToStr: string;
     DesignationR: string;
     DesignationL: string;
-    ThreadAngle: Double;
+    ThreadAngle: ValReal;
   end;
 
   TBuyableScrewSet = record
@@ -40,8 +40,8 @@ type
 var
   StdScrews: array [0..9] of TBuyableScrewSet;
 
-function SelfMadeNut(const MajorScrewDiam: Double): TNut;
-function ScrewTr(const MajorDiam, Pitch: Double): TScrew;
+function SelfMadeNut(const MajorScrewDiam: ValReal): TNut;
+function ScrewTr(const MajorDiam, Pitch: ValReal): TScrew;
 function GetNut(const StdScrew: TBuyableScrewSet; const IsScrewPullout: Boolean): TNut;
 function NutDesgination(const Nut: TNut; const IsRightHanded: Boolean;
   const Lang: TLang): string;
@@ -51,7 +51,7 @@ implementation
 uses
   SysUtils, MathUtils, Measurements, CheckNum, Math;
 
-function CreateScrew(const MajorDiam, PitchDiam, MinorDiam, Pitch: Double;
+function CreateScrew(const MajorDiam, PitchDiam, MinorDiam, Pitch: ValReal;
   const SizeToStr, DesignationR, DesignationL: string): TScrew;
 begin
   Result.MajorDiam := MajorDiam;
@@ -64,7 +64,7 @@ begin
   Result.ThreadAngle := Arctan(Pitch / Pi / PitchDiam);
 end;
 
-function CalcTrGap(const Pitch: Double): Double;
+function CalcTrGap(const Pitch: ValReal): ValReal;
 begin
   if CompareValue(Pitch, Mm(2), CompAccuracy) < 0 then
     Result := Mm(0.15)
@@ -76,10 +76,10 @@ begin
     Result := Mm(1);
 end;
 
-function ScrewTr(const MajorDiam, Pitch: Double): TScrew;
+function ScrewTr(const MajorDiam, Pitch: ValReal): TScrew;
 var
   ASizeToStr: string;
-  Gap: Double;
+  Gap: ValReal;
 begin
   ASizeToStr := FloatToStr(ToMm(MajorDiam)) + 'x' + FloatToStr(ToMm(Pitch));
   Gap := CalcTrGap(Pitch);
@@ -88,7 +88,7 @@ begin
 end;
 
 function CreateNut(const DesignationR, DesignationL: string;
-  const SectionSize, Length: Double): TNut;
+  const SectionSize, Length: ValReal): TNut;
 begin
   Result.DesignationR := DesignationR;
   Result.DesignationL := DesignationL;
@@ -97,24 +97,24 @@ begin
 end;
 
 function RoundNut(const DesignationR, DesignationL: string;
-  const SectionSize, Length: Double): TNut;
+  const SectionSize, Length: ValReal): TNut;
 begin
   Result := CreateNut(DesignationR, DesignationL, SectionSize, Length);
   Result.IsSquare := False;
 end;
 
 function SquareNut(const DesignationR, DesignationL: string;
-  const SectionSize, Length: Double): TNut;
+  const SectionSize, Length: ValReal): TNut;
 begin
   Result := CreateNut(DesignationR, DesignationL, SectionSize, Length);
   Result.IsSquare := True;
 end;
 
-function SelfMadeNut(const MajorScrewDiam: Double): TNut;
+function SelfMadeNut(const MajorScrewDiam: ValReal): TNut;
 const
   RoundBase = 0.01;  { 10 mm }
 var
-  RodFactor: Double;
+  RodFactor: ValReal;
 begin
   if MajorScrewDiam <= Mm(42) then
     RodFactor := 2

@@ -22,58 +22,61 @@ type
     abstract
     Brand: string;
     Name: string;
-    MaxTorque: Double;
-    Ratio: Double;
-    Mass: Double;
-    MaxScrew: Double;
+    MaxTorque: ValReal;
+    Ratio: ValReal;
+    Mass: ValReal;
+    MaxScrew: ValReal;
     constructor Create(const ABrand: string; const AName: string;
-      const AMaxTorque: Double; const ARatio: Double; const AMass: Double;
-      const AMaxScrew: Double);
+      const AMaxTorque: ValReal; const ARatio: ValReal; const AMass: ValReal;
+      const AMaxScrew: ValReal);
   end;
 
   THandWheel = class(TControl)
-    Diameter: Double;
+    Diameter: ValReal;
     constructor Create(const ABrand: string; const AName: string;
-      const ADiameter: Double; const AMaxTorque: Double; const ARatio: Double;
-      const AMass: Double; const AMaxScrew: Double);
+      const ADiameter: ValReal; const AMaxTorque: ValReal; const ARatio: ValReal;
+      const AMass: ValReal; const AMaxScrew: ValReal);
   end;
 
   TDriveUnit = class abstract(TControl)
     Flange: string;
     constructor Create(const ABrand: string; const AName: string;
-      const AMaxTorque: Double; const ARatio: Double; const AMass: Double;
-      const AFlange: string; const AMaxScrew: Double);
+      const AMaxTorque: ValReal; const ARatio: ValReal; const AMass: ValReal;
+      const AFlange: string; const AMaxScrew: ValReal);
   end;
 
   TActuator = class(TDriveUnit)
-    Speed: Double;
-    MinTorque: Double;
-    Power: Double;
+    Speed: ValReal;
+    MinTorque: ValReal;
+    Power: ValReal;
+    Voltage: ValReal;
+    Frequency: ValReal;
     Duty: string;
     ControlBlockNames: TControlBlockNames;
     ActuatorType: TActuatorType;
     constructor Create(const ABrand: string; const AActuatorType: TActuatorType;
-      const AName: string; const AMaxTorque: Double; const ARatio: Double;
-      const AMass: Double; const AFlange: string; const AMaxScrew: Double;
-      const ASpeed: Double; const AMinTorque: Double; const APower: Double;
-      const ADuty: string);
+      const AName: string; const AMaxTorque: ValReal; const ARatio: ValReal;
+      const AMass: ValReal; const AFlange: string; const AMaxScrew: ValReal;
+      const ASpeed: ValReal; const AMinTorque: ValReal; const APower: ValReal;
+      const ADuty: string; const AVoltage: ValReal; const AFrequency: ValReal);
     constructor CreateAuma(const AActuatorType: TActuatorType;
-      const AName: string; const AMaxTorque: Double; const ARatio: Double;
-      const AMass: Double; const AFlange: string; const AMaxScrew: Double;
-      const ASpeed: Double; const AMinTorque: Double; const APower: Double;
-      const ADuty: string; const ControlAM: string; const ControlAC: string);
+      const AName: string; const AMaxTorque: ValReal; const ARatio: ValReal;
+      const AMass: ValReal; const AFlange: string; const AMaxScrew: ValReal;
+      const ASpeed: ValReal; const AMinTorque: ValReal; const APower: ValReal;
+      const ADuty: string; const ControlAM: string; const ControlAC: string;
+      const AVoltage: ValReal; const AFrequency: ValReal);
   end;
 
   TGearbox = class(TDriveUnit)
     GearboxType: TGearboxType;
     CanHave2InputShaft: Boolean;
-    HandWheelDiam: Double;
-    NominalRatio: Double;
+    HandWheelDiam: ValReal;
+    NominalRatio: ValReal;
     constructor Create(const ABrand: string; const AGearboxType: TGearboxType;
-      const AName: string; const AMaxTorque: Double; const ANominalRatio: Double;
-      const ARatio: Double; const AMass: Double; const AFlange: string;
-      const AMaxScrew: Double; const ACanHave2InputShaft: Boolean;
-      const AHandWheelDiam: Double);
+      const AName: string; const AMaxTorque: ValReal; const ANominalRatio: ValReal;
+      const ARatio: ValReal; const AMass: ValReal; const AFlange: string;
+      const AMaxScrew: ValReal; const ACanHave2InputShaft: Boolean;
+      const AHandWheelDiam: ValReal);
   end;
 
   TArrayActuator = array of TActuator;
@@ -117,8 +120,10 @@ const
   SRotorkIB = 'Rotork IB';
 
 var
-  AumaSADutyS215, AumaSADutyS230: TModelActuator;
-  AumaSARDutyS425, AumaSARDutyS450: TModelActuator;
+  AumaSA_S215_380V50Hz, AumaSA_S230_380V50Hz,
+  AumaSA_S215_400V50Hz, AumaSA_S230_400V50Hz,
+  AumaSAR_S425_380V50Hz, AumaSAR_S450_380V50Hz,
+  AumaSAR_S425_400V50Hz, AumaSAR_S450_400V50Hz: TModelActuator;
   AumaGK, TramecR, MechanicRZAM, RotorkIB: TModelGearbox;
   AumaGST: TModelGearbox;
   HandWheels: array [0..2] of THandWheel;
@@ -129,8 +134,8 @@ uses
   Measurements;
 
 constructor TControl.Create(const ABrand: string; const AName: string;
-  const AMaxTorque: Double; const ARatio: Double; const AMass: Double;
-  const AMaxScrew: Double);
+  const AMaxTorque: ValReal; const ARatio: ValReal; const AMass: ValReal;
+  const AMaxScrew: ValReal);
 begin
   Brand := ABrand;
   Name := AName;
@@ -141,26 +146,26 @@ begin
 end;
 
 constructor THandWheel.Create(const ABrand: string; const AName: string;
-  const ADiameter: Double; const AMaxTorque: Double; const ARatio: Double;
-  const AMass: Double; const AMaxScrew: Double);
+  const ADiameter: ValReal; const AMaxTorque: ValReal; const ARatio: ValReal;
+  const AMass: ValReal; const AMaxScrew: ValReal);
 begin
   inherited Create(ABrand, AName, AMaxTorque, ARatio, AMass, AMaxScrew);
   Diameter := ADiameter;
 end;
 
 constructor TDriveUnit.Create(const ABrand: string; const AName: string;
-  const AMaxTorque: Double; const ARatio: Double; const AMass: Double;
-  const AFlange: string; const AMaxScrew: Double);
+  const AMaxTorque: ValReal; const ARatio: ValReal; const AMass: ValReal;
+  const AFlange: string; const AMaxScrew: ValReal);
 begin
   inherited Create(ABrand, AName, AMaxTorque, ARatio, AMass, AMaxScrew);
   Flange := AFlange;
 end;
 
 constructor TActuator.Create(const ABrand: string; const AActuatorType: TActuatorType;
-  const AName: string; const AMaxTorque: Double; const ARatio: Double;
-  const AMass: Double; const AFlange: string; const AMaxScrew: Double;
-  const ASpeed: Double; const AMinTorque: Double; const APower: Double;
-  const ADuty: string);
+  const AName: string; const AMaxTorque: ValReal; const ARatio: ValReal;
+  const AMass: ValReal; const AFlange: string; const AMaxScrew: ValReal;
+  const ASpeed: ValReal; const AMinTorque: ValReal; const APower: ValReal;
+  const ADuty: string; const AVoltage: ValReal; const AFrequency: ValReal);
 begin
   inherited Create(ABrand, AName, AMaxTorque, ARatio,
     AMass, AFlange, AMaxScrew);
@@ -170,26 +175,28 @@ begin
   Duty := ADuty;
   ControlBlockNames := TControlBlockNames.Create;
   ActuatorType := AActuatorType;
+  Voltage := AVoltage;
+  Frequency := AFrequency;
 end;
 
 constructor TActuator.CreateAuma(const AActuatorType: TActuatorType;
-  const AName: string; const AMaxTorque: Double; const ARatio: Double;
-  const AMass: Double; const AFlange: string; const AMaxScrew: Double;
-  const ASpeed: Double; const AMinTorque: Double; const APower: Double;
-  const ADuty: string; const ControlAM: string; const ControlAC: string);
+  const AName: string; const AMaxTorque: ValReal; const ARatio: ValReal;
+  const AMass: ValReal; const AFlange: string; const AMaxScrew: ValReal;
+  const ASpeed: ValReal; const AMinTorque: ValReal; const APower: ValReal;
+  const ADuty: string; const ControlAM: string; const ControlAC: string;
+  const AVoltage: ValReal; const AFrequency: ValReal);
 begin
-  Create(SAuma, AActuatorType, AName, AMaxTorque, ARatio, AMass,
-    AFlange, AMaxScrew, ASpeed,
-    AMinTorque, APower, ADuty);
+  Create(SAuma, AActuatorType, AName, AMaxTorque, ARatio, AMass, AFlange,
+    AMaxScrew, ASpeed, AMinTorque, APower, ADuty, AVoltage, AFrequency);
   ControlBlockNames[AumaAM] := ControlAM;
   ControlBlockNames[AumaAC] := ControlAC;
 end;
 
 constructor TGearbox.Create(const ABrand: string; const AGearboxType: TGearboxType;
-  const AName: string; const AMaxTorque: Double; const ANominalRatio: Double;
-  const ARatio: Double; const AMass: Double; const AFlange: string;
-  const AMaxScrew: Double; const ACanHave2InputShaft: Boolean;
-  const AHandWheelDiam: Double);
+  const AName: string; const AMaxTorque: ValReal; const ANominalRatio: ValReal;
+  const ARatio: ValReal; const AMass: ValReal; const AFlange: string;
+  const AMaxScrew: ValReal; const ACanHave2InputShaft: Boolean;
+  const AHandWheelDiam: ValReal);
 begin
   inherited Create(ABrand, AName, AMaxTorque, ARatio, AMass, AFlange, AMaxScrew);
   GearboxType := AGearboxType;
@@ -267,62 +274,123 @@ const
 { AC 01.1 - не выпускается (Рудакова, 02.04.2020) }
 
 var
-  AumaSA072DutyS215: array [0..11] of TActuator;
-  AumaSA072DutyS230: array [0..11] of TActuator;
+  { 380 V, 50 Hz }
 
-  AumaSA076DutyS215: array [0..11] of TActuator;
-  AumaSA076DutyS230: array [0..11] of TActuator;
+  AumaSA072_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA072_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA102DutyS215: array [0..11] of TActuator;
-  AumaSA102DutyS230: array [0..11] of TActuator;
+  AumaSA076_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA076_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA142DutyS215: array [0..11] of TActuator;
-  AumaSA142DutyS230: array [0..11] of TActuator;
+  AumaSA102_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA102_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA146DutyS215: array [0..11] of TActuator;
-  AumaSA146DutyS230: array [0..11] of TActuator;
+  AumaSA142_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA142_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA162DutyS215: array [0..11] of TActuator;
-  AumaSA162DutyS230: array [0..11] of TActuator;
+  AumaSA146_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA146_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA251DutyS215: array [0..9] of TActuator;
-  AumaSA251DutyS230: array [0..9] of TActuator;
+  AumaSA162_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA162_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA301DutyS215: array [0..9] of TActuator;
-  AumaSA301DutyS230: array [0..9] of TActuator;
+  AumaSA251_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA251_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA351DutyS215: array [0..7] of TActuator;
-  AumaSA351DutyS230: array [0..7] of TActuator;
+  AumaSA301_S215_380V50Hz: array [0..11] of TActuator;
+  AumaSA301_S230_380V50Hz: array [0..11] of TActuator;
 
-  AumaSA401DutyS215: array [0..6] of TActuator;
-  AumaSA401DutyS230: array [0..6] of TActuator;
+  AumaSA351_S215_380V50Hz: array [0..9] of TActuator;
+  AumaSA351_S230_380V50Hz: array [0..9] of TActuator;
 
-  AumaSA481DutyS215: array [0..4] of TActuator;
-  AumaSA481DutyS230: array [0..4] of TActuator;
+  AumaSA401_S215_380V50Hz: array [0..7] of TActuator;
+  AumaSA401_S230_380V50Hz: array [0..7] of TActuator;
 
-  AumaSAR072DutyS425: array [0..9] of TActuator;
-  AumaSAR072DutyS450: array [0..9] of TActuator;
+  AumaSA481_S215_380V50Hz: array [0..4] of TActuator;
+  AumaSA481_S230_380V50Hz: array [0..4] of TActuator;
 
-  AumaSAR076DutyS425: array [0..9] of TActuator;
-  AumaSAR076DutyS450: array [0..9] of TActuator;
+  AumaSAR072_S425_380V50Hz: array [0..9] of TActuator;
+  AumaSAR072_S450_380V50Hz: array [0..9] of TActuator;
 
-  AumaSAR102DutyS425: array [0..9] of TActuator;
-  AumaSAR102DutyS450: array [0..9] of TActuator;
+  AumaSAR076_S425_380V50Hz: array [0..9] of TActuator;
+  AumaSAR076_S450_380V50Hz: array [0..9] of TActuator;
 
-  AumaSAR142DutyS425: array [0..9] of TActuator;
-  AumaSAR142DutyS450: array [0..9] of TActuator;
+  AumaSAR102_S425_380V50Hz: array [0..9] of TActuator;
+  AumaSAR102_S450_380V50Hz: array [0..9] of TActuator;
 
-  AumaSAR146DutyS425: array [0..9] of TActuator;
-  AumaSAR146DutyS450: array [0..9] of TActuator;
+  AumaSAR142_S425_380V50Hz: array [0..9] of TActuator;
+  AumaSAR142_S450_380V50Hz: array [0..9] of TActuator;
 
-  AumaSAR162DutyS425: array [0..9] of TActuator;
-  AumaSAR162DutyS450: array [0..9] of TActuator;
+  AumaSAR146_S425_380V50Hz: array [0..9] of TActuator;
+  AumaSAR146_S450_380V50Hz: array [0..9] of TActuator;
 
-  AumaSAR251DutyS425: array [0..3] of TActuator;
-  AumaSAR251DutyS450: array [0..3] of TActuator;
+  AumaSAR162_S425_380V50Hz: array [0..9] of TActuator;
+  AumaSAR162_S450_380V50Hz: array [0..9] of TActuator;
 
-  AumaSAR301DutyS425: array [0..3] of TActuator;
-  AumaSAR301DutyS450: array [0..3] of TActuator;
+  AumaSAR251_S425_380V50Hz: array [0..3] of TActuator;
+  AumaSAR251_S450_380V50Hz: array [0..3] of TActuator;
+
+  AumaSAR301_S425_380V50Hz: array [0..3] of TActuator;
+  AumaSAR301_S450_380V50Hz: array [0..3] of TActuator;
+
+  { 400 V, 50 Hz }
+
+  AumaSA072_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA072_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA076_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA076_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA102_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA102_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA142_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA142_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA146_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA146_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA162_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA162_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA251_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA251_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA301_S215_400V50Hz: array [0..11] of TActuator;
+  AumaSA301_S230_400V50Hz: array [0..11] of TActuator;
+
+  AumaSA351_S215_400V50Hz: array [0..9] of TActuator;
+  AumaSA351_S230_400V50Hz: array [0..9] of TActuator;
+
+  AumaSA401_S215_400V50Hz: array [0..7] of TActuator;
+  AumaSA401_S230_400V50Hz: array [0..7] of TActuator;
+
+  AumaSA481_S215_400V50Hz: array [0..4] of TActuator;
+  AumaSA481_S230_400V50Hz: array [0..4] of TActuator;
+
+  AumaSAR072_S425_400V50Hz: array [0..9] of TActuator;
+  AumaSAR072_S450_400V50Hz: array [0..9] of TActuator;
+
+  AumaSAR076_S425_400V50Hz: array [0..9] of TActuator;
+  AumaSAR076_S450_400V50Hz: array [0..9] of TActuator;
+
+  AumaSAR102_S425_400V50Hz: array [0..9] of TActuator;
+  AumaSAR102_S450_400V50Hz: array [0..9] of TActuator;
+
+  AumaSAR142_S425_400V50Hz: array [0..9] of TActuator;
+  AumaSAR142_S450_400V50Hz: array [0..9] of TActuator;
+
+  AumaSAR146_S425_400V50Hz: array [0..9] of TActuator;
+  AumaSAR146_S450_400V50Hz: array [0..9] of TActuator;
+
+  AumaSAR162_S425_400V50Hz: array [0..9] of TActuator;
+  AumaSAR162_S450_400V50Hz: array [0..9] of TActuator;
+
+  AumaSAR251_S425_400V50Hz: array [0..3] of TActuator;
+  AumaSAR251_S450_400V50Hz: array [0..3] of TActuator;
+
+  AumaSAR301_S425_400V50Hz: array [0..3] of TActuator;
+  AumaSAR301_S450_400V50Hz: array [0..3] of TActuator;
 
   AumaGK102: array [0..1] of TGearbox;
   AumaGK142: array [0..1] of TGearbox;
@@ -361,815 +429,2431 @@ var
   RotorkIB14: array [0..1] of TGearbox;
 
 initialization
-  SetLength(AumaSADutyS215, 11);
-  SetLength(AumaSADutyS230, 11);
-  SetLength(AumaSARDutyS425, 8);
-  SetLength(AumaSARDutyS450, 8);
+  SetLength(AumaSA_S215_380V50Hz, 11);
+  SetLength(AumaSA_S230_380V50Hz, 11);
+  SetLength(AumaSAR_S425_380V50Hz, 8);
+  SetLength(AumaSAR_S450_380V50Hz, 8);
+  SetLength(AumaSA_S215_400V50Hz, 11);
+  SetLength(AumaSA_S230_400V50Hz, 11);
+  SetLength(AumaSAR_S425_400V50Hz, 8);
+  SetLength(AumaSAR_S450_400V50Hz, 8);
   SetLength(AumaGK, 8);
   SetLength(AumaGST, 8);
   SetLength(TramecR, 5);
   SetLength(MechanicRZAM, 4);
   SetLength(RotorkIB, 6);
 
-  AumaSA072DutyS215[0] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(19), F07, Mm(26), Rpm(4), Nm(10), Kw(0.02), S215, AM011, AC012);
-  AumaSA072DutyS215[1] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(19), F07, Mm(26), Rpm(5.6), Nm(10), Kw(0.02), S215, AM011, AC012);
-  AumaSA072DutyS215[2] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(19), F07, Mm(26), Rpm(8), Nm(10), Kw(0.04), S215, AM011, AC012);
-  AumaSA072DutyS215[3] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(19), F07, Mm(26), Rpm(11), Nm(10), Kw(0.04), S215, AM011, AC012);
-  AumaSA072DutyS215[4] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(19), F07, Mm(26), Rpm(16), Nm(10), Kw(0.06), S215, AM011, AC012);
-  AumaSA072DutyS215[5] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(19), F07, Mm(26), Rpm(22), Nm(10), Kw(0.06), S215, AM011, AC012);
-  AumaSA072DutyS215[6] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(20), F10, Mm(30), Rpm(32), Nm(10), Kw(0.1), S215, AM011, AC012);
-  AumaSA072DutyS215[7] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(20), F10, Mm(30), Rpm(45), Nm(10), Kw(0.1), S215, AM011, AC012);
-  AumaSA072DutyS215[8] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(20), F10, Mm(30), Rpm(63), Nm(10), Kw(0.2), S215, AM011, AC012);
-  AumaSA072DutyS215[9] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(20), F10, Mm(30), Rpm(90), Nm(10), Kw(0.2), S215, AM011, AC012);
-  AumaSA072DutyS215[10] := TActuator.CreateAuma(AumaSA, SA072, Nm(30),
-    1, Kg(20), F10, Mm(30), Rpm(125), Nm(10), Kw(0.3), S215, AM011, AC012);
-  AumaSA072DutyS215[11] := TActuator.CreateAuma(AumaSA, SA072, Nm(25),
-    1, Kg(20), F10, Mm(30), Rpm(180), Nm(10), Kw(0.3), S215, AM011, AC012);
+  { SA 380 V, 50 Hz }
 
-  AumaSA072DutyS230[0] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(19), F07, Mm(26), Rpm(4), Nm(10), Kw(0.01), S230, AM011, AC012);
-  AumaSA072DutyS230[1] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(19), F07, Mm(26), Rpm(5.6), Nm(10), Kw(0.01), S230, AM011, AC012);
-  AumaSA072DutyS230[2] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(19), F07, Mm(26), Rpm(8), Nm(10), Kw(0.03), S230, AM011, AC012);
-  AumaSA072DutyS230[3] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(19), F07, Mm(26), Rpm(11), Nm(10), Kw(0.03), S230, AM011, AC012);
-  AumaSA072DutyS230[4] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(19), F07, Mm(26), Rpm(16), Nm(10), Kw(0.04), S230, AM011, AC012);
-  AumaSA072DutyS230[5] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(19), F07, Mm(26), Rpm(22), Nm(10), Kw(0.04), S230, AM011, AC012);
-  AumaSA072DutyS230[6] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(20), F10, Mm(30), Rpm(32), Nm(10), Kw(0.07), S230, AM011, AC012);
-  AumaSA072DutyS230[7] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(20), F10, Mm(30), Rpm(45), Nm(10), Kw(0.07), S230, AM011, AC012);
-  AumaSA072DutyS230[8] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(20), F10, Mm(30), Rpm(63), Nm(10), Kw(0.14), S230, AM011, AC012);
-  AumaSA072DutyS230[9] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(20), F10, Mm(30), Rpm(90), Nm(10), Kw(0.14), S230, AM011, AC012);
-  AumaSA072DutyS230[10] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(20), F10, Mm(30), Rpm(125), Nm(10), Kw(0.21), S230, AM011, AC012);
-  AumaSA072DutyS230[11] := TActuator.CreateAuma(AumaSA, SA072, Nm(20),
-    1, Kg(20), F10, Mm(30), Rpm(180), Nm(10), Kw(0.21), S230, AM011, AC012);
+  AumaSA072_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(10), Kw(0.02), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(10), Kw(0.02), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(10), Kw(0.04), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(10), Kw(0.04), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(10), Kw(0.06), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(10), Kw(0.06), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(10), Kw(0.1), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(10), Kw(0.1), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(10), Kw(0.2), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(10), Kw(0.2), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(125), Nm(10), Kw(0.3), S215, AM011, AC012, 380, 50);
+  AumaSA072_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(25), 1, Kg(20), F10,
+    Mm(30), Rpm(180), Nm(10), Kw(0.3), S215, AM011, AC012, 380, 50);
 
-  AumaSA076DutyS215[0] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(19), F07, Mm(26), Rpm(4), Nm(20), Kw(0.03), S215, AM011, AC012);
-  AumaSA076DutyS215[1] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(19), F07, Mm(26), Rpm(5.6), Nm(20), Kw(0.03), S215, AM011, AC012);
-  AumaSA076DutyS215[2] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(19), F07, Mm(26), Rpm(8), Nm(20), Kw(0.06), S215, AM011, AC012);
-  AumaSA076DutyS215[3] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(19), F07, Mm(26), Rpm(11), Nm(20), Kw(0.06), S215, AM011, AC012);
-  AumaSA076DutyS215[4] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(19), F07, Mm(26), Rpm(16), Nm(20), Kw(0.12), S215, AM011, AC012);
-  AumaSA076DutyS215[5] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(19), F07, Mm(26), Rpm(22), Nm(20), Kw(0.12), S215, AM011, AC012);
-  AumaSA076DutyS215[6] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(21), F10, Mm(30), Rpm(32), Nm(20), Kw(0.2), S215, AM011, AC012);
-  AumaSA076DutyS215[7] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(21), F10, Mm(30), Rpm(45), Nm(20), Kw(0.2), S215, AM011, AC012);
-  AumaSA076DutyS215[8] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(21), F10, Mm(30), Rpm(63), Nm(20), Kw(0.4), S215, AM011, AC012);
-  AumaSA076DutyS215[9] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(21), F10, Mm(30), Rpm(90), Nm(20), Kw(0.4), S215, AM011, AC012);
-  AumaSA076DutyS215[10] := TActuator.CreateAuma(AumaSA, SA076, Nm(60),
-    1, Kg(21), F10, Mm(30), Rpm(125), Nm(20), Kw(0.5), S215, AM011, AC012);
-  AumaSA076DutyS215[11] := TActuator.CreateAuma(AumaSA, SA076, Nm(50),
-    1, Kg(21), F10, Mm(30), Rpm(180), Nm(20), Kw(0.5), S215, AM011, AC012);
+  AumaSA072_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(10), Kw(0.01), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(10), Kw(0.01), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(10), Kw(0.03), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(10), Kw(0.03), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(10), Kw(0.04), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(10), Kw(0.04), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(10), Kw(0.07), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(10), Kw(0.07), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(10), Kw(0.14), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(10), Kw(0.14), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(125), Nm(10), Kw(0.21), S230, AM011, AC012, 380, 50);
+  AumaSA072_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(180), Nm(10), Kw(0.21), S230, AM011, AC012, 380, 50);
 
-  AumaSA076DutyS230[0] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(19), F07, Mm(26), Rpm(4), Nm(20), Kw(0.02), S230, AM011, AC012);
-  AumaSA076DutyS230[1] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(19), F07, Mm(26), Rpm(5.6), Nm(20), Kw(0.02), S230, AM011, AC012);
-  AumaSA076DutyS230[2] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(19), F07, Mm(26), Rpm(8), Nm(20), Kw(0.04), S230, AM011, AC012);
-  AumaSA076DutyS230[3] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(19), F07, Mm(26), Rpm(11), Nm(20), Kw(0.04), S230, AM011, AC012);
-  AumaSA076DutyS230[4] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(19), F07, Mm(26), Rpm(16), Nm(20), Kw(0.08), S230, AM011, AC012);
-  AumaSA076DutyS230[5] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(19), F07, Mm(26), Rpm(22), Nm(20), Kw(0.08), S230, AM011, AC012);
-  AumaSA076DutyS230[6] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(21), F10, Mm(30), Rpm(32), Nm(20), Kw(0.14), S230, AM011, AC012);
-  AumaSA076DutyS230[7] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(21), F10, Mm(30), Rpm(45), Nm(20), Kw(0.14), S230, AM011, AC012);
-  AumaSA076DutyS230[8] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(21), F10, Mm(30), Rpm(63), Nm(20), Kw(0.28), S230, AM011, AC012);
-  AumaSA076DutyS230[9] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(21), F10, Mm(30), Rpm(90), Nm(20), Kw(0.28), S230, AM011, AC012);
-  AumaSA076DutyS230[10] := TActuator.CreateAuma(AumaSA, SA076, Nm(40),
-    1, Kg(21), F10, Mm(30), Rpm(125), Nm(20), Kw(0.35), S230, AM011, AC012);
-  AumaSA076DutyS230[11] := TActuator.CreateAuma(AumaSA, SA076, Nm(30),
-    1, Kg(21), F10, Mm(30), Rpm(180), Nm(20), Kw(0.35), S230, AM011, AC012);
+  AumaSA076_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(4), Nm(20), Kw(0.03), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(5.6), Nm(20), Kw(0.03), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(20), F07, Mm(26),
+    Rpm(8), Nm(20), Kw(0.06), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(20), F07, Mm(26),
+    Rpm(11), Nm(20), Kw(0.06), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(20), F07, Mm(26),
+    Rpm(16), Nm(20), Kw(0.12), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(20), F07, Mm(26),
+    Rpm(22), Nm(20), Kw(0.12), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(32), Nm(20), Kw(0.2), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(45), Nm(20), Kw(0.2), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(63), Nm(20), Kw(0.4), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(90), Nm(20), Kw(0.4), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(125), Nm(20), Kw(0.5), S215, AM011, AC012, 380, 50);
+  AumaSA076_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(50), 1, Kg(21), F10, Mm(30),
+    Rpm(180), Nm(20), Kw(0.5), S215, AM011, AC012, 380, 50);
 
-  AumaSA102DutyS215[0] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(23), F10, Mm(40), Rpm(4), Nm(40), Kw(0.06), S215, AM011, AC012);
-  AumaSA102DutyS215[1] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(23), F10, Mm(40), Rpm(5.6), Nm(40), Kw(0.06), S215, AM011, AC012);
-  AumaSA102DutyS215[2] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(23), F10, Mm(40), Rpm(8), Nm(40), Kw(0.12), S215, AM011, AC012);
-  AumaSA102DutyS215[3] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(23), F10, Mm(40), Rpm(11), Nm(40), Kw(0.12), S215, AM011, AC012);
-  AumaSA102DutyS215[4] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(23), F10, Mm(40), Rpm(16), Nm(40), Kw(0.25), S215, AM011, AC012);
-  AumaSA102DutyS215[5] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(23), F10, Mm(40), Rpm(22), Nm(40), Kw(0.25), S215, AM011, AC012);
-  AumaSA102DutyS215[6] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(25), F10, Mm(40), Rpm(32), Nm(40), Kw(0.4), S215, AM011, AC012);
-  AumaSA102DutyS215[7] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(25), F10, Mm(40), Rpm(45), Nm(40), Kw(0.4), S215, AM011, AC012);
-  AumaSA102DutyS215[8] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(26), F10, Mm(40), Rpm(63), Nm(40), Kw(0.7), S215, AM011, AC012);
-  AumaSA102DutyS215[9] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(26), F10, Mm(40), Rpm(90), Nm(40), Kw(0.7), S215, AM011, AC012);
-  AumaSA102DutyS215[10] := TActuator.CreateAuma(AumaSA, SA102, Nm(120),
-    1, Kg(26), F10, Mm(40), Rpm(125), Nm(40), Kw(1), S215, AM011, AC012);
-  AumaSA102DutyS215[11] := TActuator.CreateAuma(AumaSA, SA102, Nm(100),
-    1, Kg(26), F10, Mm(40), Rpm(180), Nm(40), Kw(1), S215, AM011, AC012);
+  AumaSA076_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(4), Nm(20), Kw(0.02), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(5.6), Nm(20), Kw(0.02), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(8), Nm(20), Kw(0.04), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(11), Nm(20), Kw(0.04), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(16), Nm(20), Kw(0.08), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(22), Nm(20), Kw(0.08), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(32), Nm(20), Kw(0.14), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(45), Nm(20), Kw(0.14), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(63), Nm(20), Kw(0.28), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(90), Nm(20), Kw(0.28), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10, Mm(30),
+    Rpm(125), Nm(20), Kw(0.35), S230, AM011, AC012, 380, 50);
+  AumaSA076_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(30), 1, Kg(21), F10, Mm(30),
+    Rpm(180), Nm(20), Kw(0.35), S230, AM011, AC012, 380, 50);
 
-  AumaSA102DutyS230[0] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(23), F10, Mm(40), Rpm(4), Nm(40), Kw(0.04), S230, AM011, AC012);
-  AumaSA102DutyS230[1] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(23), F10, Mm(40), Rpm(5.6), Nm(40), Kw(0.04), S230, AM011, AC012);
-  AumaSA102DutyS230[2] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(23), F10, Mm(40), Rpm(8), Nm(40), Kw(0.08), S230, AM011, AC012);
-  AumaSA102DutyS230[3] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(23), F10, Mm(40), Rpm(11), Nm(40), Kw(0.08), S230, AM011, AC012);
-  AumaSA102DutyS230[4] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(23), F10, Mm(40), Rpm(16), Nm(40), Kw(0.17), S230, AM011, AC012);
-  AumaSA102DutyS230[5] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(23), F10, Mm(40), Rpm(22), Nm(40), Kw(0.17), S230, AM011, AC012);
-  AumaSA102DutyS230[6] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(25), F10, Mm(40), Rpm(32), Nm(40), Kw(0.28), S230, AM011, AC012);
-  AumaSA102DutyS230[7] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(25), F10, Mm(40), Rpm(45), Nm(40), Kw(0.28), S230, AM011, AC012);
-  AumaSA102DutyS230[8] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(26), F10, Mm(40), Rpm(63), Nm(40), Kw(0.5), S230, AM011, AC012);
-  AumaSA102DutyS230[9] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(26), F10, Mm(40), Rpm(90), Nm(40), Kw(0.5), S230, AM011, AC012);
-  AumaSA102DutyS230[10] := TActuator.CreateAuma(AumaSA, SA102, Nm(90),
-    1, Kg(26), F10, Mm(40), Rpm(125), Nm(40), Kw(0.7), S230, AM011, AC012);
-  AumaSA102DutyS230[11] := TActuator.CreateAuma(AumaSA, SA102, Nm(70),
-    1, Kg(26), F10, Mm(40), Rpm(180), Nm(40), Kw(0.7), S230, AM011, AC012);
+  AumaSA102_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(4), Nm(40), Kw(0.06), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(5.6), Nm(40), Kw(0.06), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(8), Nm(40), Kw(0.12), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(11), Nm(40), Kw(0.12), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(16), Nm(40), Kw(0.25), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(22), Nm(40), Kw(0.25), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(40), Kw(0.4), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(40), Kw(0.4), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(63), Nm(40), Kw(0.7), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(90), Nm(40), Kw(0.7), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(125), Nm(40), Kw(1), S215, AM011, AC012, 380, 50);
+  AumaSA102_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(100), 1, Kg(25), F10,
+    Mm(40), Rpm(180), Nm(40), Kw(1), S215, AM011, AC012, 380, 50);
 
-  AumaSA142DutyS215[0] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(47), F14, Mm(55), Rpm(4), Nm(100), Kw(0.12), S215, AM021, AC012);
-  AumaSA142DutyS215[1] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(47), F14, Mm(55), Rpm(5.6), Nm(100), Kw(0.12), S215, AM021, AC012);
-  AumaSA142DutyS215[2] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(47), F14, Mm(55), Rpm(8), Nm(100), Kw(0.25), S215, AM021, AC012);
-  AumaSA142DutyS215[3] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(47), F14, Mm(55), Rpm(11), Nm(100), Kw(0.25), S215, AM021, AC012);
-  AumaSA142DutyS215[4] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(48), F14, Mm(55), Rpm(16), Nm(100), Kw(0.45), S215, AM021, AC012);
-  AumaSA142DutyS215[5] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(48), F14, Mm(55), Rpm(22), Nm(100), Kw(0.45), S215, AM021, AC012);
-  AumaSA142DutyS215[6] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(51), F14, Mm(55), Rpm(32), Nm(100), Kw(0.75), S215, AM021, AC012);
-  AumaSA142DutyS215[7] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(51), F14, Mm(55), Rpm(45), Nm(100), Kw(0.75), S215, AM021, AC012);
-  AumaSA142DutyS215[8] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(52), F14, Mm(55), Rpm(63), Nm(100), Kw(1.4), S215, AM021, AC012);
-  AumaSA142DutyS215[9] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(52), F14, Mm(55), Rpm(90), Nm(100), Kw(1.4), S215, AM021, AC012);
-  AumaSA142DutyS215[10] := TActuator.CreateAuma(AumaSA, SA142, Nm(250),
-    1, Kg(52), F14, Mm(55), Rpm(125), Nm(100), Kw(1.8), S215, AM021, AC012);
-  AumaSA142DutyS215[11] := TActuator.CreateAuma(AumaSA, SA142, Nm(200),
-    1, Kg(52), F14, Mm(55), Rpm(180), Nm(100), Kw(1.8), S215, AM021, AC012);
+  AumaSA102_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(4), Nm(40), Kw(0.04), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(5.6), Nm(40), Kw(0.04), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(8), Nm(40), Kw(0.08), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(11), Nm(40), Kw(0.08), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(16), Nm(40), Kw(0.17), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(22), Nm(40), Kw(0.17), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(40), Kw(0.28), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(40), Kw(0.28), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(63), Nm(40), Kw(0.5), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(90), Nm(40), Kw(0.5), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(125), Nm(40), Kw(0.7), S230, AM011, AC012, 380, 50);
+  AumaSA102_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(70), 1, Kg(25), F10,
+    Mm(40), Rpm(180), Nm(40), Kw(0.7), S230, AM011, AC012, 380, 50);
 
-  AumaSA142DutyS230[0] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(47), F14, Mm(55), Rpm(4), Nm(100), Kw(0.08), S230, AM021, AC012);
-  AumaSA142DutyS230[1] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(47), F14, Mm(55), Rpm(5.6), Nm(100), Kw(0.08), S230, AM021, AC012);
-  AumaSA142DutyS230[2] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(47), F14, Mm(55), Rpm(8), Nm(100), Kw(0.18), S230, AM021, AC012);
-  AumaSA142DutyS230[3] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(47), F14, Mm(55), Rpm(11), Nm(100), Kw(0.18), S230, AM021, AC012);
-  AumaSA142DutyS230[4] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(48), F14, Mm(55), Rpm(16), Nm(100), Kw(0.3), S230, AM021, AC012);
-  AumaSA142DutyS230[5] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(48), F14, Mm(55), Rpm(22), Nm(100), Kw(0.3), S230, AM021, AC012);
-  AumaSA142DutyS230[6] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(51), F14, Mm(55), Rpm(32), Nm(100), Kw(0.5), S230, AM021, AC012);
-  AumaSA142DutyS230[7] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(51), F14, Mm(55), Rpm(45), Nm(100), Kw(0.5), S230, AM021, AC012);
-  AumaSA142DutyS230[8] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(52), F14, Mm(55), Rpm(63), Nm(100), Kw(1), S230, AM021, AC012);
-  AumaSA142DutyS230[9] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(52), F14, Mm(55), Rpm(90), Nm(100), Kw(1), S230, AM021, AC012);
-  AumaSA142DutyS230[10] := TActuator.CreateAuma(AumaSA, SA142, Nm(180),
-    1, Kg(52), F14, Mm(55), Rpm(125), Nm(100), Kw(1.3), S230, AM021, AC012);
-  AumaSA142DutyS230[11] := TActuator.CreateAuma(AumaSA, SA142, Nm(140),
-    1, Kg(52), F14, Mm(55), Rpm(180), Nm(100), Kw(1.3), S230, AM021, AC012);
+  AumaSA142_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(4), Nm(100), Kw(0.12), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(5.6), Nm(100), Kw(0.12), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(8), Nm(100), Kw(0.25), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(11), Nm(100), Kw(0.25), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(100), Kw(0.45), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(100), Kw(0.45), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(32), Nm(100), Kw(0.75), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(45), Nm(100), Kw(0.75), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(63), Nm(100), Kw(1.4), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(90), Nm(100), Kw(1.4), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(125), Nm(100), Kw(1.8), S215, AM021, AC012, 380, 50);
+  AumaSA142_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(200), 1, Kg(48), F14,
+    Mm(55), Rpm(180), Nm(100), Kw(1.8), S215, AM021, AC012, 380, 50);
 
-  AumaSA146DutyS215[0] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(49), F14, Mm(55), Rpm(4), Nm(200), Kw(0.2), S215, AM021, AC012);
-  AumaSA146DutyS215[1] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(49), F14, Mm(55), Rpm(5.6), Nm(200), Kw(0.2), S215, AM021, AC012);
-  AumaSA146DutyS215[2] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(49), F14, Mm(55), Rpm(8), Nm(200), Kw(0.4), S215, AM021, AC012);
-  AumaSA146DutyS215[3] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(49), F14, Mm(55), Rpm(11), Nm(200), Kw(0.4), S215, AM021, AC012);
-  AumaSA146DutyS215[4] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(50), F14, Mm(55), Rpm(16), Nm(200), Kw(0.8), S215, AM021, AC012);
-  AumaSA146DutyS215[5] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(50), F14, Mm(55), Rpm(22), Nm(200), Kw(0.8), S215, AM021, AC012);
-  AumaSA146DutyS215[6] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(57), F14, Mm(55), Rpm(32), Nm(200), Kw(1.6), S215, AM021, AC012);
-  AumaSA146DutyS215[7] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(57), F14, Mm(55), Rpm(45), Nm(200), Kw(1.6), S215, AM021, AC012);
-  AumaSA146DutyS215[8] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(57), F14, Mm(55), Rpm(63), Nm(200), Kw(3), S215, AM021, AC012);
-  AumaSA146DutyS215[9] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(57), F14, Mm(55), Rpm(90), Nm(200), Kw(3), S215, AM021, AC012);
-  AumaSA146DutyS215[10] := TActuator.CreateAuma(AumaSA, SA146, Nm(500),
-    1, Kg(57), F14, Mm(55), Rpm(125), Nm(200), Kw(3.3), S215, AM021, AC012);
-  AumaSA146DutyS215[11] := TActuator.CreateAuma(AumaSA, SA146, Nm(400),
-    1, Kg(57), F14, Mm(55), Rpm(180), Nm(200), Kw(3.3), S215, AM021, AC012);
+  AumaSA142_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(4), Nm(100), Kw(0.08), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(5.6), Nm(100), Kw(0.08), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(8), Nm(100), Kw(0.18), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(11), Nm(100), Kw(0.18), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(100), Kw(0.3), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(100), Kw(0.3), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(32), Nm(100), Kw(0.5), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(45), Nm(100), Kw(0.5), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(63), Nm(100), Kw(1), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(90), Nm(100), Kw(1), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(125), Nm(100), Kw(1.3), S230, AM021, AC012, 380, 50);
+  AumaSA142_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(140), 1, Kg(48), F14,
+    Mm(55), Rpm(180), Nm(100), Kw(1.3), S230, AM021, AC012, 380, 50);
 
-  AumaSA146DutyS230[0] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(49), F14, Mm(55), Rpm(4), Nm(200), Kw(0.14), S230, AM021, AC012);
-  AumaSA146DutyS230[1] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(49), F14, Mm(55), Rpm(5.6), Nm(200), Kw(0.14), S230, AM021, AC012);
-  AumaSA146DutyS230[2] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(49), F14, Mm(55), Rpm(8), Nm(200), Kw(0.3), S230, AM021, AC012);
-  AumaSA146DutyS230[3] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(49), F14, Mm(55), Rpm(11), Nm(200), Kw(0.3), S230, AM021, AC012);
-  AumaSA146DutyS230[4] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(50), F14, Mm(55), Rpm(16), Nm(200), Kw(0.6), S230, AM021, AC012);
-  AumaSA146DutyS230[5] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(50), F14, Mm(55), Rpm(22), Nm(200), Kw(0.6), S230, AM021, AC012);
-  AumaSA146DutyS230[6] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(57), F14, Mm(55), Rpm(32), Nm(200), Kw(1), S230, AM021, AC012);
-  AumaSA146DutyS230[7] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(57), F14, Mm(55), Rpm(45), Nm(200), Kw(1), S230, AM021, AC012);
-  AumaSA146DutyS230[8] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(57), F14, Mm(55), Rpm(63), Nm(200), Kw(2), S230, AM021, AC012);
-  AumaSA146DutyS230[9] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(57), F14, Mm(55), Rpm(90), Nm(200), Kw(2), S230, AM021, AC012);
-  AumaSA146DutyS230[10] := TActuator.CreateAuma(AumaSA, SA146, Nm(360),
-    1, Kg(57), F14, Mm(55), Rpm(125), Nm(200), Kw(2.3), S230, AM021, AC012);
-  AumaSA146DutyS230[11] := TActuator.CreateAuma(AumaSA, SA146, Nm(290),
-    1, Kg(57), F14, Mm(55), Rpm(180), Nm(200), Kw(2.3), S230, AM021, AC012);
+  AumaSA146_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(4), Nm(200), Kw(0.2), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(5.6), Nm(200), Kw(0.2), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(8), Nm(200), Kw(0.4), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(11), Nm(200), Kw(0.4), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(16), Nm(200), Kw(0.8), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(22), Nm(200), Kw(0.8), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(32), Nm(200), Kw(1.6), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(45), Nm(200), Kw(1.6), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(63), Nm(200), Kw(3), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(90), Nm(200), Kw(3), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(125), Nm(200), Kw(3.3), S215, AM021, AC012, 380, 50);
+  AumaSA146_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(400), 1, Kg(53), F14,
+    Mm(55), Rpm(180), Nm(200), Kw(3.3), S215, AM021, AC012, 380, 50);
 
-  AumaSA162DutyS215[0] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(75), F16, Mm(75), Rpm(4), Nm(400), Kw(0.4), S215, AM021, AC012);
-  AumaSA162DutyS215[1] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(75), F16, Mm(75), Rpm(5.6), Nm(400), Kw(0.4), S215, AM021, AC012);
-  AumaSA162DutyS215[2] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(75), F16, Mm(75), Rpm(8), Nm(400), Kw(0.8), S215, AM021, AC012);
-  AumaSA162DutyS215[3] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(75), F16, Mm(75), Rpm(11), Nm(400), Kw(0.8), S215, AM021, AC012);
-  AumaSA162DutyS215[4] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(75), F16, Mm(75), Rpm(16), Nm(400), Kw(1.5), S215, AM021, AC012);
-  AumaSA162DutyS215[5] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(75), F16, Mm(75), Rpm(22), Nm(400), Kw(1.5), S215, AM021, AC012);
-  AumaSA162DutyS215[6] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(86), F16, Mm(75), Rpm(32), Nm(400), Kw(3), S215, AM021, AC012);
-  AumaSA162DutyS215[7] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(86), F16, Mm(75), Rpm(45), Nm(400), Kw(3), S215, AM021, AC012);
-  AumaSA162DutyS215[8] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(91), F16, Mm(75), Rpm(63), Nm(400), Kw(5), S215, AM021, AC012);
-  AumaSA162DutyS215[9] := TActuator.CreateAuma(AumaSA, SA162, Nm(1000),
-    1, Kg(91), F16, Mm(75), Rpm(90), Nm(400), Kw(5), S215, AM021, AC012);
-  AumaSA162DutyS215[10] := TActuator.CreateAuma(AumaSA, SA162, Nm(800),
-    1, Kg(91), F16, Mm(75), Rpm(125), Nm(400), Kw(6), S215, AM021, AC012);
-  AumaSA162DutyS215[11] := TActuator.CreateAuma(AumaSA, SA162, Nm(800),
-    1, Kg(91), F16, Mm(75), Rpm(180), Nm(400), Kw(6), S215, AM021, AC012);
+  AumaSA146_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(4), Nm(200), Kw(0.14), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(5.6), Nm(200), Kw(0.14), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(8), Nm(200), Kw(0.3), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(11), Nm(200), Kw(0.3), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(16), Nm(200), Kw(0.6), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(22), Nm(200), Kw(0.6), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(32), Nm(200), Kw(1), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(45), Nm(200), Kw(1), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(63), Nm(200), Kw(2), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(90), Nm(200), Kw(2), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(125), Nm(200), Kw(2.3), S230, AM021, AC012, 380, 50);
+  AumaSA146_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(290), 1, Kg(53), F14,
+    Mm(55), Rpm(180), Nm(200), Kw(2.3), S230, AM021, AC012, 380, 50);
 
-  AumaSA162DutyS230[0] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(75), F16, Mm(75), Rpm(4), Nm(400), Kw(0.3), S230, AM021, AC012);
-  AumaSA162DutyS230[1] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(75), F16, Mm(75), Rpm(5.6), Nm(400), Kw(0.3), S230, AM021, AC012);
-  AumaSA162DutyS230[2] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(75), F16, Mm(75), Rpm(8), Nm(400), Kw(0.6), S230, AM021, AC012);
-  AumaSA162DutyS230[3] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(75), F16, Mm(75), Rpm(11), Nm(400), Kw(0.6), S230, AM021, AC012);
-  AumaSA162DutyS230[4] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(75), F16, Mm(75), Rpm(16), Nm(400), Kw(1), S230, AM021, AC012);
-  AumaSA162DutyS230[5] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(75), F16, Mm(75), Rpm(22), Nm(400), Kw(1), S230, AM021, AC012);
-  AumaSA162DutyS230[6] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(86), F16, Mm(75), Rpm(32), Nm(400), Kw(2), S230, AM021, AC012);
-  AumaSA162DutyS230[7] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(86), F16, Mm(75), Rpm(45), Nm(400), Kw(2), S230, AM021, AC012);
-  AumaSA162DutyS230[8] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(91), F16, Mm(75), Rpm(63), Nm(400), Kw(3.5), S230, AM021, AC012);
-  AumaSA162DutyS230[9] := TActuator.CreateAuma(AumaSA, SA162, Nm(710),
-    1, Kg(91), F16, Mm(75), Rpm(90), Nm(400), Kw(3.5), S230, AM021, AC012);
-  AumaSA162DutyS230[10] := TActuator.CreateAuma(AumaSA, SA162, Nm(570),
-    1, Kg(91), F16, Mm(75), Rpm(125), Nm(400), Kw(4), S230, AM021, AC012);
-  AumaSA162DutyS230[11] := TActuator.CreateAuma(AumaSA, SA162, Nm(570),
-    1, Kg(91), F16, Mm(75), Rpm(180), Nm(400), Kw(4), S230, AM021, AC012);
+  AumaSA162_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(4), Nm(400), Kw(0.4), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(5.6), Nm(400), Kw(0.4), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(8), Nm(400), Kw(0.8), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(11), Nm(400), Kw(0.8), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(16), Nm(400), Kw(1.5), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(22), Nm(400), Kw(1.5), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(79), F16,
+    Mm(75), Rpm(32), Nm(400), Kw(3), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(79), F16,
+    Mm(75), Rpm(45), Nm(400), Kw(3), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(83), F16,
+    Mm(75), Rpm(63), Nm(400), Kw(5), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(83), F16,
+    Mm(75), Rpm(90), Nm(400), Kw(5), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(800), 1, Kg(83), F16,
+    Mm(75), Rpm(125), Nm(400), Kw(6), S215, AM021, AC012, 380, 50);
+  AumaSA162_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(800), 1, Kg(83), F16,
+    Mm(75), Rpm(180), Nm(400), Kw(6), S215, AM021, AC012, 380, 50);
 
-  AumaSA251DutyS215[0] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(150), F25, Mm(95), Rpm(4), Nm(630), Kw(1.1), S215, AM021, AC012);
-  AumaSA251DutyS215[1] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(150), F25, Mm(95), Rpm(5.6), Nm(630), Kw(1.1), S215, AM021, AC012);
-  AumaSA251DutyS215[2] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(150), F25, Mm(95), Rpm(8), Nm(630), Kw(3), S215, AM021, AC012);
-  AumaSA251DutyS215[3] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(150), F25, Mm(95), Rpm(11), Nm(630), Kw(3), S215, AM021, AC012);
-  AumaSA251DutyS215[4] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(150), F25, Mm(95), Rpm(16), Nm(630), Kw(4), S215, AM021, AC012);
-  AumaSA251DutyS215[5] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(150), F25, Mm(95), Rpm(22), Nm(630), Kw(4), S215, AM021, AC012);
-  AumaSA251DutyS215[6] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(160), F25, Mm(95), Rpm(32), Nm(630), Kw(7.5), S215, AM021, AC012);
-  AumaSA251DutyS215[7] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(160), F25, Mm(95), Rpm(45), Nm(630), Kw(7.5), S215, AM021, AC012);
-  AumaSA251DutyS215[8] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(160), F25, Mm(95), Rpm(63), Nm(630), Kw(15), S215, AM021, AC012);
-  AumaSA251DutyS215[9] := TActuator.CreateAuma(AumaSA, SA251, Nm(2000),
-    1, Kg(160), F25, Mm(95), Rpm(90), Nm(630), Kw(15), S215, AM021, AC012);
+  AumaSA162_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(4), Nm(400), Kw(0.3), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(5.6), Nm(400), Kw(0.3), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(8), Nm(400), Kw(0.6), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(11), Nm(400), Kw(0.6), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(16), Nm(400), Kw(1), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(22), Nm(400), Kw(1), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(79), F16,
+    Mm(75), Rpm(32), Nm(400), Kw(2), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(79), F16,
+    Mm(75), Rpm(45), Nm(400), Kw(2), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(83), F16,
+    Mm(75), Rpm(63), Nm(400), Kw(3.5), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(83), F16,
+    Mm(75), Rpm(90), Nm(400), Kw(3.5), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(570), 1, Kg(83), F16,
+    Mm(75), Rpm(125), Nm(400), Kw(4), S230, AM021, AC012, 380, 50);
+  AumaSA162_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(570), 1, Kg(83), F16,
+    Mm(75), Rpm(180), Nm(400), Kw(4), S230, AM021, AC012, 380, 50);
 
-  AumaSA251DutyS230[0] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(150), F25, Mm(95), Rpm(4), Nm(630), Kw(0.75), S230, AM021, AC012);
-  AumaSA251DutyS230[1] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(150), F25, Mm(95), Rpm(5.6), Nm(630), Kw(0.75), S230, AM021, AC012);
-  AumaSA251DutyS230[2] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(150), F25, Mm(95), Rpm(8), Nm(630), Kw(2.2), S230, AM021, AC012);
-  AumaSA251DutyS230[3] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(150), F25, Mm(95), Rpm(11), Nm(630), Kw(2.2), S230, AM021, AC012);
-  AumaSA251DutyS230[4] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(150), F25, Mm(95), Rpm(16), Nm(630), Kw(3), S230, AM021, AC012);
-  AumaSA251DutyS230[5] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(150), F25, Mm(95), Rpm(22), Nm(630), Kw(3), S230, AM021, AC012);
-  AumaSA251DutyS230[6] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(160), F25, Mm(95), Rpm(32), Nm(630), Kw(5.5), S230, AM021, AC012);
-  AumaSA251DutyS230[7] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(160), F25, Mm(95), Rpm(45), Nm(630), Kw(5.5), S230, AM021, AC012);
-  AumaSA251DutyS230[8] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(160), F25, Mm(95), Rpm(63), Nm(630), Kw(11), S230, AM021, AC012);
-  AumaSA251DutyS230[9] := TActuator.CreateAuma(AumaSA, SA251, Nm(1400),
-    1, Kg(160), F25, Mm(95), Rpm(90), Nm(630), Kw(11), S230, AM021, AC012);
+  AumaSA251_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(630), Kw(1.1), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(630), Kw(1.1), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(630), Kw(3), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(630), Kw(3), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(16), Nm(630), Kw(4), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(22), Nm(630), Kw(4), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(32), Nm(630), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(45), Nm(630), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(63), Nm(630), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(90), Nm(630), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1700), 1, Kg(160), F25,
+    Mm(95), Rpm(125), Nm(630), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA251_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(180), Nm(630), Kw(15), S215, AM021, AC012, 380, 50);
 
-  AumaSA301DutyS215[0] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(190), F30, Mm(115), Rpm(4), Nm(1250), Kw(2.2), S215, AM021, AC012);
-  AumaSA301DutyS215[1] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(190), F30, Mm(115), Rpm(5.6), Nm(1250), Kw(2.2), S215, AM021, AC012);
-  AumaSA301DutyS215[2] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(190), F30, Mm(115), Rpm(8), Nm(1250), Kw(5.5), S215, AM021, AC012);
-  AumaSA301DutyS215[3] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(190), F30, Mm(115), Rpm(11), Nm(1250), Kw(5.5), S215, AM021, AC012);
-  AumaSA301DutyS215[4] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(190), F30, Mm(115), Rpm(16), Nm(1250), Kw(7.5), S215, AM021, AC012);
-  AumaSA301DutyS215[5] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(190), F30, Mm(115), Rpm(22), Nm(1250), Kw(7.5), S215, AM021, AC012);
-  AumaSA301DutyS215[6] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(260), F30, Mm(115), Rpm(32), Nm(1250), Kw(15), S215, AM021, AC012);
-  AumaSA301DutyS215[7] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(260), F30, Mm(115), Rpm(45), Nm(1250), Kw(15), S215, AM021, AC012);
-  AumaSA301DutyS215[8] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(260), F30, Mm(115), Rpm(63), Nm(1250), Kw(30), S215, AM021, AC012);
-  AumaSA301DutyS215[9] := TActuator.CreateAuma(AumaSA, SA301, Nm(4000),
-    1, Kg(260), F30, Mm(115), Rpm(90), Nm(1250), Kw(30), S215, AM021, AC012);
+  AumaSA251_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(630), Kw(0.75), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(630), Kw(0.75), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(630), Kw(2.2), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(630), Kw(2.2), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(16), Nm(630), Kw(3), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(22), Nm(630), Kw(3), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(32), Nm(630), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(45), Nm(630), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(63), Nm(630), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(90), Nm(630), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1200), 1, Kg(160), F25,
+    Mm(95), Rpm(125), Nm(630), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA251_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1000), 1, Kg(160), F25,
+    Mm(95), Rpm(180), Nm(630), Kw(11), S230, AM021, AC012, 380, 50);
 
-  AumaSA301DutyS230[0] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(190), F30, Mm(115), Rpm(4), Nm(1250), Kw(1.5), S230, AM021, AC012);
-  AumaSA301DutyS230[1] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(190), F30, Mm(115), Rpm(5.6), Nm(1250), Kw(1.5), S230, AM021, AC012);
-  AumaSA301DutyS230[2] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(190), F30, Mm(115), Rpm(8), Nm(1250), Kw(4), S230, AM021, AC012);
-  AumaSA301DutyS230[3] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(190), F30, Mm(115), Rpm(11), Nm(1250), Kw(4), S230, AM021, AC012);
-  AumaSA301DutyS230[4] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(190), F30, Mm(115), Rpm(16), Nm(1250), Kw(5.5), S230, AM021, AC012);
-  AumaSA301DutyS230[5] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(190), F30, Mm(115), Rpm(22), Nm(1250), Kw(5.5), S230, AM021, AC012);
-  AumaSA301DutyS230[6] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(260), F30, Mm(115), Rpm(32), Nm(1250), Kw(11), S230, AM021, AC012);
-  AumaSA301DutyS230[7] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(260), F30, Mm(115), Rpm(45), Nm(1250), Kw(11), S230, AM021, AC012);
-  AumaSA301DutyS230[8] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(260), F30, Mm(115), Rpm(63), Nm(1250), Kw(22), S230, AM021, AC012);
-  AumaSA301DutyS230[9] := TActuator.CreateAuma(AumaSA, SA301, Nm(2800),
-    1, Kg(260), F30, Mm(115), Rpm(90), Nm(1250), Kw(22), S230, AM021, AC012);
+  AumaSA301_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(1250), Kw(2.2), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(1250), Kw(2.2), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(1250), Kw(5.5), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(1250), Kw(5.5), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(16), Nm(1250), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(22), Nm(1250), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(32), Nm(1250), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(45), Nm(1250), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(63), Nm(1250), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(90), Nm(1250), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(3200), 1, Kg(260), F30,
+    Mm(115), Rpm(125), Nm(1250), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA301_S215_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(180), Nm(1250), Kw(30), S215, AM021, AC012, 380, 50);
 
-  AumaSA351DutyS215[0] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(410), F35, Mm(155), Rpm(4), Nm(2500), Kw(4), S215, AM021, AC012);
-  AumaSA351DutyS215[1] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(410), F35, Mm(155), Rpm(5.6), Nm(2500), Kw(4), S215, AM021, AC012);
-  AumaSA351DutyS215[2] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(410), F35, Mm(155), Rpm(8), Nm(2500), Kw(7.5), S215, AM021, AC012);
-  AumaSA351DutyS215[3] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(410), F35, Mm(155), Rpm(11), Nm(2500), Kw(7.5), S215, AM021, AC012);
-  AumaSA351DutyS215[4] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(410), F35, Mm(155), Rpm(16), Nm(2500), Kw(15), S215, AM021, AC012);
-  AumaSA351DutyS215[5] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(410), F35, Mm(155), Rpm(22), Nm(2500), Kw(15), S215, AM021, AC012);
-  AumaSA351DutyS215[6] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(425), F35, Mm(155), Rpm(32), Nm(2500), Kw(30), S215, AM021, AC012);
-  AumaSA351DutyS215[7] := TActuator.CreateAuma(AumaSA, SA351, Nm(8000),
-    1, Kg(425), F35, Mm(155), Rpm(45), Nm(2500), Kw(30), S215, AM021, AC012);
+  AumaSA301_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(1250), Kw(1.5), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(1250), Kw(1.5), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(1250), Kw(4), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(1250), Kw(4), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(16), Nm(1250), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(22), Nm(1250), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(32), Nm(1250), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(45), Nm(1250), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(63), Nm(1250), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(90), Nm(1250), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2200), 1, Kg(260), F30,
+    Mm(115), Rpm(125), Nm(1250), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA301_S230_380V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2000), 1, Kg(260), F30,
+    Mm(115), Rpm(180), Nm(1250), Kw(22), S230, AM021, AC012, 380, 50);
 
-  AumaSA351DutyS230[0] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(410), F35, Mm(155), Rpm(4), Nm(2500), Kw(3), S230, AM021, AC012);
-  AumaSA351DutyS230[1] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(410), F35, Mm(155), Rpm(5.6), Nm(2500), Kw(3), S230, AM021, AC012);
-  AumaSA351DutyS230[2] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(410), F35, Mm(155), Rpm(8), Nm(2500), Kw(5.5), S230, AM021, AC012);
-  AumaSA351DutyS230[3] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(410), F35, Mm(155), Rpm(11), Nm(2500), Kw(5.5), S230, AM021, AC012);
-  AumaSA351DutyS230[4] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(410), F35, Mm(155), Rpm(16), Nm(2500), Kw(11), S230, AM021, AC012);
-  AumaSA351DutyS230[5] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(410), F35, Mm(155), Rpm(22), Nm(2500), Kw(11), S230, AM021, AC012);
-  AumaSA351DutyS230[6] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(425), F35, Mm(155), Rpm(32), Nm(2500), Kw(14), S230, AM021, AC012);
-  AumaSA351DutyS230[7] := TActuator.CreateAuma(AumaSA, SA351, Nm(5700),
-    1, Kg(425), F35, Mm(155), Rpm(45), Nm(2500), Kw(14), S230, AM021, AC012);
+  AumaSA351_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(4), Nm(2500), Kw(4), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(5.6), Nm(2500), Kw(4), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(8), Nm(2500), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(11), Nm(2500), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(16), Nm(2500), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(22), Nm(2500), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(425), F35,
+    Mm(155), Rpm(32), Nm(2500), Kw(20), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(425), F35,
+    Mm(155), Rpm(45), Nm(2500), Kw(20), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(6400), 1, Kg(425), F35,
+    Mm(155), Rpm(63), Nm(2500), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA351_S215_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5500), 1, Kg(425), F35,
+    Mm(155), Rpm(90), Nm(2500), Kw(30), S215, AM021, AC012, 380, 50);
 
-  AumaSA401DutyS215[0] := TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1,
-    Kg(510), F40, Mm(175), Rpm(4), Nm(5000), Kw(7.5), S215, AM021, AC012);
-  AumaSA401DutyS215[1] := TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1,
-    Kg(510), F40, Mm(175), Rpm(5.6), Nm(5000), Kw(7.5), S215, AM021, AC012);
-  AumaSA401DutyS215[2] := TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1,
-    Kg(510), F40, Mm(175), Rpm(8), Nm(5000), Kw(15), S215, AM021, AC012);
-  AumaSA401DutyS215[3] := TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1,
-    Kg(510), F40, Mm(175), Rpm(11), Nm(5000), Kw(15), S215, AM021, AC012);
-  AumaSA401DutyS215[4] := TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1,
-    Kg(510), F40, Mm(175), Rpm(16), Nm(5000), Kw(30), S215, AM021, AC012);
-  AumaSA401DutyS215[5] := TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1,
-    Kg(510), F40, Mm(175), Rpm(22), Nm(5000), Kw(30), S215, AM021, AC012);
-  AumaSA401DutyS215[6] := TActuator.CreateAuma(AumaSA, SA401, Nm(14000), 1,
-    Kg(510), F40, Mm(175), Rpm(32), Nm(5000), Kw(30), S215, AM021, AC012);
+  AumaSA351_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(4), Nm(2500), Kw(3), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(5.6), Nm(2500), Kw(3), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(8), Nm(2500), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(11), Nm(2500), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(16), Nm(2500), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(22), Nm(2500), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(425), F35,
+    Mm(155), Rpm(32), Nm(2500), Kw(14), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(425), F35,
+    Mm(155), Rpm(45), Nm(2500), Kw(14), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(4500), 1, Kg(425), F35,
+    Mm(155), Rpm(63), Nm(2500), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA351_S230_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(3800), 1, Kg(425), F35,
+    Mm(155), Rpm(90), Nm(2500), Kw(22), S230, AM021, AC012, 380, 50);
 
-  AumaSA401DutyS230[0] := TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1,
-    Kg(510), F40, Mm(175), Rpm(4), Nm(5000), Kw(5.5), S230, AM021, AC012);
-  AumaSA401DutyS230[1] := TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1,
-    Kg(510), F40, Mm(175), Rpm(5.6), Nm(5000), Kw(5.5), S230, AM021, AC012);
-  AumaSA401DutyS230[2] := TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1,
-    Kg(510), F40, Mm(175), Rpm(8), Nm(5000), Kw(11), S230, AM021, AC012);
-  AumaSA401DutyS230[3] := TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1,
-    Kg(510), F40, Mm(175), Rpm(11), Nm(5000), Kw(11), S230, AM021, AC012);
-  AumaSA401DutyS230[4] := TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1,
-    Kg(510), F40, Mm(175), Rpm(16), Nm(5000), Kw(22), S230, AM021, AC012);
-  AumaSA401DutyS230[5] := TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1,
-    Kg(510), F40, Mm(175), Rpm(22), Nm(5000), Kw(22), S230, AM021, AC012);
-  AumaSA401DutyS230[6] := TActuator.CreateAuma(AumaSA, SA401, Nm(9800),
-    1, Kg(510), F40, Mm(175), Rpm(32), Nm(5000), Kw(22), S230, AM021, AC012);
+  AumaSA401_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(4), Nm(5000), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(5.6), Nm(5000), Kw(7.5), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(8), Nm(5000), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(11), Nm(5000), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(16), Nm(5000), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(22), Nm(5000), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(14000), 1, Kg(510),
+    F40, Mm(175), Rpm(32), Nm(5000), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA401_S215_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(10000), 1, Kg(510),
+    F40, Mm(175), Rpm(45), Nm(5000), Kw(30), S215, AM021, AC012, 380, 50);
 
-  AumaSA481DutyS215[0] := TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1,
-    Kg(750), F48, Mm(175), Rpm(4), Nm(10000), Kw(15), S215, AM021, AC012);
-  AumaSA481DutyS215[1] := TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1,
-    Kg(750), F48, Mm(175), Rpm(5.6), Nm(10000), Kw(15), S215, AM021, AC012);
-  AumaSA481DutyS215[2] := TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1,
-    Kg(750), F48, Mm(175), Rpm(8), Nm(10000), Kw(30), S215, AM021, AC012);
-  AumaSA481DutyS215[3] := TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1,
-    Kg(750), F48, Mm(175), Rpm(11), Nm(10000), Kw(30), S215, AM021, AC012);
-  AumaSA481DutyS215[4] := TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1,
-    Kg(750), F48, Mm(175), Rpm(16), Nm(10000), Kw(45), S215, AM021, AC012);
+  AumaSA401_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(4), Nm(5000), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(5.6), Nm(5000), Kw(5.5), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(8), Nm(5000), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(11), Nm(5000), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(16), Nm(5000), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(22), Nm(5000), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(9800), 1, Kg(510),
+    F40, Mm(175), Rpm(32), Nm(5000), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA401_S230_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(7000), 1, Kg(510),
+    F40, Mm(175), Rpm(45), Nm(5000), Kw(22), S230, AM021, AC012, 380, 50);
 
-  AumaSA481DutyS230[0] := TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1,
-    Kg(750), F48, Mm(175), Rpm(4), Nm(10000), Kw(11), S230, AM021, AC012);
-  AumaSA481DutyS230[1] := TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1,
-    Kg(750), F48, Mm(175), Rpm(5.6), Nm(10000), Kw(11), S230, AM021, AC012);
-  AumaSA481DutyS230[2] := TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1,
-    Kg(750), F48, Mm(175), Rpm(8), Nm(10000), Kw(22), S230, AM021, AC012);
-  AumaSA481DutyS230[3] := TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1,
-    Kg(750), F48, Mm(175), Rpm(11), Nm(10000), Kw(22), S230, AM021, AC012);
-  AumaSA481DutyS230[4] := TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1,
-    Kg(750), F48, Mm(175), Rpm(16), Nm(10000), Kw(30), S230, AM021, AC012);
+  AumaSA481_S215_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(4), Nm(10000), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA481_S215_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(5.6), Nm(10000), Kw(15), S215, AM021, AC012, 380, 50);
+  AumaSA481_S215_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(8), Nm(10000), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA481_S215_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(11), Nm(10000), Kw(30), S215, AM021, AC012, 380, 50);
+  AumaSA481_S215_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(16), Nm(10000), Kw(45), S215, AM021, AC012, 380, 50);
 
-  AumaSAR072DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(19), F07, Mm(26), Rpm(4), Nm(15), Kw(0.02), S425, AM011, AC012);
-  AumaSAR072DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(19), F07, Mm(26), Rpm(5.6), Nm(15), Kw(0.02), S425, AM011, AC012);
-  AumaSAR072DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(19), F07, Mm(26), Rpm(8), Nm(15), Kw(0.04), S425, AM011, AC012);
-  AumaSAR072DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(19), F07, Mm(26), Rpm(11), Nm(15), Kw(0.04), S425, AM011, AC012);
-  AumaSAR072DutyS425[4] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(19), F07, Mm(26), Rpm(16), Nm(15), Kw(0.06), S425, AM011, AC012);
-  AumaSAR072DutyS425[5] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(19), F07, Mm(26), Rpm(22), Nm(15), Kw(0.06), S425, AM011, AC012);
-  AumaSAR072DutyS425[6] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(20), F10, Mm(30), Rpm(32), Nm(15), Kw(0.1), S425, AM011, AC012);
-  AumaSAR072DutyS425[7] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(20), F10, Mm(30), Rpm(45), Nm(15), Kw(0.1), S425, AM011, AC012);
-  AumaSAR072DutyS425[8] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(20), F10, Mm(30), Rpm(63), Nm(15), Kw(0.2), S425, AM011, AC012);
-  AumaSAR072DutyS425[9] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(30), 1, Kg(20), F10, Mm(30), Rpm(90), Nm(15), Kw(0.2), S425, AM011, AC012);
+  AumaSA481_S230_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(4), Nm(10000), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA481_S230_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(5.6), Nm(10000), Kw(11), S230, AM021, AC012, 380, 50);
+  AumaSA481_S230_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(8), Nm(10000), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA481_S230_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(11), Nm(10000), Kw(22), S230, AM021, AC012, 380, 50);
+  AumaSA481_S230_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(16), Nm(10000), Kw(30), S230, AM021, AC012, 380, 50);
 
-  AumaSAR072DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(19), F07, Mm(26), Rpm(4), Nm(15), Kw(0.01), S450, AM011, AC012);
-  AumaSAR072DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(19), F07, Mm(26), Rpm(5.6), Nm(15), Kw(0.01), S450, AM011, AC012);
-  AumaSAR072DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(19), F07, Mm(26), Rpm(8), Nm(15), Kw(0.03), S450, AM011, AC012);
-  AumaSAR072DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(19), F07, Mm(26), Rpm(11), Nm(15), Kw(0.03), S450, AM011, AC012);
-  AumaSAR072DutyS450[4] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(19), F07, Mm(26), Rpm(16), Nm(15), Kw(0.04), S450, AM011, AC012);
-  AumaSAR072DutyS450[5] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(19), F07, Mm(26), Rpm(22), Nm(15), Kw(0.04), S450, AM011, AC012);
-  AumaSAR072DutyS450[6] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(20), F10, Mm(30), Rpm(32), Nm(15), Kw(0.07), S450, AM011, AC012);
-  AumaSAR072DutyS450[7] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(20), F10, Mm(30), Rpm(45), Nm(15), Kw(0.07), S450, AM011, AC012);
-  AumaSAR072DutyS450[8] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(20), F10, Mm(30), Rpm(63), Nm(15), Kw(0.14), S450, AM011, AC012);
-  AumaSAR072DutyS450[9] := TActuator.CreateAuma(AumaSAR, SAR072,
-    Nm(20), 1, Kg(20), F10, Mm(30), Rpm(90), Nm(15), Kw(0.14), S450, AM011, AC012);
+  { SAR 380 V, 50 Hz }
 
-  AumaSAR076DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(20), F07, Mm(26), Rpm(4), Nm(30), Kw(0.03), S425, AM011, AC012);
-  AumaSAR076DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(20), F07, Mm(26), Rpm(5.6), Nm(30), Kw(0.03), S425, AM011, AC012);
-  AumaSAR076DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(20), F07, Mm(26), Rpm(8), Nm(30), Kw(0.06), S425, AM011, AC012);
-  AumaSAR076DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(20), F07, Mm(26), Rpm(11), Nm(30), Kw(0.06), S425, AM011, AC012);
-  AumaSAR076DutyS425[4] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(20), F07, Mm(26), Rpm(16), Nm(30), Kw(0.12), S425, AM011, AC012);
-  AumaSAR076DutyS425[5] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(20), F07, Mm(26), Rpm(22), Nm(30), Kw(0.12), S425, AM011, AC012);
-  AumaSAR076DutyS425[6] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(21), F10, Mm(30), Rpm(32), Nm(30), Kw(0.2), S425, AM011, AC012);
-  AumaSAR076DutyS425[7] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(21), F10, Mm(30), Rpm(45), Nm(30), Kw(0.2), S425, AM011, AC012);
-  AumaSAR076DutyS425[8] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(21), F10, Mm(30), Rpm(63), Nm(30), Kw(0.4), S425, AM011, AC012);
-  AumaSAR076DutyS425[9] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(60), 1, Kg(21), F10, Mm(30), Rpm(90), Nm(30), Kw(0.4), S425, AM011, AC012);
+  AumaSAR072_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1,
+    Kg(19), F07, Mm(26), Rpm(4), Nm(15), Kw(0.02), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(15), Kw(0.02), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(15), Kw(0.04), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(15), Kw(0.04), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(15), Kw(0.06), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(15), Kw(0.06), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(15), Kw(0.1), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(15), Kw(0.1), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(15), Kw(0.2), S425, AM011, AC012, 380, 50);
+  AumaSAR072_S425_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(15), Kw(0.2), S425, AM011, AC012, 380, 50);
 
-  AumaSAR076DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(20), F07, Mm(26), Rpm(4), Nm(30), Kw(0.02), S450, AM011, AC012);
-  AumaSAR076DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(20), F07, Mm(26), Rpm(5.6), Nm(30), Kw(0.02), S450, AM011, AC012);
-  AumaSAR076DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(20), F07, Mm(26), Rpm(8), Nm(30), Kw(0.04), S450, AM011, AC012);
-  AumaSAR076DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(20), F07, Mm(26), Rpm(11), Nm(30), Kw(0.04), S450, AM011, AC012);
-  AumaSAR076DutyS450[4] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(20), F07, Mm(26), Rpm(16), Nm(30), Kw(0.08), S450, AM011, AC012);
-  AumaSAR076DutyS450[5] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(20), F07, Mm(26), Rpm(22), Nm(30), Kw(0.08), S450, AM011, AC012);
-  AumaSAR076DutyS450[6] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(21), F10, Mm(30), Rpm(32), Nm(30), Kw(0.14), S450, AM011, AC012);
-  AumaSAR076DutyS450[7] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(21), F10, Mm(30), Rpm(45), Nm(30), Kw(0.14), S450, AM011, AC012);
-  AumaSAR076DutyS450[8] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(21), F10, Mm(30), Rpm(63), Nm(30), Kw(0.28), S450, AM011, AC012);
-  AumaSAR076DutyS450[9] := TActuator.CreateAuma(AumaSAR, SAR076,
-    Nm(40), 1, Kg(21), F10, Mm(30), Rpm(90), Nm(30), Kw(0.28), S450, AM011, AC012);
+  AumaSAR072_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(15), Kw(0.01), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(15), Kw(0.01), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(15), Kw(0.03), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(15), Kw(0.03), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(15), Kw(0.04), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(15), Kw(0.04), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(15), Kw(0.07), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(15), Kw(0.07), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(15), Kw(0.14), S450, AM011, AC012, 380, 50);
+  AumaSAR072_S450_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(15), Kw(0.14), S450, AM011, AC012, 380, 50);
 
-  AumaSAR102DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(22), F10, Mm(40), Rpm(4), Nm(60), Kw(0.06), S425, AM011, AC012);
-  AumaSAR102DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(22), F10, Mm(40), Rpm(5.6), Nm(60), Kw(0.06), S425, AM011, AC012);
-  AumaSAR102DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(22), F10, Mm(40), Rpm(8), Nm(60), Kw(0.12), S425, AM011, AC012);
-  AumaSAR102DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(22), F10, Mm(40), Rpm(11), Nm(60), Kw(0.12), S425, AM011, AC012);
-  AumaSAR102DutyS425[4] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(22), F10, Mm(40), Rpm(16), Nm(60), Kw(0.25), S425, AM011, AC012);
-  AumaSAR102DutyS425[5] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(22), F10, Mm(40), Rpm(22), Nm(60), Kw(0.25), S425, AM011, AC012);
-  AumaSAR102DutyS425[6] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(25), F10, Mm(40), Rpm(32), Nm(60), Kw(0.4), S425, AM011, AC012);
-  AumaSAR102DutyS425[7] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(25), F10, Mm(40), Rpm(45), Nm(60), Kw(0.4), S425, AM011, AC012);
-  AumaSAR102DutyS425[8] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(25), F10, Mm(40), Rpm(63), Nm(60), Kw(0.7), S425, AM011, AC012);
-  AumaSAR102DutyS425[9] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(120), 1, Kg(25), F10, Mm(40), Rpm(90), Nm(60), Kw(0.7), S425, AM011, AC012);
+  AumaSAR076_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(4), Nm(30), Kw(0.03), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(5.6), Nm(30), Kw(0.03), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(8), Nm(30), Kw(0.06), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(11), Nm(30), Kw(0.06), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(16), Nm(30), Kw(0.12), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(22), Nm(30), Kw(0.12), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(32), Nm(30), Kw(0.2), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(45), Nm(30), Kw(0.2), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(63), Nm(30), Kw(0.4), S425, AM011, AC012, 380, 50);
+  AumaSAR076_S425_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(90), Nm(30), Kw(0.4), S425, AM011, AC012, 380, 50);
 
-  AumaSAR102DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(22), F10, Mm(40), Rpm(4), Nm(60), Kw(0.04), S450, AM011, AC012);
-  AumaSAR102DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(22), F10, Mm(40), Rpm(5.6), Nm(60), Kw(0.04), S450, AM011, AC012);
-  AumaSAR102DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(22), F10, Mm(40), Rpm(8), Nm(60), Kw(0.08), S450, AM011, AC012);
-  AumaSAR102DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(22), F10, Mm(40), Rpm(11), Nm(60), Kw(0.08), S450, AM011, AC012);
-  AumaSAR102DutyS450[4] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(22), F10, Mm(40), Rpm(16), Nm(60), Kw(0.17), S450, AM011, AC012);
-  AumaSAR102DutyS450[5] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(22), F10, Mm(40), Rpm(22), Nm(60), Kw(0.17), S450, AM011, AC012);
-  AumaSAR102DutyS450[6] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(25), F10, Mm(40), Rpm(32), Nm(60), Kw(0.28), S450, AM011, AC012);
-  AumaSAR102DutyS450[7] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(25), F10, Mm(40), Rpm(45), Nm(60), Kw(0.28), S450, AM011, AC012);
-  AumaSAR102DutyS450[8] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(25), F10, Mm(40), Rpm(63), Nm(60), Kw(0.5), S450, AM011, AC012);
-  AumaSAR102DutyS450[9] := TActuator.CreateAuma(AumaSAR, SAR102,
-    Nm(90), 1, Kg(25), F10, Mm(40), Rpm(90), Nm(60), Kw(0.5), S450, AM011, AC012);
+  AumaSAR076_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(4), Nm(30), Kw(0.02), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(5.6), Nm(30), Kw(0.02), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(8), Nm(30), Kw(0.04), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(11), Nm(30), Kw(0.04), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(16), Nm(30), Kw(0.08), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(22), Nm(30), Kw(0.08), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(32), Nm(30), Kw(0.14), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(45), Nm(30), Kw(0.14), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(63), Nm(30), Kw(0.28), S450, AM011, AC012, 380, 50);
+  AumaSAR076_S450_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(90), Nm(30), Kw(0.28), S450, AM011, AC012, 380, 50);
 
-  AumaSAR142DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(44), F14, Mm(55), Rpm(4), Nm(120), Kw(0.12), S425, AM021, AC012);
-  AumaSAR142DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(44), F14, Mm(55), Rpm(5.6), Nm(120), Kw(0.12), S425, AM021, AC012);
-  AumaSAR142DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(44), F14, Mm(55), Rpm(8), Nm(120), Kw(0.25), S425, AM021, AC012);
-  AumaSAR142DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(44), F14, Mm(55), Rpm(11), Nm(120), Kw(0.25), S425, AM021, AC012);
-  AumaSAR142DutyS425[4] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(48), F14, Mm(55), Rpm(16), Nm(120), Kw(0.45), S425, AM021, AC012);
-  AumaSAR142DutyS425[5] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(48), F14, Mm(55), Rpm(22), Nm(120), Kw(0.45), S425, AM021, AC012);
-  AumaSAR142DutyS425[6] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(48), F14, Mm(55), Rpm(32), Nm(120), Kw(0.75), S425, AM021, AC012);
-  AumaSAR142DutyS425[7] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(48), F14, Mm(55), Rpm(45), Nm(120), Kw(0.75), S425, AM021, AC012);
-  AumaSAR142DutyS425[8] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(48), F14, Mm(55), Rpm(63), Nm(120), Kw(1.4), S425, AM021, AC012);
-  AumaSAR142DutyS425[9] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(250), 1, Kg(48), F14, Mm(55), Rpm(90), Nm(120), Kw(1.4), S425, AM021, AC012);
+  AumaSAR102_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(4), Nm(60), Kw(0.06), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(5.6), Nm(60), Kw(0.06), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(8), Nm(60), Kw(0.12), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(11), Nm(60), Kw(0.12), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(16), Nm(60), Kw(0.25), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(22), Nm(60), Kw(0.25), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(60), Kw(0.4), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(60), Kw(0.4), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(63), Nm(60), Kw(0.7), S425, AM011, AC012, 380, 50);
+  AumaSAR102_S425_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(90), Nm(60), Kw(0.7), S425, AM011, AC012, 380, 50);
 
-  AumaSAR142DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(44), F14, Mm(55), Rpm(4), Nm(120), Kw(0.08), S450, AM021, AC012);
-  AumaSAR142DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(44), F14, Mm(55), Rpm(5.6), Nm(120), Kw(0.08), S450, AM021, AC012);
-  AumaSAR142DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(44), F14, Mm(55), Rpm(8), Nm(120), Kw(0.18), S450, AM021, AC012);
-  AumaSAR142DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(44), F14, Mm(55), Rpm(11), Nm(120), Kw(0.18), S450, AM021, AC012);
-  AumaSAR142DutyS450[4] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(48), F14, Mm(55), Rpm(16), Nm(120), Kw(0.3), S450, AM021, AC012);
-  AumaSAR142DutyS450[5] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(48), F14, Mm(55), Rpm(22), Nm(120), Kw(0.3), S450, AM021, AC012);
-  AumaSAR142DutyS450[6] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(48), F14, Mm(55), Rpm(32), Nm(120), Kw(0.5), S450, AM021, AC012);
-  AumaSAR142DutyS450[7] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(48), F14, Mm(55), Rpm(45), Nm(120), Kw(0.5), S450, AM021, AC012);
-  AumaSAR142DutyS450[8] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(48), F14, Mm(55), Rpm(63), Nm(120), Kw(1), S450, AM021, AC012);
-  AumaSAR142DutyS450[9] := TActuator.CreateAuma(AumaSAR, SAR142,
-    Nm(180), 1, Kg(48), F14, Mm(55), Rpm(90), Nm(120), Kw(1), S450, AM021, AC012);
+  AumaSAR102_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(4), Nm(60), Kw(0.04), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(5.6), Nm(60), Kw(0.04), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(8), Nm(60), Kw(0.08), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(11), Nm(60), Kw(0.08), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(16), Nm(60), Kw(0.17), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(22), Nm(60), Kw(0.17), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(60), Kw(0.28), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(60), Kw(0.28), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(63), Nm(60), Kw(0.5), S450, AM011, AC012, 380, 50);
+  AumaSAR102_S450_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(90), Nm(60), Kw(0.5), S450, AM011, AC012, 380, 50);
 
-  AumaSAR146DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(46), F14, Mm(55), Rpm(4), Nm(250), Kw(0.2), S425, AM021, AC012);
-  AumaSAR146DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(46), F14, Mm(55), Rpm(5.6), Nm(250), Kw(0.2), S425, AM021, AC012);
-  AumaSAR146DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(46), F14, Mm(55), Rpm(8), Nm(250), Kw(0.4), S425, AM021, AC012);
-  AumaSAR146DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(46), F14, Mm(55), Rpm(11), Nm(250), Kw(0.4), S425, AM021, AC012);
-  AumaSAR146DutyS425[4] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(53), F14, Mm(55), Rpm(16), Nm(250), Kw(0.8), S425, AM021, AC012);
-  AumaSAR146DutyS425[5] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(53), F14, Mm(55), Rpm(22), Nm(250), Kw(0.8), S425, AM021, AC012);
-  AumaSAR146DutyS425[6] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(53), F14, Mm(55), Rpm(32), Nm(250), Kw(1.6), S425, AM021, AC012);
-  AumaSAR146DutyS425[7] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(53), F14, Mm(55), Rpm(45), Nm(250), Kw(1.6), S425, AM021, AC012);
-  AumaSAR146DutyS425[8] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(53), F14, Mm(55), Rpm(63), Nm(250), Kw(3), S425, AM021, AC012);
-  AumaSAR146DutyS425[9] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(500), 1, Kg(53), F14, Mm(55), Rpm(90), Nm(250), Kw(3), S425, AM021, AC012);
+  AumaSAR142_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(4), Nm(120), Kw(0.12), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(5.6), Nm(120), Kw(0.12), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(8), Nm(120), Kw(0.25), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(11), Nm(120), Kw(0.25), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(120), Kw(0.45), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(120), Kw(0.45), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(32), Nm(120), Kw(0.75), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(45), Nm(120), Kw(0.75), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(63), Nm(120), Kw(1.4), S425, AM021, AC012, 380, 50);
+  AumaSAR142_S425_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(90), Nm(120), Kw(1.4), S425, AM021, AC012, 380, 50);
 
-  AumaSAR146DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(46), F14, Mm(55), Rpm(4), Nm(250), Kw(0.14), S450, AM021, AC012);
-  AumaSAR146DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(46), F14, Mm(55), Rpm(5.6), Nm(250), Kw(0.14), S450, AM021, AC012);
-  AumaSAR146DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(46), F14, Mm(55), Rpm(8), Nm(250), Kw(0.3), S450, AM021, AC012);
-  AumaSAR146DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(46), F14, Mm(55), Rpm(11), Nm(250), Kw(0.3), S450, AM021, AC012);
-  AumaSAR146DutyS450[4] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(53), F14, Mm(55), Rpm(16), Nm(250), Kw(0.6), S450, AM021, AC012);
-  AumaSAR146DutyS450[5] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(53), F14, Mm(55), Rpm(22), Nm(250), Kw(0.6), S450, AM021, AC012);
-  AumaSAR146DutyS450[6] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(53), F14, Mm(55), Rpm(32), Nm(250), Kw(1), S450, AM021, AC012);
-  AumaSAR146DutyS450[7] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(53), F14, Mm(55), Rpm(45), Nm(250), Kw(1), S450, AM021, AC012);
-  AumaSAR146DutyS450[8] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(53), F14, Mm(55), Rpm(63), Nm(250), Kw(2), S450, AM021, AC012);
-  AumaSAR146DutyS450[9] := TActuator.CreateAuma(AumaSAR, SAR146,
-    Nm(360), 1, Kg(53), F14, Mm(55), Rpm(90), Nm(250), Kw(2), S450, AM021, AC012);
+  AumaSAR142_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(4), Nm(120), Kw(0.08), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(5.6), Nm(120), Kw(0.08), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(8), Nm(120), Kw(0.18), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(11), Nm(120), Kw(0.18), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(120), Kw(0.3), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(120), Kw(0.3), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(32), Nm(120), Kw(0.5), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(45), Nm(120), Kw(0.5), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(63), Nm(120), Kw(1), S450, AM021, AC012, 380, 50);
+  AumaSAR142_S450_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(90), Nm(120), Kw(1), S450, AM021, AC012, 380, 50);
 
-  AumaSAR162DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(67), F16, Mm(75), Rpm(4), Nm(500), Kw(0.4), S425, AM021, AC012);
-  AumaSAR162DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(67), F16, Mm(75), Rpm(5.6), Nm(500), Kw(0.4), S425, AM021, AC012);
-  AumaSAR162DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(67), F16, Mm(75), Rpm(8), Nm(500), Kw(0.8), S425, AM021, AC012);
-  AumaSAR162DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(67), F16, Mm(75), Rpm(11), Nm(500), Kw(0.8), S425, AM021, AC012);
-  AumaSAR162DutyS425[4] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(67), F16, Mm(75), Rpm(16), Nm(500), Kw(1.5), S425, AM021, AC012);
-  AumaSAR162DutyS425[5] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(67), F16, Mm(75), Rpm(22), Nm(500), Kw(1.5), S425, AM021, AC012);
-  AumaSAR162DutyS425[6] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(79), F16, Mm(75), Rpm(32), Nm(500), Kw(3), S425, AM021, AC012);
-  AumaSAR162DutyS425[7] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(79), F16, Mm(75), Rpm(45), Nm(500), Kw(3), S425, AM021, AC012);
-  AumaSAR162DutyS425[8] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(82), F16, Mm(75), Rpm(63), Nm(500), Kw(5), S425, AM021, AC012);
-  AumaSAR162DutyS425[9] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(1000), 1, Kg(82), F16, Mm(75), Rpm(90), Nm(500), Kw(5), S425, AM021, AC012);
+  AumaSAR146_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(4), Nm(250), Kw(0.2), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(5.6), Nm(250), Kw(0.2), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(8), Nm(250), Kw(0.4), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(11), Nm(250), Kw(0.4), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(16), Nm(250), Kw(0.8), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(22), Nm(250), Kw(0.8), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(32), Nm(250), Kw(1.6), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(45), Nm(250), Kw(1.6), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(63), Nm(250), Kw(3), S425, AM021, AC012, 380, 50);
+  AumaSAR146_S425_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(90), Nm(250), Kw(3), S425, AM021, AC012, 380, 50);
 
-  AumaSAR162DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(67), F16, Mm(75), Rpm(4), Nm(500), Kw(0.3), S450, AM021, AC012);
-  AumaSAR162DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(67), F16, Mm(75), Rpm(5.6), Nm(500), Kw(0.3), S450, AM021, AC012);
-  AumaSAR162DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(67), F16, Mm(75), Rpm(8), Nm(500), Kw(0.6), S450, AM021, AC012);
-  AumaSAR162DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(67), F16, Mm(75), Rpm(11), Nm(500), Kw(0.6), S450, AM021, AC012);
-  AumaSAR162DutyS450[4] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(67), F16, Mm(75), Rpm(16), Nm(500), Kw(1), S450, AM021, AC012);
-  AumaSAR162DutyS450[5] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(67), F16, Mm(75), Rpm(22), Nm(500), Kw(1), S450, AM021, AC012);
-  AumaSAR162DutyS450[6] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(79), F16, Mm(75), Rpm(32), Nm(500), Kw(2), S450, AM021, AC012);
-  AumaSAR162DutyS450[7] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(79), F16, Mm(75), Rpm(45), Nm(500), Kw(2), S450, AM021, AC012);
-  AumaSAR162DutyS450[8] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(82), F16, Mm(75), Rpm(63), Nm(500), Kw(3.5), S450, AM021, AC012);
-  AumaSAR162DutyS450[9] := TActuator.CreateAuma(AumaSAR, SAR162,
-    Nm(710), 1, Kg(82), F16, Mm(75), Rpm(90), Nm(500), Kw(3.5), S450, AM021, AC012);
+  AumaSAR146_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(4), Nm(250), Kw(0.14), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(5.6), Nm(250), Kw(0.14), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(8), Nm(250), Kw(0.3), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(11), Nm(250), Kw(0.3), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(16), Nm(250), Kw(0.6), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(22), Nm(250), Kw(0.6), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(32), Nm(250), Kw(1), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(45), Nm(250), Kw(1), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(63), Nm(250), Kw(2), S450, AM021, AC012, 380, 50);
+  AumaSAR146_S450_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(90), Nm(250), Kw(2), S450, AM021, AC012, 380, 50);
 
-  AumaSAR251DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(2000), 1, Kg(150), F25, Mm(95), Rpm(4), Nm(1000), Kw(1.1), S425, AM021, AC012);
-  AumaSAR251DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(2000), 1, Kg(150), F25, Mm(95), Rpm(5.6), Nm(1000), Kw(1.1), S425, AM021, AC012);
-  AumaSAR251DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(2000), 1, Kg(150), F25, Mm(95), Rpm(8), Nm(1000), Kw(3), S425, AM021, AC012);
-  AumaSAR251DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(2000), 1, Kg(150), F25, Mm(95), Rpm(11), Nm(1000), Kw(3), S425, AM021, AC012);
+  AumaSAR162_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(4), Nm(500), Kw(0.4), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(5.6), Nm(500), Kw(0.4), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(8), Nm(500), Kw(0.8), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(11), Nm(500), Kw(0.8), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(16), Nm(500), Kw(1.5), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(22), Nm(500), Kw(1.5), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(79), F16,
+    Mm(75), Rpm(32), Nm(500), Kw(3), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(79), F16,
+    Mm(75), Rpm(45), Nm(500), Kw(3), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(82), F16,
+    Mm(75), Rpm(63), Nm(500), Kw(5), S425, AM021, AC012, 380, 50);
+  AumaSAR162_S425_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(82), F16,
+    Mm(75), Rpm(90), Nm(500), Kw(5), S425, AM021, AC012, 380, 50);
 
-  AumaSAR251DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(1400), 1, Kg(150), F25, Mm(95), Rpm(4), Nm(1000), Kw(0.75), S450, AM021, AC012);
-  AumaSAR251DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(1400), 1, Kg(150), F25, Mm(95), Rpm(5.6), Nm(1000), Kw(0.75), S450, AM021, AC012);
-  AumaSAR251DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(1400), 1, Kg(150), F25, Mm(95), Rpm(8), Nm(1000), Kw(2.2), S450, AM021, AC012);
-  AumaSAR251DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR251,
-    Nm(1400), 1, Kg(150), F25, Mm(95), Rpm(11), Nm(1000), Kw(2.2), S450, AM021, AC012);
+  AumaSAR162_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(4), Nm(500), Kw(0.3), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(5.6), Nm(500), Kw(0.3), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(8), Nm(500), Kw(0.6), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(11), Nm(500), Kw(0.6), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(16), Nm(500), Kw(1), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(22), Nm(500), Kw(1), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(79), F16,
+    Mm(75), Rpm(32), Nm(500), Kw(2), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(79), F16,
+    Mm(75), Rpm(45), Nm(500), Kw(2), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(82), F16,
+    Mm(75), Rpm(63), Nm(500), Kw(3.5), S450, AM021, AC012, 380, 50);
+  AumaSAR162_S450_380V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(82), F16,
+    Mm(75), Rpm(90), Nm(500), Kw(3.5), S450, AM021, AC012, 380, 50);
 
-  AumaSAR301DutyS425[0] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(4000), 1, Kg(190), F30, Mm(115), Rpm(4), Nm(2000), Kw(2.2), S425, AM021, AC012);
-  AumaSAR301DutyS425[1] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(4000), 1, Kg(190), F30, Mm(115), Rpm(5.6), Nm(2000), Kw(2.2), S425, AM021, AC012);
-  AumaSAR301DutyS425[2] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(4000), 1, Kg(190), F30, Mm(115), Rpm(8), Nm(2000), Kw(5.5), S425, AM021, AC012);
-  AumaSAR301DutyS425[3] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(4000), 1, Kg(190), F30, Mm(115), Rpm(11), Nm(2000), Kw(5.5), S425, AM021, AC012);
+  AumaSAR251_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(1000), Kw(1.1), S425, AM021, AC012, 380, 50);
+  AumaSAR251_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(1000), Kw(1.1), S425, AM021, AC012, 380, 50);
+  AumaSAR251_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(1000), Kw(3), S425, AM021, AC012, 380, 50);
+  AumaSAR251_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(1000), Kw(3), S425, AM021, AC012, 380, 50);
 
-  AumaSAR301DutyS450[0] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(2800), 1, Kg(190), F30, Mm(115), Rpm(4), Nm(2000), Kw(1.5), S450, AM021, AC012);
-  AumaSAR301DutyS450[1] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(2800), 1, Kg(190), F30, Mm(115), Rpm(5.6), Nm(2000), Kw(1.5), S450, AM021, AC012);
-  AumaSAR301DutyS450[2] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(2800), 1, Kg(190), F30, Mm(115), Rpm(8), Nm(2000), Kw(4), S450, AM021, AC012);
-  AumaSAR301DutyS450[3] := TActuator.CreateAuma(AumaSAR, SAR301,
-    Nm(2800), 1, Kg(190), F30, Mm(115), Rpm(11), Nm(2000), Kw(4), S450, AM021, AC012);
+  AumaSAR251_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(1000), Kw(0.75), S450, AM021, AC012, 380, 50);
+  AumaSAR251_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(1000), Kw(0.75), S450, AM021, AC012, 380, 50);
+  AumaSAR251_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(1000), Kw(2.2), S450, AM021, AC012, 380, 50);
+  AumaSAR251_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(1000), Kw(2.2), S450, AM021, AC012, 380, 50);
 
-  AumaSADutyS215[0] := AumaSA072DutyS215;
-  AumaSADutyS215[1] := AumaSA076DutyS215;
-  AumaSADutyS215[2] := AumaSA102DutyS215;
-  AumaSADutyS215[3] := AumaSA142DutyS215;
-  AumaSADutyS215[4] := AumaSA146DutyS215;
-  AumaSADutyS215[5] := AumaSA162DutyS215;
-  AumaSADutyS215[6] := AumaSA251DutyS215;
-  AumaSADutyS215[7] := AumaSA301DutyS215;
-  AumaSADutyS215[8] := AumaSA351DutyS215;
-  AumaSADutyS215[9] := AumaSA401DutyS215;
-  AumaSADutyS215[10] := AumaSA481DutyS215;
+  AumaSAR301_S425_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(2000), Kw(2.2), S425, AM021, AC012, 380, 50);
+  AumaSAR301_S425_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(2000), Kw(2.2), S425, AM021, AC012, 380, 50);
+  AumaSAR301_S425_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(2000), Kw(5.5), S425, AM021, AC012, 380, 50);
+  AumaSAR301_S425_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(2000), Kw(5.5), S425, AM021, AC012, 380, 50);
 
-  AumaSADutyS230[0] := AumaSA072DutyS230;
-  AumaSADutyS230[1] := AumaSA076DutyS230;
-  AumaSADutyS230[2] := AumaSA102DutyS230;
-  AumaSADutyS230[3] := AumaSA142DutyS230;
-  AumaSADutyS230[4] := AumaSA146DutyS230;
-  AumaSADutyS230[5] := AumaSA162DutyS230;
-  AumaSADutyS230[6] := AumaSA251DutyS230;
-  AumaSADutyS230[7] := AumaSA301DutyS230;
-  AumaSADutyS230[8] := AumaSA351DutyS230;
-  AumaSADutyS230[9] := AumaSA401DutyS230;
-  AumaSADutyS230[10] := AumaSA481DutyS230;
+  AumaSAR301_S450_380V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(2000), Kw(1.5), S450, AM021, AC012, 380, 50);
+  AumaSAR301_S450_380V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(2000), Kw(1.5), S450, AM021, AC012, 380, 50);
+  AumaSAR301_S450_380V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(2000), Kw(4), S450, AM021, AC012, 380, 50);
+  AumaSAR301_S450_380V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(2000), Kw(4), S450, AM021, AC012, 380, 50);
 
-  AumaSARDutyS425[0] := AumaSAR072DutyS425;
-  AumaSARDutyS425[1] := AumaSAR076DutyS425;
-  AumaSARDutyS425[2] := AumaSAR102DutyS425;
-  AumaSARDutyS425[3] := AumaSAR142DutyS425;
-  AumaSARDutyS425[4] := AumaSAR146DutyS425;
-  AumaSARDutyS425[5] := AumaSAR162DutyS425;
-  AumaSARDutyS425[6] := AumaSAR251DutyS425;
-  AumaSARDutyS425[7] := AumaSAR301DutyS425;
+  AumaSA_S215_380V50Hz[0] := AumaSA072_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[1] := AumaSA076_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[2] := AumaSA102_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[3] := AumaSA142_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[4] := AumaSA146_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[5] := AumaSA162_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[6] := AumaSA251_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[7] := AumaSA301_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[8] := AumaSA351_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[9] := AumaSA401_S215_380V50Hz;
+  AumaSA_S215_380V50Hz[10] := AumaSA481_S215_380V50Hz;
 
-  AumaSARDutyS450[0] := AumaSAR072DutyS450;
-  AumaSARDutyS450[1] := AumaSAR076DutyS450;
-  AumaSARDutyS450[2] := AumaSAR102DutyS450;
-  AumaSARDutyS450[3] := AumaSAR142DutyS450;
-  AumaSARDutyS450[4] := AumaSAR146DutyS450;
-  AumaSARDutyS450[5] := AumaSAR162DutyS450;
-  AumaSARDutyS450[6] := AumaSAR251DutyS450;
-  AumaSARDutyS450[7] := AumaSAR301DutyS450;
+  AumaSA_S230_380V50Hz[0] := AumaSA072_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[1] := AumaSA076_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[2] := AumaSA102_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[3] := AumaSA142_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[4] := AumaSA146_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[5] := AumaSA162_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[6] := AumaSA251_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[7] := AumaSA301_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[8] := AumaSA351_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[9] := AumaSA401_S230_380V50Hz;
+  AumaSA_S230_380V50Hz[10] := AumaSA481_S230_380V50Hz;
+
+  AumaSAR_S425_380V50Hz[0] := AumaSAR072_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[1] := AumaSAR076_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[2] := AumaSAR102_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[3] := AumaSAR142_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[4] := AumaSAR146_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[5] := AumaSAR162_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[6] := AumaSAR251_S425_380V50Hz;
+  AumaSAR_S425_380V50Hz[7] := AumaSAR301_S425_380V50Hz;
+
+  AumaSAR_S450_380V50Hz[0] := AumaSAR072_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[1] := AumaSAR076_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[2] := AumaSAR102_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[3] := AumaSAR142_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[4] := AumaSAR146_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[5] := AumaSAR162_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[6] := AumaSAR251_S450_380V50Hz;
+  AumaSAR_S450_380V50Hz[7] := AumaSAR301_S450_380V50Hz;
+
+  { SA 400 V, 50 Hz }
+
+  AumaSA072_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(10), Kw(0.02), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(10), Kw(0.02), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(10), Kw(0.04), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(10), Kw(0.04), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(10), Kw(0.06), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(10), Kw(0.06), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(10), Kw(0.10), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(10), Kw(0.10), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(10), Kw(0.20), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(10), Kw(0.20), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(125), Nm(10), Kw(0.30), S215, AM011, AC012, 400, 50);
+  AumaSA072_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(25), 1, Kg(20), F10,
+    Mm(30), Rpm(180), Nm(10), Kw(0.30), S215, AM011, AC012, 400, 50);
+
+  AumaSA072_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(10), Kw(0.01), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(10), Kw(0.01), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(10), Kw(0.03), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(10), Kw(0.03), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(10), Kw(0.04), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(10), Kw(0.04), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(10), Kw(0.07), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(10), Kw(0.07), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(10), Kw(0.14), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(10), Kw(0.14), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(125), Nm(10), Kw(0.21), S230, AM011, AC012, 400, 50);
+  AumaSA072_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(180), Nm(10), Kw(0.21), S230, AM011, AC012, 400, 50);
+
+  AumaSA076_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(20), Kw(0.03), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(20), Kw(0.03), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(19), F07, Mm(26),
+    Rpm(8), Nm(20), Kw(0.06), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(19), F07, Mm(26),
+    Rpm(11), Nm(20), Kw(0.06), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(19), F07, Mm(26),
+    Rpm(16), Nm(20), Kw(0.12), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(19), F07, Mm(26),
+    Rpm(22), Nm(20), Kw(0.12), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(32), Nm(20), Kw(0.20), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(45), Nm(20), Kw(0.20), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(63), Nm(20), Kw(0.40), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(90), Nm(20), Kw(0.40), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(60), 1, Kg(21), F10, Mm(30),
+    Rpm(125), Nm(20), Kw(0.50), S215, AM011, AC012, 400, 50);
+  AumaSA076_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(50), 1, Kg(21), F10, Mm(30),
+    Rpm(180), Nm(20), Kw(0.50), S215, AM011, AC012, 400, 50);
+
+  AumaSA076_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(20), Kw(0.02), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(20), Kw(0.02), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(20), Kw(0.04), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(20), Kw(0.04), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(20), Kw(0.08), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(20), Kw(0.08), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(32), Nm(20), Kw(0.14), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(45), Nm(20), Kw(0.14), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(63), Nm(20), Kw(0.28), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(90), Nm(20), Kw(0.28), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(40), 1, Kg(21), F10, Mm(30),
+    Rpm(125), Nm(20), Kw(0.35), S230, AM011, AC012, 400, 50);
+  AumaSA076_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA076, Nm(30), 1, Kg(21), F10, Mm(30),
+    Rpm(180), Nm(20), Kw(0.35), S230, AM011, AC012, 400, 50);
+
+  AumaSA102_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(23), F10,
+    Mm(40), Rpm(4), Nm(40), Kw(0.06), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(23), F10,
+    Mm(40), Rpm(5.6), Nm(40), Kw(0.06), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(23), F10,
+    Mm(40), Rpm(8), Nm(40), Kw(0.12), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(23), F10,
+    Mm(40), Rpm(11), Nm(40), Kw(0.12), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(23), F10,
+    Mm(40), Rpm(16), Nm(40), Kw(0.25), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(23), F10,
+    Mm(40), Rpm(22), Nm(40), Kw(0.25), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(40), Kw(0.40), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(40), Kw(0.40), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(26), F10,
+    Mm(40), Rpm(63), Nm(40), Kw(0.70), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(26), F10,
+    Mm(40), Rpm(90), Nm(40), Kw(0.70), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(120), 1, Kg(26), F10,
+    Mm(40), Rpm(125), Nm(40), Kw(1.00), S215, AM011, AC012, 400, 50);
+  AumaSA102_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(100), 1, Kg(26), F10,
+    Mm(40), Rpm(180), Nm(40), Kw(1.00), S215, AM011, AC012, 400, 50);
+
+  AumaSA102_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(23), F10,
+    Mm(40), Rpm(4), Nm(40), Kw(0.04), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(23), F10,
+    Mm(40), Rpm(5.6), Nm(40), Kw(0.04), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(23), F10,
+    Mm(40), Rpm(8), Nm(40), Kw(0.08), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(23), F10,
+    Mm(40), Rpm(11), Nm(40), Kw(0.08), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(23), F10,
+    Mm(40), Rpm(16), Nm(40), Kw(0.17), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(23), F10,
+    Mm(40), Rpm(22), Nm(40), Kw(0.17), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(40), Kw(0.28), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(40), Kw(0.28), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(26), F10,
+    Mm(40), Rpm(63), Nm(40), Kw(0.50), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(26), F10,
+    Mm(40), Rpm(90), Nm(40), Kw(0.50), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(90), 1, Kg(26), F10,
+    Mm(40), Rpm(125), Nm(40), Kw(0.70), S230, AM011, AC012, 400, 50);
+  AumaSA102_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA102, Nm(70), 1, Kg(26), F10,
+    Mm(40), Rpm(180), Nm(40), Kw(0.70), S230, AM011, AC012, 400, 50);
+
+  AumaSA142_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(47), F14,
+    Mm(55), Rpm(4), Nm(100), Kw(0.12), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(47), F14,
+    Mm(55), Rpm(5.6), Nm(100), Kw(0.12), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(47), F14,
+    Mm(55), Rpm(8), Nm(100), Kw(0.25), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(47), F14,
+    Mm(55), Rpm(11), Nm(100), Kw(0.25), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(100), Kw(0.45), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(100), Kw(0.45), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(51), F14,
+    Mm(55), Rpm(32), Nm(100), Kw(0.75), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(51), F14,
+    Mm(55), Rpm(45), Nm(100), Kw(0.75), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(52), F14,
+    Mm(55), Rpm(63), Nm(100), Kw(1.40), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(52), F14,
+    Mm(55), Rpm(90), Nm(100), Kw(1.40), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(250), 1, Kg(52), F14,
+    Mm(55), Rpm(125), Nm(100), Kw(1.80), S215, AM021, AC012, 400, 50);
+  AumaSA142_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(200), 1, Kg(52), F14,
+    Mm(55), Rpm(180), Nm(100), Kw(1.80), S215, AM021, AC012, 400, 50);
+
+  AumaSA142_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(47), F14,
+    Mm(55), Rpm(4), Nm(100), Kw(0.08), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(47), F14,
+    Mm(55), Rpm(5.6), Nm(100), Kw(0.08), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(47), F14,
+    Mm(55), Rpm(8), Nm(100), Kw(0.18), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(47), F14,
+    Mm(55), Rpm(11), Nm(100), Kw(0.18), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(100), Kw(0.30), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(100), Kw(0.30), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(51), F14,
+    Mm(55), Rpm(32), Nm(100), Kw(0.50), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(51), F14,
+    Mm(55), Rpm(45), Nm(100), Kw(0.50), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(52), F14,
+    Mm(55), Rpm(63), Nm(100), Kw(1.00), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(52), F14,
+    Mm(55), Rpm(90), Nm(100), Kw(1.00), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(180), 1, Kg(52), F14,
+    Mm(55), Rpm(125), Nm(100), Kw(1.30), S230, AM021, AC012, 400, 50);
+  AumaSA142_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA142, Nm(140), 1, Kg(52), F14,
+    Mm(55), Rpm(180), Nm(100), Kw(1.30), S230, AM021, AC012, 400, 50);
+
+  AumaSA146_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(49), F14,
+    Mm(55), Rpm(4), Nm(200), Kw(0.20), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(49), F14,
+    Mm(55), Rpm(5.6), Nm(200), Kw(0.20), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(49), F14,
+    Mm(55), Rpm(8), Nm(200), Kw(0.40), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(49), F14,
+    Mm(55), Rpm(11), Nm(200), Kw(0.40), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(50), F14,
+    Mm(55), Rpm(16), Nm(200), Kw(0.80), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(50), F14,
+    Mm(55), Rpm(22), Nm(200), Kw(0.80), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(57), F14,
+    Mm(55), Rpm(32), Nm(200), Kw(1.60), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(57), F14,
+    Mm(55), Rpm(45), Nm(200), Kw(1.60), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(57), F14,
+    Mm(55), Rpm(63), Nm(200), Kw(3.00), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(57), F14,
+    Mm(55), Rpm(90), Nm(200), Kw(3.00), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(500), 1, Kg(57), F14,
+    Mm(55), Rpm(125), Nm(200), Kw(3.30), S215, AM021, AC012, 400, 50);
+  AumaSA146_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(400), 1, Kg(57), F14,
+    Mm(55), Rpm(180), Nm(200), Kw(3.30), S215, AM021, AC012, 400, 50);
+
+  AumaSA146_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(49), F14,
+    Mm(55), Rpm(4), Nm(200), Kw(0.14), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(49), F14,
+    Mm(55), Rpm(5.6), Nm(200), Kw(0.14), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(49), F14,
+    Mm(55), Rpm(8), Nm(200), Kw(0.30), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(49), F14,
+    Mm(55), Rpm(11), Nm(200), Kw(0.30), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(50), F14,
+    Mm(55), Rpm(16), Nm(200), Kw(0.60), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(50), F14,
+    Mm(55), Rpm(22), Nm(200), Kw(0.60), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(57), F14,
+    Mm(55), Rpm(32), Nm(200), Kw(1.00), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(57), F14,
+    Mm(55), Rpm(45), Nm(200), Kw(1.00), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(57), F14,
+    Mm(55), Rpm(63), Nm(200), Kw(2.00), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(57), F14,
+    Mm(55), Rpm(90), Nm(200), Kw(2.00), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(360), 1, Kg(57), F14,
+    Mm(55), Rpm(125), Nm(200), Kw(2.30), S230, AM021, AC012, 400, 50);
+  AumaSA146_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA146, Nm(290), 1, Kg(57), F14,
+    Mm(55), Rpm(180), Nm(200), Kw(2.30), S230, AM021, AC012, 400, 50);
+
+  AumaSA162_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(75), F16,
+    Mm(75), Rpm(4), Nm(400), Kw(0.40), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(75), F16,
+    Mm(75), Rpm(5.6), Nm(400), Kw(0.40), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(75), F16,
+    Mm(75), Rpm(8), Nm(400), Kw(0.80), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(75), F16,
+    Mm(75), Rpm(11), Nm(400), Kw(0.80), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(75), F16,
+    Mm(75), Rpm(16), Nm(400), Kw(1.50), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(75), F16,
+    Mm(75), Rpm(22), Nm(400), Kw(1.50), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(86), F16,
+    Mm(75), Rpm(32), Nm(400), Kw(3.00), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(86), F16,
+    Mm(75), Rpm(45), Nm(400), Kw(3.00), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(91), F16,
+    Mm(75), Rpm(63), Nm(400), Kw(5.00), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(1000), 1, Kg(91), F16,
+    Mm(75), Rpm(90), Nm(400), Kw(5.00), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(800), 1, Kg(91), F16,
+    Mm(75), Rpm(125), Nm(400), Kw(6.00), S215, AM021, AC012, 400, 50);
+  AumaSA162_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(800), 1, Kg(91), F16,
+    Mm(75), Rpm(180), Nm(400), Kw(6.00), S215, AM021, AC012, 400, 50);
+
+  AumaSA162_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(75), F16,
+    Mm(75), Rpm(4), Nm(400), Kw(0.30), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(75), F16,
+    Mm(75), Rpm(5.6), Nm(400), Kw(0.30), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(75), F16,
+    Mm(75), Rpm(8), Nm(400), Kw(0.60), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(75), F16,
+    Mm(75), Rpm(11), Nm(400), Kw(0.60), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(75), F16,
+    Mm(75), Rpm(16), Nm(400), Kw(1.00), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(75), F16,
+    Mm(75), Rpm(22), Nm(400), Kw(1.00), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(86), F16,
+    Mm(75), Rpm(32), Nm(400), Kw(2.00), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(86), F16,
+    Mm(75), Rpm(45), Nm(400), Kw(2.00), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(91), F16,
+    Mm(75), Rpm(63), Nm(400), Kw(3.50), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(710), 1, Kg(91), F16,
+    Mm(75), Rpm(90), Nm(400), Kw(3.50), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(570), 1, Kg(91), F16,
+    Mm(75), Rpm(125), Nm(400), Kw(4.00), S230, AM021, AC012, 400, 50);
+  AumaSA162_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA162, Nm(570), 1, Kg(91), F16,
+    Mm(75), Rpm(180), Nm(400), Kw(4.00), S230, AM021, AC012, 400, 50);
+
+  AumaSA251_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(630), Kw(1.1), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(630), Kw(1.1), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(630), Kw(3.0), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(630), Kw(3.0), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(16), Nm(630), Kw(4.0), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(22), Nm(630), Kw(4.0), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(32), Nm(630), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(45), Nm(630), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(63), Nm(630), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(2000), 1, Kg(160), F25,
+    Mm(95), Rpm(90), Nm(630), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1700), 1, Kg(160), F25,
+    Mm(95), Rpm(125), Nm(630), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA251_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(180), Nm(630), Kw(15), S215, AM021, AC012, 400, 50);
+
+  AumaSA251_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(630), Kw(0.75), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(630), Kw(0.75), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(630), Kw(2.2), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(630), Kw(2.2), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(16), Nm(630), Kw(3.0), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(22), Nm(630), Kw(3.0), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(32), Nm(630), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(45), Nm(630), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(63), Nm(630), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1400), 1, Kg(160), F25,
+    Mm(95), Rpm(90), Nm(630), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1200), 1, Kg(160), F25,
+    Mm(95), Rpm(125), Nm(630), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA251_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA251, Nm(1000), 1, Kg(160), F25,
+    Mm(95), Rpm(180), Nm(630), Kw(11), S230, AM021, AC012, 400, 50);
+
+  AumaSA301_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(1250), Kw(2.2), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(1250), Kw(2.2), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(1250), Kw(5.5), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(1250), Kw(5.5), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(16), Nm(1250), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(22), Nm(1250), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(32), Nm(1250), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(45), Nm(1250), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(63), Nm(1250), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(4000), 1, Kg(260), F30,
+    Mm(115), Rpm(90), Nm(1250), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(3200), 1, Kg(260), F30,
+    Mm(115), Rpm(125), Nm(1250), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA301_S215_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(180), Nm(1250), Kw(30), S215, AM021, AC012, 400, 50);
+
+  AumaSA301_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(1250), Kw(1.5), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(1250), Kw(1.5), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(1250), Kw(4.0), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(1250), Kw(4.0), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(16), Nm(1250), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(22), Nm(1250), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(32), Nm(1250), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(45), Nm(1250), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(63), Nm(1250), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2800), 1, Kg(260), F30,
+    Mm(115), Rpm(90), Nm(1250), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[10] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2200), 1, Kg(260), F30,
+    Mm(115), Rpm(125), Nm(1250), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA301_S230_400V50Hz[11] :=
+    TActuator.CreateAuma(AumaSA, SA301, Nm(2000), 1, Kg(260), F30,
+    Mm(115), Rpm(180), Nm(1250), Kw(22), S230, AM021, AC012, 400, 50);
+
+  AumaSA351_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(4), Nm(2500), Kw(4.0), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(5.6), Nm(2500), Kw(4.0), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(8), Nm(2500), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(11), Nm(2500), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(16), Nm(2500), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(410), F35,
+    Mm(155), Rpm(22), Nm(2500), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(425), F35,
+    Mm(155), Rpm(32), Nm(2500), Kw(20), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(8000), 1, Kg(425), F35,
+    Mm(155), Rpm(45), Nm(2500), Kw(20), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(6400), 1, Kg(425), F35,
+    Mm(155), Rpm(63), Nm(2500), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA351_S215_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5500), 1, Kg(425), F35,
+    Mm(155), Rpm(90), Nm(2500), Kw(30), S215, AM021, AC012, 400, 50);
+
+  AumaSA351_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(4), Nm(2500), Kw(3.0), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(5.6), Nm(2500), Kw(3.0), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(8), Nm(2500), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(11), Nm(2500), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(16), Nm(2500), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(410), F35,
+    Mm(155), Rpm(22), Nm(2500), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(425), F35,
+    Mm(155), Rpm(32), Nm(2500), Kw(14), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(5700), 1, Kg(425), F35,
+    Mm(155), Rpm(45), Nm(2500), Kw(14), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(4500), 1, Kg(425), F35,
+    Mm(155), Rpm(63), Nm(2500), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA351_S230_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSA, SA351, Nm(3800), 1, Kg(425), F35,
+    Mm(155), Rpm(90), Nm(2500), Kw(22), S230, AM021, AC012, 400, 50);
+
+  AumaSA401_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(4), Nm(5000), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(5.6), Nm(5000), Kw(7.5), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(8), Nm(5000), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(11), Nm(5000), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(16), Nm(5000), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(16000), 1, Kg(510),
+    F40, Mm(175), Rpm(22), Nm(5000), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(14000), 1, Kg(510),
+    F40, Mm(175), Rpm(32), Nm(5000), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA401_S215_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(10000), 1, Kg(510),
+    F40, Mm(175), Rpm(45), Nm(5000), Kw(30), S215, AM021, AC012, 400, 50);
+
+  AumaSA401_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(4), Nm(5000), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(5.6), Nm(5000), Kw(5.5), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(8), Nm(5000), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(11), Nm(5000), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(16), Nm(5000), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(11200), 1, Kg(510),
+    F40, Mm(175), Rpm(22), Nm(5000), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(9800), 1, Kg(510),
+    F40, Mm(175), Rpm(32), Nm(5000), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA401_S230_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSA, SA401, Nm(7000), 1, Kg(510),
+    F40, Mm(175), Rpm(45), Nm(5000), Kw(22), S230, AM021, AC012, 400, 50);
+
+  AumaSA481_S215_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(4), Nm(10000), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA481_S215_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(5.6), Nm(10000), Kw(15), S215, AM021, AC012, 400, 50);
+  AumaSA481_S215_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(8), Nm(10000), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA481_S215_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(11), Nm(10000), Kw(30), S215, AM021, AC012, 400, 50);
+  AumaSA481_S215_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(32000), 1, Kg(750),
+    F48, Mm(175), Rpm(16), Nm(10000), Kw(45), S215, AM021, AC012, 400, 50);
+
+  AumaSA481_S230_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(4), Nm(10000), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA481_S230_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(5.6), Nm(10000), Kw(11), S230, AM021, AC012, 400, 50);
+  AumaSA481_S230_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(8), Nm(10000), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA481_S230_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(11), Nm(10000), Kw(22), S230, AM021, AC012, 400, 50);
+  AumaSA481_S230_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSA, SA481, Nm(22400), 1, Kg(750),
+    F48, Mm(175), Rpm(16), Nm(10000), Kw(30), S230, AM021, AC012, 400, 50);
+
+  { SAR 400 V, 50 Hz }
+
+  AumaSAR072_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1,
+    Kg(19), F07, Mm(26), Rpm(4), Nm(15), Kw(0.02), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(15), Kw(0.02), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(15), Kw(0.04), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(15), Kw(0.04), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(15), Kw(0.06), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(15), Kw(0.06), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(15), Kw(0.10), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(15), Kw(0.10), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(15), Kw(0.20), S425, AM011, AC012, 400, 50);
+  AumaSAR072_S425_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(30), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(15), Kw(0.20), S425, AM011, AC012, 400, 50);
+
+  AumaSAR072_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(4), Nm(15), Kw(0.01), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(5.6), Nm(15), Kw(0.01), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(8), Nm(15), Kw(0.03), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(11), Nm(15), Kw(0.03), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(16), Nm(15), Kw(0.04), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(19), F07,
+    Mm(26), Rpm(22), Nm(15), Kw(0.04), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(32), Nm(15), Kw(0.07), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(45), Nm(15), Kw(0.07), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(63), Nm(15), Kw(0.14), S450, AM011, AC012, 400, 50);
+  AumaSAR072_S450_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR072, Nm(20), 1, Kg(20), F10,
+    Mm(30), Rpm(90), Nm(15), Kw(0.14), S450, AM011, AC012, 400, 50);
+
+  AumaSAR076_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(4), Nm(30), Kw(0.03), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(5.6), Nm(30), Kw(0.03), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(8), Nm(30), Kw(0.06), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(11), Nm(30), Kw(0.06), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(16), Nm(30), Kw(0.12), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(20), F07,
+    Mm(26), Rpm(22), Nm(30), Kw(0.12), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(32), Nm(30), Kw(0.20), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(45), Nm(30), Kw(0.20), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(63), Nm(30), Kw(0.40), S425, AM011, AC012, 400, 50);
+  AumaSAR076_S425_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(60), 1, Kg(21), F10,
+    Mm(30), Rpm(90), Nm(30), Kw(0.40), S425, AM011, AC012, 400, 50);
+
+  AumaSAR076_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(4), Nm(30), Kw(0.02), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(5.6), Nm(30), Kw(0.02), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(8), Nm(30), Kw(0.04), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(11), Nm(30), Kw(0.04), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(16), Nm(30), Kw(0.08), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(20), F07,
+    Mm(26), Rpm(22), Nm(30), Kw(0.08), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(32), Nm(30), Kw(0.14), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(45), Nm(30), Kw(0.14), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(63), Nm(30), Kw(0.28), S450, AM011, AC012, 400, 50);
+  AumaSAR076_S450_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR076, Nm(40), 1, Kg(21), F10,
+    Mm(30), Rpm(90), Nm(30), Kw(0.28), S450, AM011, AC012, 400, 50);
+
+  AumaSAR102_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(4), Nm(60), Kw(0.06), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(5.6), Nm(60), Kw(0.06), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(8), Nm(60), Kw(0.12), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(11), Nm(60), Kw(0.12), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(16), Nm(60), Kw(0.25), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(22), F10,
+    Mm(40), Rpm(22), Nm(60), Kw(0.25), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(60), Kw(0.40), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(60), Kw(0.40), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(63), Nm(60), Kw(0.70), S425, AM011, AC012, 400, 50);
+  AumaSAR102_S425_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(120), 1, Kg(25), F10,
+    Mm(40), Rpm(90), Nm(60), Kw(0.70), S425, AM011, AC012, 400, 50);
+
+  AumaSAR102_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(4), Nm(60), Kw(0.04), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(5.6), Nm(60), Kw(0.04), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(8), Nm(60), Kw(0.08), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(11), Nm(60), Kw(0.08), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(16), Nm(60), Kw(0.17), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(22), F10,
+    Mm(40), Rpm(22), Nm(60), Kw(0.17), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(32), Nm(60), Kw(0.28), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(45), Nm(60), Kw(0.28), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(63), Nm(60), Kw(0.50), S450, AM011, AC012, 400, 50);
+  AumaSAR102_S450_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR102, Nm(90), 1, Kg(25), F10,
+    Mm(40), Rpm(90), Nm(60), Kw(0.50), S450, AM011, AC012, 400, 50);
+
+  AumaSAR142_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(4), Nm(120), Kw(0.12), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(5.6), Nm(120), Kw(0.12), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(8), Nm(120), Kw(0.25), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(44), F14,
+    Mm(55), Rpm(11), Nm(120), Kw(0.25), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(120), Kw(0.45), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(120), Kw(0.45), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(32), Nm(120), Kw(0.75), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(45), Nm(120), Kw(0.75), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(63), Nm(120), Kw(1.40), S425, AM021, AC012, 400, 50);
+  AumaSAR142_S425_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(250), 1, Kg(48), F14,
+    Mm(55), Rpm(90), Nm(120), Kw(1.40), S425, AM021, AC012, 400, 50);
+
+  AumaSAR142_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(4), Nm(120), Kw(0.08), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(5.6), Nm(120), Kw(0.08), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(8), Nm(120), Kw(0.18), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(44), F14,
+    Mm(55), Rpm(11), Nm(120), Kw(0.18), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(16), Nm(120), Kw(0.30), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(22), Nm(120), Kw(0.30), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(32), Nm(120), Kw(0.50), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(45), Nm(120), Kw(0.50), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(63), Nm(120), Kw(1.00), S450, AM021, AC012, 400, 50);
+  AumaSAR142_S450_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR142, Nm(180), 1, Kg(48), F14,
+    Mm(55), Rpm(90), Nm(120), Kw(1.00), S450, AM021, AC012, 400, 50);
+
+  AumaSAR146_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(4), Nm(250), Kw(0.20), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(5.6), Nm(250), Kw(0.20), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(8), Nm(250), Kw(0.40), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(46), F14,
+    Mm(55), Rpm(11), Nm(250), Kw(0.40), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(16), Nm(250), Kw(0.80), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(22), Nm(250), Kw(0.80), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(32), Nm(250), Kw(1.60), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(45), Nm(250), Kw(1.60), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(63), Nm(250), Kw(3.00), S425, AM021, AC012, 400, 50);
+  AumaSAR146_S425_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(500), 1, Kg(53), F14,
+    Mm(55), Rpm(90), Nm(250), Kw(3.00), S425, AM021, AC012, 400, 50);
+
+  AumaSAR146_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(4), Nm(250), Kw(0.14), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(5.6), Nm(250), Kw(0.14), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(8), Nm(250), Kw(0.30), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(46), F14,
+    Mm(55), Rpm(11), Nm(250), Kw(0.30), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(16), Nm(250), Kw(0.60), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(22), Nm(250), Kw(0.60), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(32), Nm(250), Kw(1.00), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(45), Nm(250), Kw(1.00), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(63), Nm(250), Kw(2.00), S450, AM021, AC012, 400, 50);
+  AumaSAR146_S450_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR146, Nm(360), 1, Kg(53), F14,
+    Mm(55), Rpm(90), Nm(250), Kw(2.00), S450, AM021, AC012, 400, 50);
+
+  AumaSAR162_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(4), Nm(500), Kw(0.40), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(5.6), Nm(500), Kw(0.40), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(8), Nm(500), Kw(0.80), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(11), Nm(500), Kw(0.80), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(16), Nm(500), Kw(1.50), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(67), F16,
+    Mm(75), Rpm(22), Nm(500), Kw(1.50), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(79), F16,
+    Mm(75), Rpm(32), Nm(500), Kw(3.00), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(79), F16,
+    Mm(75), Rpm(45), Nm(500), Kw(3.00), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(83), F16,
+    Mm(75), Rpm(63), Nm(500), Kw(5.00), S425, AM021, AC012, 400, 50);
+  AumaSAR162_S425_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(1000), 1, Kg(83), F16,
+    Mm(75), Rpm(90), Nm(500), Kw(5.00), S425, AM021, AC012, 400, 50);
+
+  AumaSAR162_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(4), Nm(500), Kw(0.30), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(5.6), Nm(500), Kw(0.30), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(8), Nm(500), Kw(0.60), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(11), Nm(500), Kw(0.60), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[4] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(16), Nm(500), Kw(1.00), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[5] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(67), F16,
+    Mm(75), Rpm(22), Nm(500), Kw(1.00), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[6] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(79), F16,
+    Mm(75), Rpm(32), Nm(500), Kw(2.00), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[7] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(79), F16,
+    Mm(75), Rpm(45), Nm(500), Kw(2.00), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[8] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(83), F16,
+    Mm(75), Rpm(63), Nm(500), Kw(3.50), S450, AM021, AC012, 400, 50);
+  AumaSAR162_S450_400V50Hz[9] :=
+    TActuator.CreateAuma(AumaSAR, SAR162, Nm(710), 1, Kg(83), F16,
+    Mm(75), Rpm(90), Nm(500), Kw(3.50), S450, AM021, AC012, 400, 50);
+
+  AumaSAR251_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(1000), Kw(1.1), S425, AM021, AC012, 400, 50);
+  AumaSAR251_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(1000), Kw(1.1), S425, AM021, AC012, 400, 50);
+  AumaSAR251_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(1000), Kw(3.0), S425, AM021, AC012, 400, 50);
+  AumaSAR251_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(2000), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(1000), Kw(3.0), S425, AM021, AC012, 400, 50);
+
+  AumaSAR251_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(4), Nm(1000), Kw(0.75), S450, AM021, AC012, 400, 50);
+  AumaSAR251_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(5.6), Nm(1000), Kw(0.75), S450, AM021, AC012, 400, 50);
+  AumaSAR251_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(8), Nm(1000), Kw(2.2), S450, AM021, AC012, 400, 50);
+  AumaSAR251_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR251, Nm(1400), 1, Kg(150), F25,
+    Mm(95), Rpm(11), Nm(1000), Kw(2.2), S450, AM021, AC012, 400, 50);
+
+  AumaSAR301_S425_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(2000), Kw(2.2), S425, AM021, AC012, 400, 50);
+  AumaSAR301_S425_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(2000), Kw(2.2), S425, AM021, AC012, 400, 50);
+  AumaSAR301_S425_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(2000), Kw(5.5), S425, AM021, AC012, 400, 50);
+  AumaSAR301_S425_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(4000), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(2000), Kw(5.5), S425, AM021, AC012, 400, 50);
+
+  AumaSAR301_S450_400V50Hz[0] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(4), Nm(2000), Kw(1.5), S450, AM021, AC012, 400, 50);
+  AumaSAR301_S450_400V50Hz[1] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(5.6), Nm(2000), Kw(1.5), S450, AM021, AC012, 400, 50);
+  AumaSAR301_S450_400V50Hz[2] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(8), Nm(2000), Kw(4.0), S450, AM021, AC012, 400, 50);
+  AumaSAR301_S450_400V50Hz[3] :=
+    TActuator.CreateAuma(AumaSAR, SAR301, Nm(2800), 1, Kg(190), F30,
+    Mm(115), Rpm(11), Nm(2000), Kw(4.0), S450, AM021, AC012, 400, 50);
+
+  AumaSA_S215_400V50Hz[0] := AumaSA072_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[1] := AumaSA076_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[2] := AumaSA102_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[3] := AumaSA142_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[4] := AumaSA146_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[5] := AumaSA162_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[6] := AumaSA251_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[7] := AumaSA301_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[8] := AumaSA351_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[9] := AumaSA401_S215_400V50Hz;
+  AumaSA_S215_400V50Hz[10] := AumaSA481_S215_400V50Hz;
+
+  AumaSA_S230_400V50Hz[0] := AumaSA072_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[1] := AumaSA076_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[2] := AumaSA102_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[3] := AumaSA142_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[4] := AumaSA146_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[5] := AumaSA162_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[6] := AumaSA251_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[7] := AumaSA301_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[8] := AumaSA351_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[9] := AumaSA401_S230_400V50Hz;
+  AumaSA_S230_400V50Hz[10] := AumaSA481_S230_400V50Hz;
+
+  AumaSAR_S425_400V50Hz[0] := AumaSAR072_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[1] := AumaSAR076_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[2] := AumaSAR102_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[3] := AumaSAR142_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[4] := AumaSAR146_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[5] := AumaSAR162_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[6] := AumaSAR251_S425_400V50Hz;
+  AumaSAR_S425_400V50Hz[7] := AumaSAR301_S425_400V50Hz;
+
+  AumaSAR_S450_400V50Hz[0] := AumaSAR072_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[1] := AumaSAR076_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[2] := AumaSAR102_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[3] := AumaSAR142_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[4] := AumaSAR146_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[5] := AumaSAR162_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[6] := AumaSAR251_S450_400V50Hz;
+  AumaSAR_S450_400V50Hz[7] := AumaSAR301_S450_400V50Hz;
 
   AumaGK102[0] := TGearbox.Create(SAuma, TGearboxType.AumaGK, GK102,
     Nm(120), 1, 0.9, Kg(8.5), F10, Mm(40), False, Mm(315));

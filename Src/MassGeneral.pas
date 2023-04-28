@@ -11,15 +11,15 @@ interface
 uses fgl, StrengthCalculations;
 
 type
-  TSheetWeights = specialize TFPGMap<Double, Double>;
+  TSheetWeights = specialize TFPGMap<ValReal, ValReal>;
 
   TWeights = record
     Sheet: TSheetWeights;
-    Total, Frame, Gate: Double;
+    Total, Frame, Gate: ValReal;
   end;
 
   TSheetMetal = record
-    S, R: Double;
+    S, R: ValReal;
   end;
 
 const
@@ -32,22 +32,22 @@ const
     (S: 0.008; R: 0.01123));
 
 procedure CalcMass(var Mass: TWeights; const Slg: TSlidegate; const InputData: TInputData);
-procedure UpdateSheetWeight(var SheetWeights: TSheetWeights; const S, Weight: Double);
-function CalcPipeMass(const MajorDiam, Thickness, Length: Double): Double;
+procedure UpdateSheetWeight(var SheetWeights: TSheetWeights; const S, Weight: ValReal);
+function CalcPipeMass(const MajorDiam, Thickness, Length: ValReal): ValReal;
 procedure ClearWeights(var Mass: TWeights);
-procedure SetSheetMetal(out SheetMetal: TSheetMetal; const S: Double);
+procedure SetSheetMetal(out SheetMetal: TSheetMetal; const S: ValReal);
 
 implementation
 
 uses MassWedge, MassFlow, MathUtils, CheckNum;
 
-function CalcPipeMass(const MajorDiam, Thickness, Length: Double): Double;
+function CalcPipeMass(const MajorDiam, Thickness, Length: ValReal): ValReal;
 begin
   Result := Length * RingSectorArea(MajorDiam, MajorDiam - 2 * Thickness, 2 * Pi) *
     SteelDensity;
 end;
 
-procedure SetSheetMetal(out SheetMetal: TSheetMetal; const S: Double);
+procedure SetSheetMetal(out SheetMetal: TSheetMetal; const S: ValReal);
 var
   I: Integer;
   IsFound: Boolean;
@@ -68,7 +68,7 @@ begin
   end;
 end;
 
-procedure UpdateSheetWeight(var SheetWeights: TSheetWeights; const S, Weight: Double);
+procedure UpdateSheetWeight(var SheetWeights: TSheetWeights; const S, Weight: ValReal);
 var
   I: Integer;
 begin
@@ -89,7 +89,7 @@ const
   MassRack = 9;  { kg }
   BracketMass = 4;  { kg }
 var
-  PipeMass: Double;
+  PipeMass: ValReal;
 begin
   ClearWeights(Mass);
   if Slg.SlgKind = Flow then

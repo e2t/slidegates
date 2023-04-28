@@ -12,7 +12,7 @@ type
   TLang = (Eng, Ukr, Rus);
 
 var
-  L10nOut: array [0..88, TLang] of string;
+  L10nOut: array [0..89, TLang] of string;
   L10nGui: array [0..55, TLang] of string;
 
 implementation
@@ -74,9 +74,9 @@ initialization
   L10nOut[13, Ukr] := 'Гайка власного виготовлення';
   L10nOut[13, Rus] := 'Гайка собственного изготовления';
 
-  L10nOut[14, Eng] := 'Bronze strip %S, L=%G mm';
-  L10nOut[14, Ukr] := 'Смуга бронзова %S, L=%G мм';
-  L10nOut[14, Rus] := 'Полоса бронзовая %S, L=%G мм';
+  L10nOut[14, Eng] := 'ЗЩНК.01-00.001 Pad on the wedge — %G pcs.';
+  L10nOut[14, Ukr] := 'ЗЩНК.01-00.001 Накладка клина — %G шт.';
+  L10nOut[14, Rus] := 'ЗЩНК.01-00.001 Накладка клина — %G шт.';
 
   L10nOut[15, Eng] := 'Screw %S (inner %S), factor of safity %S';
   L10nOut[15, Ukr] := 'Гвинт %S (внутр. %S), запас міцності %S';
@@ -196,9 +196,9 @@ initialization
   L10nOut[40, Ukr] := 'Температурний діапазон від %.0F °C до %.0F °C';
   L10nOut[40, Rus] := 'Температурный диапазон от %.0F °C до %.0F °C';
 
-  L10nOut[41, Eng] := 'Voltage 380 V / 50 Hz / 3ph';
-  L10nOut[41, Ukr] := 'Напруга живлення 380 В / 50 Гц / 3ф';
-  L10nOut[41, Rus] := 'Напряжение питания 380 В / 50 Гц / 3ф';
+  L10nOut[41, Eng] := 'Voltage %.0F V / %.0F Hz / 3ph';
+  L10nOut[41, Ukr] := 'Напруга живлення %.0F В / %.0F Гц / 3ф';
+  L10nOut[41, Rus] := 'Напряжение питания %.0F В / %.0F Гц / 3ф';
 
   L10nOut[42, Eng] := 'General industrial design';
   L10nOut[42, Ukr] := 'Загальнопромислове виконання';
@@ -387,6 +387,10 @@ initialization
   L10nOut[88, Eng] := 'Without explosion protection';
   L10nOut[88, Ukr] := 'Без вибухозахисту';
   L10nOut[88, Rus] := 'Без взрывозащиты';
+
+  L10nOut[89, Eng] := 'Contact the design department for weight calculations.';
+  L10nOut[89, Ukr] := 'За розрахунком маси звертайтеся в конструкторський відділ.';
+  L10nOut[89, Rus] := 'За расчетом массы обращайтесь в конструкторский отдел.';
 
   (*
   L10nOut[, Eng] := '';

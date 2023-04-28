@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 581
+  Left = 443
   Height = 630
-  Top = 141
+  Top = 147
   Width = 1055
   ClientHeight = 630
   ClientWidth = 1055
@@ -9,7 +9,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   Position = poDefaultPosOnly
-  LCLVersion = '2.2.0.4'
+  LCLVersion = '2.2.6.0'
   Visible = True
   object PageControlDriveKind: TPageControl
     Left = 8
@@ -79,6 +79,7 @@ object MainForm: TMainForm
         Top = 106
         Width = 305
         Caption = 'Количество полных ходов щита до перегрева привода:'
+        ParentColor = False
       end
       object EditMinSpeed: TEdit
         Left = 506
@@ -96,6 +97,17 @@ object MainForm: TMainForm
         Top = 76
         Width = 310
         Caption = 'Предпочитать скорость вращения не меньше (об/мин):'
+        ParentColor = False
+      end
+      object ComboBoxNetwork: TComboBox
+        Left = 8
+        Height = 23
+        Top = 102
+        Width = 100
+        ItemHeight = 15
+        OnChange = ComboBoxNetworkChange
+        Style = csDropDownList
+        TabOrder = 6
       end
     end
     object TabSheetGearbox: TTabSheet
@@ -148,6 +160,7 @@ object MainForm: TMainForm
         Top = 80
         Width = 472
         Caption = 'С двумя винтами AUMA GK и РЗАМ можно использовать только с электроприводом.'#13#10'Tramec можно использовать только с невыдвижным(и) винтом(-ами).'#13#10'Цилиндрический редуктор можно использовать только с одним винтом.'
+        ParentColor = False
       end
     end
     object TabSheetHandWheel: TTabSheet
@@ -164,6 +177,7 @@ object MainForm: TMainForm
         Top = 59
         Width = 116
         Caption = 'Заполняется в коде...'
+        ParentColor = False
       end
     end
   end
@@ -183,6 +197,7 @@ object MainForm: TMainForm
     Top = 132
     Width = 160
     Caption = 'Плотность жидкости (кг/м3):'
+    ParentColor = False
   end
   object PageControlSlgKind: TPageControl
     Left = 8
@@ -202,6 +217,7 @@ object MainForm: TMainForm
         Top = 8
         Width = 176
         Caption = 'Уплотнение по трем сторонам.'#13#10'Закрытие вниз, открытие вверх.'#13#10'Винт с левой резьбой.'
+        ParentColor = False
       end
       object Label7: TLabel
         Left = 8
@@ -209,6 +225,7 @@ object MainForm: TMainForm
         Top = 56
         Width = 250
         Caption = 'Гидростатический напор равен высоте щита.'
+        ParentColor = False
       end
       object GroupBox3: TGroupBox
         Left = 8
@@ -266,6 +283,7 @@ object MainForm: TMainForm
         Top = 56
         Width = 161
         Caption = 'Гидростатический напор (м):'
+        ParentColor = False
       end
       object Label11: TLabel
         Left = 8
@@ -273,6 +291,7 @@ object MainForm: TMainForm
         Top = 8
         Width = 195
         Caption = 'Уплотнение по четырем сторонам.'#13#10'Закрытие вниз, открытие вверх.'#13#10'Винт с левой резьбой.'
+        ParentColor = False
       end
       object GroupBox4: TGroupBox
         Left = 8
@@ -337,6 +356,7 @@ object MainForm: TMainForm
         Top = 8
         Width = 176
         Caption = 'Уплотнение по трем сторонам.'#13#10'Закрытие вверх, открытие вниз.'#13#10'Винт с правой резьбой.'
+        ParentColor = False
       end
       object Label9: TLabel
         Left = 8
@@ -344,6 +364,7 @@ object MainForm: TMainForm
         Top = 56
         Width = 250
         Caption = 'Гидростатический напор равен высоте щита.'
+        ParentColor = False
       end
       object EditBethFrameTopAndGateTop: TEdit
         Left = 232
@@ -360,6 +381,7 @@ object MainForm: TMainForm
         Top = 196
         Width = 187
         Caption = 'От верха рамы до верха щита (м):'
+        ParentColor = False
       end
       object GroupBox2: TGroupBox
         Left = 8
@@ -477,6 +499,7 @@ object MainForm: TMainForm
       Top = 8
       Width = 82
       Caption = 'Винт TrxS (мм):'
+      ParentColor = False
     end
     object ComboBoxScrew: TComboBox
       Left = 160
@@ -494,6 +517,7 @@ object MainForm: TMainForm
       Top = 36
       Width = 118
       Caption = 'Высота открытия (м):'
+      ParentColor = False
     end
     object EditWay: TEdit
       Left = 160
@@ -553,6 +577,7 @@ object MainForm: TMainForm
       Top = 64
       Width = 92
       Caption = 'Лист рамы (мм):'
+      ParentColor = False
     end
     object Label24: TLabel
       AnchorSideTop.Control = ComboBoxGateSheet
@@ -562,6 +587,7 @@ object MainForm: TMainForm
       Top = 92
       Width = 90
       Caption = 'Лист щита (мм):'
+      ParentColor = False
     end
   end
   object Panel1: TPanel
@@ -598,6 +624,7 @@ object MainForm: TMainForm
       Top = 8
       Width = 102
       Caption = 'Ширина рамы (м):'
+      ParentColor = False
     end
     object EditFrameHeight: TEdit
       Left = 172
@@ -621,6 +648,7 @@ object MainForm: TMainForm
       Top = 36
       Width = 97
       Caption = 'Высота рамы (м):'
+      ParentColor = False
     end
     object Label4: TLabel
       AnchorSideTop.Control = EditGateHeight
@@ -630,6 +658,7 @@ object MainForm: TMainForm
       Top = 64
       Width = 95
       Caption = 'Высота щита (м):'
+      ParentColor = False
     end
   end
   object PageControlDriveLocation: TPageControl
@@ -654,6 +683,7 @@ object MainForm: TMainForm
         Top = 37
         Width = 279
         Caption = 'Стандартное размещение на верхней балке рамы.'
+        ParentColor = False
       end
     end
     object TabSheetOnRack: TTabSheet
@@ -668,6 +698,7 @@ object MainForm: TMainForm
         Top = 36
         Width = 158
         Caption = 'От верха рамы до земли (м):'
+        ParentColor = False
       end
       object EditBtwFrameTopAndGround: TEdit
         Left = 224
@@ -690,6 +721,7 @@ object MainForm: TMainForm
         Top = 8
         Width = 203
         Caption = 'Высота колонки управления 760 мм.'
+        ParentColor = False
       end
     end
     object TabSheetOnBracket: TTabSheet
@@ -711,6 +743,7 @@ object MainForm: TMainForm
         Top = 36
         Width = 158
         Caption = 'От верха рамы до земли (м):'
+        ParentColor = False
       end
       object CheckBoxBracketWithoutPipeNodes: TCheckBox
         Left = 8
@@ -726,6 +759,7 @@ object MainForm: TMainForm
         Top = 8
         Width = 240
         Caption = 'Выносная опора с настенным креплением.'
+        ParentColor = False
       end
     end
   end
@@ -735,8 +769,9 @@ object MainForm: TMainForm
     Top = 436
     Width = 212
     Caption = 'Расположение привода или штурвала'
+    ParentColor = False
   end
-  object ComboBox1: TComboBox
+  object ComboBoxGuiLang: TComboBox
     AnchorSideBottom.Side = asrBottom
     Left = 8
     Height = 23
@@ -744,11 +779,11 @@ object MainForm: TMainForm
     Width = 100
     Anchors = [akLeft, akBottom]
     ItemHeight = 15
-    OnChange = ComboBox1Change
+    OnChange = ComboBoxGuiLangChange
     Style = csDropDownList
     TabOrder = 10
   end
-  object ComboBox2: TComboBox
+  object ComboBoxOutLang: TComboBox
     AnchorSideBottom.Side = asrBottom
     Left = 616
     Height = 23
@@ -756,7 +791,7 @@ object MainForm: TMainForm
     Width = 100
     Anchors = [akLeft, akBottom]
     ItemHeight = 15
-    OnChange = ComboBox2Change
+    OnChange = ComboBoxOutLangChange
     Style = csDropDownList
     TabOrder = 11
   end
