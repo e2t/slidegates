@@ -83,7 +83,7 @@ begin
   CalcFlowDesign(Des, InputData);
   Mass.Gate := CalcMassGate(Slg) * Des.GateSheet.S / StdGateSheet.S;
   Mass.Frame := CalcMassFrame(Slg) * Des.FrameSheet.S / StdFrameSheet.S;
-  Mass.Total := Mass.Gate + Mass.Frame + MassScrew(Slg) * Slg.ScrewsNumber + 3;
+  Mass.Slidegate := Mass.Gate + Mass.Frame + MassScrew(Slg) * Slg.ScrewsNumber + 3;
 
   UpdateSheetWeight(Mass.Sheet, Des.GateSheet.S, Mass.Gate);
   UpdateSheetWeight(Mass.Sheet, Des.FrameSheet.S, Mass.Frame);

@@ -12,7 +12,7 @@ type
   TLang = (Eng, Ukr, Rus);
 
 var
-  L10nOut: array [0..89, TLang] of string;
+  L10nOut: array [0..93, TLang] of string;
   L10nGui: array [0..55, TLang] of string;
 
 implementation
@@ -22,9 +22,9 @@ initialization
   L10nOut[0, Ukr] := 'Гідростатичний тиск %.3G м вод. ст.';
   L10nOut[0, Rus] := 'Гидростатический напор %.3G м вод. ст.';
 
-  L10nOut[1, Eng] := 'Weight of stainless steel %.0F kg  (frame %.0F kg, gate %.0F kg)';
-  L10nOut[1, Ukr] := 'Маса нерж. сталі %.0F кг (рама %.0F кг, щит %.0F кг)';
-  L10nOut[1, Rus] := 'Масса нерж. стали %.0F кг  (рама %.0F кг, щит %.0F кг)';
+  L10nOut[1, Eng] := 'Weight of stainless steel %.0F kg';
+  L10nOut[1, Ukr] := 'Вага нерж. сталі %.0F кг';
+  L10nOut[1, Rus] := 'Вес нерж. стали %.0F кг';
 
   L10nOut[2, Eng] := 'S';
   L10nOut[2, Ukr] := 'П';
@@ -392,14 +392,29 @@ initialization
   L10nOut[89, Ukr] := 'За розрахунком маси звертайтеся в конструкторський відділ.';
   L10nOut[89, Rus] := 'За расчетом массы обращайтесь в конструкторский отдел.';
 
+  L10nOut[90, Eng] := 'Weight is %.0F kg';
+  L10nOut[90, Ukr] := 'Вага %.0F кг';
+  L10nOut[90, Rus] := 'Вес %.0F кг';
+
+  L10nOut[91, Eng] := 'Penstock %.0F kg, аrame %.0F kg, gate %.0F kg';
+  L10nOut[91, Ukr] := 'Затвор %.0F кг, рама %.0F кг, щит %.0F кг';
+  L10nOut[91, Rus] := 'Затвор %.0F кг, рама %.0F кг, щит %.0F кг';
+
+  L10nOut[92, Eng] := 'Without handwheel';
+  L10nOut[92, Ukr] := 'Без штурвалу';
+  L10nOut[92, Rus] := 'Без штурвала';
+
+  L10nOut[93, Eng] := 'Actuator weight is %.0F kg, weight of the control is %.0F kg';
+  L10nOut[93, Ukr] := 'Вага приводу %.0F кг, блока керування %.0F кг';
+  L10nOut[93, Rus] := 'Вес привода %.0F кг, блока управления %.0F кг';
+
   (*
   L10nOut[, Eng] := '';
+  L10nOut[, Ukr] := '';
   L10nOut[, Rus] := '';
 
   L10nOut[, Eng] := '';
-  L10nOut[, Rus] := '';
-
-  L10nOut[, Eng] := '';
+  L10nOut[, Ukr] := '';
   L10nOut[, Rus] := '';
   *)
 

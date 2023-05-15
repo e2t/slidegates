@@ -8,7 +8,11 @@ unit MassWedge;
 
 interface
 
-uses MassGeneral, StrengthCalculations;
+uses
+  MassGeneral, StrengthCalculations;
+
+const
+  PipeFlangeS = 0.02;  { 20 mm }
 
 procedure CalcMassWedged(var Mass: TWeights; const Slg: TSlidegate;
   const InputData: TInputData);
@@ -16,7 +20,7 @@ procedure CalcMassWedged(var Mass: TWeights; const Slg: TSlidegate;
 implementation
 
 uses
-  MathUtils, Screws, Measurements;
+  MathUtils, Screws, Measurements, CheckNum, Math;
 
 type
   TWedgedDesign = record
@@ -39,7 +43,6 @@ type
 const
   TopBalkShelf = 0.05;  { 50 mm }
   WallFlangeS = 0.008;  { 8 mm }
-  PipeFlangeS = 0.02;  { 20 mm }
 
 function CalcGateSheet(const Slg: TSlidegate): TSheetMetal;
 var
@@ -53,7 +56,7 @@ begin
     Result := StdSheet[1]   { 3 mm }
   else if (Slg.FrameWidth <= 1.6) and (Slg.GateHeight <= 1.6) then
     Result := StdSheet[2]   { 4 mm }
-  else if (Slg.FrameWidth <= 2.5) and (Slg.GateHeight <= 2.5) then
+  else if (Slg.FrameWidth <= 2.5) and (Slg.GateHeight <= 2.5) and IsLessEq(Slg.HydrHead, Metre(6)) then
     Result := StdSheet[3]   { 5 mm }
   else
     Result := StdSheet[4];  { 6 mm }
@@ -65,7 +68,7 @@ begin
     (Slg.FrameHeight <= 3.0) then
     Result := StdSheet[2]   { 4 mm }
   else if (Slg.FrameWidth <= 2.5) and (Slg.GateHeight <= 2.5) and
-    (Slg.FrameHeight <= 6.0) then
+    (Slg.FrameHeight <= 6.0) and IsLessEq(Slg.HydrHead, Metre(6)) then
     Result := StdSheet[3]   { 5 mm }
   else
     Result := StdSheet[4];  { 6 mm }
@@ -505,64 +508,100 @@ begin
     Des.GateWidth, Des.GateDepth, Des.GateShelf]) * Slg.GateHeight * SteelDensity;
 end;
 
+function NeedEmpiricCalc(const Slg: TSlidegate): Boolean;
+begin
+  Result := (Slg.SlgKind = Deep) and (Slg.HydrForce > Kgf(1e3));
+end;
+
 procedure CalcMassGate(out MassGate: ValReal; var SheetWeights: TSheetWeights;
   const Slg: TSlidegate; const Des: TWedgedDesign);
 var
-  EdgesMass, GateWallMass, MassHorizEdge, MassVertEdge, CoverMass: ValReal;
+  EdgesMass, GateWallMass, MassHorizEdge, MassVertEdge, CoverMass, FactorGate: ValReal;
 begin
-  GateWallMass := MassWall(Slg, Des);
-  MassHorizEdge := CalcMassHorizEdge(Des);
-  MassVertEdge := CalcMassVertEdge(Slg, Des);
-  EdgesMass := Des.HorizEdgesCount * MassHorizEdge + Des.VertEdgesCount * MassVertEdge;
-  CoverMass := MassCover(Slg, Des);
-  MassGate := GateWallMass + EdgesMass + CoverMass;
+  if NeedEmpiricCalc(Slg) then
+  begin
+    FactorGate := ToTonf(Slg.HydrForce) * Slg.FrameWidth * Slg.FrameWidth * Slg.GateHeight;
+    MassGate := 40.798 * Power(FactorGate, 0.4655);
 
-  UpdateSheetWeight(SheetWeights, Des.GateSheet.S, GateWallMass + CoverMass);
-  UpdateSheetWeight(SheetWeights, Des.EdgeSheet.S, EdgesMass);
+    UpdateSheetWeight(SheetWeights, Des.GateSheet.S, MassGate);
+  end
+  else
+  begin
+    GateWallMass := MassWall(Slg, Des);
+    MassHorizEdge := CalcMassHorizEdge(Des);
+    MassVertEdge := CalcMassVertEdge(Slg, Des);
+    EdgesMass := Des.HorizEdgesCount * MassHorizEdge + Des.VertEdgesCount * MassVertEdge;
+    CoverMass := MassCover(Slg, Des);
+    MassGate := GateWallMass + EdgesMass + CoverMass;
+
+    UpdateSheetWeight(SheetWeights, Des.GateSheet.S, GateWallMass + CoverMass);
+    UpdateSheetWeight(SheetWeights, Des.EdgeSheet.S, EdgesMass);
+  end;
 end;
 
-procedure CalcMassFrame(out MassFrame: ValReal; var SheetWeights: TSheetWeights;
-  const Slg: TSlidegate; const Des: TWedgedDesign);
+procedure CalcMassFrame(out MassFrame, PipeFlangesWeight: ValReal;
+  var SheetWeights: TSheetWeights; const Slg: TSlidegate; const Des: TWedgedDesign);
 var
-  SidesCount: Integer;
-  MassFlanges, MainMass: ValReal;
+  SidesCount: Integer = 1;
+  MassFlanges, MainMass, FactorFrame: ValReal;
 begin
-  if Slg.InstallKind = Wall then
+  if (Slg.InstallKind = Flange) or (Slg.InstallKind = TwoFlange) then
   begin
-    MassFlanges := MassWallFlange(Slg, Des);
-    UpdateSheetWeight(SheetWeights, WallFlangeS, MassFlanges);
-  end
-  else if (Slg.InstallKind = Flange) or (Slg.InstallKind = TwoFlange) then
-  begin
-    if Slg.InstallKind = Flange then
-      SidesCount := 1
-    else if Slg.InstallKind = TwoFlange then
+    if Slg.InstallKind = TwoFlange then
       SidesCount := 2;
-    MassFlanges := MassPipeFlange(Des) * SidesCount;
-    if Slg.HaveCounterFlange then
-      MassFlanges := MassFlanges * 2;
-    UpdateSheetWeight(SheetWeights, PipeFlangeS, MassFlanges);
+    PipeFlangesWeight := MassPipeFlange(Des) * SidesCount;
+  end
+  else
+    PipeFlangesWeight := 0;
+
+  if NeedEmpiricCalc(Slg) then
+  begin
+    if Slg.InstallKind = TwoFlange then
+    begin
+      FactorFrame := ToTonf(Slg.HydrForce) * Slg.FrameWidth * Slg.FrameHeight;
+      MassFrame := 89.79 * Power(FactorFrame, 0.4786);
+    end
+    else
+    begin
+      FactorFrame := ToTonf(Slg.HydrForce) * Slg.FrameWidth * (3 * Slg.FrameWidth + 2 * Slg.FrameHeight);
+      MassFrame := 44.661 * Power(FactorFrame, 0.3278);
+    end;
+
+    UpdateSheetWeight(SheetWeights, Des.FrameSheet.S, MassFrame);
+  end
+  else
+  begin
+    if Slg.InstallKind = Wall then
+    begin
+      MassFlanges := MassWallFlange(Slg, Des);
+      UpdateSheetWeight(SheetWeights, WallFlangeS, MassFlanges);
+    end
+    else if (Slg.InstallKind = Flange) or (Slg.InstallKind = TwoFlange) then
+    begin
+      MassFlanges := PipeFlangesWeight;
+      UpdateSheetWeight(SheetWeights, PipeFlangeS, MassFlanges);
+    end;
+
+    MainMass := MassChannel(Slg, Des) * 2 + MassBottom(Slg, Des) +
+      MassTopChannel(Slg, Des) + Bar4DeepMass(Slg, Des) +
+      MassMiddleScrewSupport(Slg, Des) + MassCrossbar(Slg, Des) +
+      MassSmallBottom(Slg, Des);
+    if Des.BigPipeLength > 0 then
+      MainMass := MainMass + (MassBigPipe(Des) + MassBottomSegment(Slg, Des) +
+        MassTopSegment(Slg, Des)) * SidesCount;
+    if Slg.IsFrameClosed then
+      MainMass := MainMass + MassCap(Slg, Des) + MassFrameHorizEdge(Slg, Des) *
+        FrameHorizEdgeCount(Slg, Des) + MassFrameVertEdge(Des) *
+        FrameVertEdgeCount(Slg);
+    if Slg.InstallKind = Channel then
+      MainMass := MainMass + CalcBracketsMass(Slg);
+    UpdateSheetWeight(SheetWeights, Des.FrameSheet.S, MainMass);
+
+    MassFrame := MainMass;
+    if (Slg.InstallKind = Wall) or (Slg.InstallKind = Flange) or
+      (Slg.InstallKind = TwoFlange) then
+      MassFrame := MassFrame + MassFlanges;
   end;
-
-  MainMass := MassChannel(Slg, Des) * 2 + MassBottom(Slg, Des) +
-    MassTopChannel(Slg, Des) + Bar4DeepMass(Slg, Des) +
-    MassMiddleScrewSupport(Slg, Des) + MassCrossbar(Slg, Des) +
-    MassSmallBottom(Slg, Des);
-  if Des.BigPipeLength > 0 then
-    MainMass := MainMass + (MassBigPipe(Des) + MassBottomSegment(Slg, Des) +
-      MassTopSegment(Slg, Des)) * SidesCount;
-  if Slg.IsFrameClosed then
-    MainMass := MainMass + MassCap(Slg, Des) + MassFrameHorizEdge(Slg, Des) *
-      FrameHorizEdgeCount(Slg, Des) + MassFrameVertEdge(Des) *
-      FrameVertEdgeCount(Slg);
-  if Slg.InstallKind = Channel then
-    MainMass := MainMass + CalcBracketsMass(Slg);
-  UpdateSheetWeight(SheetWeights, Des.FrameSheet.S, MainMass);
-
-  MassFrame := MainMass;
-  if (Slg.InstallKind = Wall) or (Slg.InstallKind = Flange) or
-    (Slg.InstallKind = TwoFlange) then
-    MassFrame := MassFrame + MassFlanges;
 end;
 
 function MassScrew(const Slg: TSlidegate): ValReal;
@@ -591,6 +630,19 @@ begin
     BearingHouseMass * BearingHouseCount;
 end;
 
+function ScrewsWeight(const Slg: TSlidegate): ValReal;
+var
+  FactorScrew: ValReal;
+begin
+  if NeedEmpiricCalc(Slg) then
+  begin
+    FactorScrew := Sqrt(ToTonf(Slg.HydrForce)) * (Slg.FrameHeight - Slg.GateHeight);
+    Result := 6.2631 * FactorScrew - 1.8365;
+  end
+  else
+    Result := MassScrew(Slg) * Slg.ScrewsNumber;
+end;
+
 procedure CalcMassWedged(var Mass: TWeights; const Slg: TSlidegate;
   const InputData: TInputData);
 var
@@ -598,8 +650,8 @@ var
 begin
   CalcWedgedDesign(Des, Slg, InputData);
   CalcMassGate(Mass.Gate, Mass.Sheet, Slg, Des);
-  CalcMassFrame(Mass.Frame, Mass.Sheet, Slg, Des);
-  Mass.Total := Mass.Gate + Mass.Frame + MassScrew(Slg) * Slg.ScrewsNumber;
+  CalcMassFrame(Mass.Frame, Mass.PipeFlanges, Mass.Sheet, Slg, Des);
+  Mass.Slidegate := Mass.Gate + Mass.Frame + ScrewsWeight(Slg);
 end;
 
 end.

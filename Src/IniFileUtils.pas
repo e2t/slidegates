@@ -53,7 +53,6 @@ var
   Key: string;
   Index: Integer;
 begin
-  //writeln('SetKey', Ident, Value);
   Index := Keys.IndexOfData(Value);
   if Index < 0 then
     Exit;

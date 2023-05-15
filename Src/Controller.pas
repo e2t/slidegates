@@ -802,6 +802,17 @@ begin
   Put.Append(L10nOut[52, Lang]);
   Put.Append(L10nOut[53, Lang]);
   Put.Append(L10nOut[54, Lang]);
+  if IsMore(Slg.Actuator.Mass, 0) then
+  begin
+    case Slg.ControlBlock of
+      NoBlock:
+        Put.Append(Format(L10nOut[90, Lang], [Slg.Actuator.Mass]));
+      AumaAM:
+        Put.Append(Format(L10nOut[93, Lang], [Slg.Actuator.Mass, WeightAM]));
+      AumaAC:
+        Put.Append(Format(L10nOut[93, Lang], [Slg.Actuator.Mass, WeightAC]));
+    end;
+  end;
   Put.Append('');
 end;
 
@@ -812,11 +823,14 @@ begin
     Put.Append(Format(L10nOut[60, Lang], [ToMm(HandWheel.Diameter)]))
   else
     Put.Append(Format(L10nOut[61, Lang], [HandWheel.Name]));
+  if IsMore(HandWheel.Mass, 0) then
+    Put.Append(Format(L10nOut[90, Lang], [HandWheel.Mass]));
   Put.Append('');
 end;
 
 procedure OutputAumaGearbox(var Put: TStringList; const Grb: TGearbox;
-  const Lang: TLang; const Sleeve: string; const ScrewsNumber: Integer);
+  const Lang: TLang; const Sleeve: string; const ScrewsNumber: Integer;
+  const NeedHandwheel: Boolean);
 var
   DriveName: string;
 begin
@@ -830,17 +844,21 @@ begin
     DriveName := DriveName + ' (x2)';
   Put.Append(DriveName);
   Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
-  if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  if NeedHandwheel and (Grb.HandWheelDiam > 0) then
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]))
+  else
+    Put.Append(L10nOut[92, Lang]);
   Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
   Put.Append(Format(L10nOut[34, Lang], [Grb.Flange]));
   Put.Append(Format(L10nOut[35, Lang], [Sleeve]));
+  if IsMore(Grb.Mass, 0) then
+    Put.Append(Format(L10nOut[90, Lang], [Grb.Mass]));
   Put.Append('');
 end;
 
 procedure OutputRZAMGearbox(var Put: TStringList; const Grb: TGearbox;
   const Lang: TLang; const Sleeve: string; const ScrewsNumber: Integer;
-  const IsScrewPullout: Boolean);
+  const IsScrewPullout: Boolean; const NeedHandwheel: Boolean);
 var
   DriveName: string;
 begin
@@ -849,8 +867,10 @@ begin
     DriveName := DriveName + ' (x2)';
   Put.Append(DriveName);
   Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
-  if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  if NeedHandwheel and (Grb.HandWheelDiam > 0) then
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]))
+  else
+    Put.Append(L10nOut[92, Lang]);
   Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
   Put.Append(Format(L10nOut[34, Lang], [Grb.Flange]));
   Put.Append(Format(L10nOut[35, Lang], [Sleeve]));
@@ -859,35 +879,47 @@ begin
   Put.Append(L10nOut[86, Lang]);
   Put.Append(L10nOut[87, Lang]);
   Put.Append(L10nOut[88, Lang]);
+  if IsMore(Grb.Mass, 0) then
+    Put.Append(Format(L10nOut[90, Lang], [Grb.Mass]));
   Put.Append('');
 end;
 
 procedure OutputRotorkGearbox(var Put: TStringList; const Grb: TGearbox;
-  const Lang: TLang; const Sleeve: string; const Need2InputShaft: Boolean);
+  const Lang: TLang; const Sleeve: string; const Need2InputShaft: Boolean;
+  const NeedHandwheel: Boolean);
 begin
   Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name]));
   if Need2InputShaft then
     Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name +
       ' DUAL INPUT BEVEL GEARCASE (180)']));
   Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
-  if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  if NeedHandwheel and (Grb.HandWheelDiam > 0) then
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]))
+  else
+    Put.Append(L10nOut[92, Lang]);
   Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
   Put.Append(Format(L10nOut[34, Lang], [Grb.Flange]));
   Put.Append(Format(L10nOut[35, Lang], [Sleeve]));
+  if IsMore(Grb.Mass, 0) then
+    Put.Append(Format(L10nOut[90, Lang], [Grb.Mass]));
   Put.Append('');
 end;
 
 procedure OutputTramecGearbox(var Put: TStringList; const Grb: TGearbox;
-  const Lang: TLang; const Need2InputShaft: Boolean);
+  const Lang: TLang; const Need2InputShaft: Boolean;
+  const NeedHandwheel: Boolean);
 begin
   Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name]));
   if Need2InputShaft then
     Put.Append(Format(L10nOut[58, Lang], [Grb.Brand, Grb.Name + ' seA']));
   Put.Append(Format(L10nOut[57, Lang], [Grb.NominalRatio, Grb.Ratio]));
-  if Grb.HandWheelDiam > 0 then
-    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]));
+  if NeedHandwheel and (Grb.HandWheelDiam > 0) then
+    Put.Append(Format(L10nOut[83, Lang], [ToMm(Grb.HandWheelDiam)]))
+  else
+    Put.Append(L10nOut[92, Lang]);
   Put.Append(Format(L10nOut[59, Lang], [Grb.MaxTorque]));
+  if IsMore(Grb.Mass, 0) then
+    Put.Append(Format(L10nOut[90, Lang], [Grb.Mass]));
   Put.Append('');
 end;
 
@@ -961,6 +993,7 @@ function Output(const Slg: TSlidegate; const Mass: TWeights;
   const Lang: TLang): TStringList;
 var
   SInstallKind, SDriveLocation, ScrewDescription: string;
+  NeedGearboxHandwheel: Boolean;
 begin
   Result := TStringList.Create;
   Result.Append(Designation(Slg, Lang));
@@ -992,8 +1025,8 @@ begin
   Result.Append(ScrewDescription);
   Result.Append(Format(L10nOut[0, Lang], [Slg.HydrHead]));
   Result.Append(Format(L10nOut[65, Lang], [Slg.Leakage]));
-  if IsLessEq(Slg.HydrForce, Kgf(20e3)) then
-    Result.Append(Format(L10nOut[1, Lang], [Mass.Total, Mass.Frame, Mass.Gate]))
+  if IsLessEq(Slg.HydrForce, Kgf(55e3)) then
+    Result.Append(Format(L10nOut[1, Lang], [Mass.Total]))
   else
     Result.Append(Highlight(L10nOut[89, Lang]));
   Result.Append('');
@@ -1002,22 +1035,28 @@ begin
     OutputAumaActuator(Result, Slg, Lang);
   if Slg.Gearbox <> nil then
   begin
-    if Slg.Gearbox.GearboxType = TGearboxType.TramecR then
-      OutputTramecGearbox(Result, Slg.Gearbox, Lang, Slg.GearboxNeed2InputShaft)
-    else if Slg.Gearbox.GearboxType = TGearboxType.RotorkIB then
-      OutputRotorkGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve,
-        Slg.GearboxNeed2InputShaft)
-    else if Slg.Gearbox.GearboxType = TGearboxType.MechanicRZAM then
-      OutputRZAMGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber,
-        Slg.IsScrewPullout)
-    else
-      OutputAumaGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber);
+    NeedGearboxHandwheel := (Slg.ScrewsNumber = 1) and (Slg.Gearbox.GearboxType <> TGearboxType.AumaGST);
+    case Slg.Gearbox.GearboxType of
+      TGearboxType.TramecR:
+        OutputTramecGearbox(Result, Slg.Gearbox, Lang, Slg.GearboxNeed2InputShaft,
+          NeedGearboxHandwheel);
+      TGearboxType.RotorkIB:
+        OutputRotorkGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve,
+          Slg.GearboxNeed2InputShaft, NeedGearboxHandwheel);
+      TGearboxType.MechanicRZAM:
+        OutputRZAMGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber,
+          Slg.IsScrewPullout, NeedGearboxHandwheel);
+      else
+        OutputAumaGearbox(Result, Slg.Gearbox, Lang, Slg.Sleeve, Slg.ScrewsNumber,
+          NeedGearboxHandwheel);
+    end;
   end;
   if Slg.HandWheel <> nil then
     OutputHandWheel(Result, Slg.HandWheel, Lang);
 
   Result.Append(Highlight(L10nOut[77, Lang]));
   Result.Append('');
+  Result.Append(Format(L10nOut[91, Lang], [Mass.Slidegate, Mass.Frame, Mass.Gate]));
   OutputOfficeMemo(Result, Slg, Mass.Sheet, Lang);
 
   Result.Append(Format(L10nOut[15, Lang], [Slg.Screw.SizeToStr,

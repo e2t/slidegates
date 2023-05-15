@@ -9,8 +9,7 @@
         <Filename Value="Slidegate.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <WindowIndex Value="1"/>
-        <CursorPos X="26" Y="27"/>
+        <CursorPos Y="36"/>
         <UsageCount Value="200"/>
       </Unit0>
       <Unit1>
@@ -29,8 +28,8 @@
         <Filename Value="DriveUnits.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="3029"/>
-        <CursorPos X="17" Y="3048"/>
+        <TopLine Value="85"/>
+        <CursorPos X="17" Y="108"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -54,8 +53,8 @@
         <Filename Value="StrengthCalculations.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="5"/>
-        <TopLine Value="656"/>
-        <CursorPos X="27" Y="719"/>
+        <TopLine Value="81"/>
+        <CursorPos X="25" Y="98"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -70,7 +69,8 @@
         <Filename Value="Localization.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="4"/>
-        <CursorPos X="22" Y="13"/>
+        <TopLine Value="384"/>
+        <CursorPos X="57" Y="407"/>
         <UsageCount Value="202"/>
         <Loaded Value="True"/>
       </Unit5>
@@ -79,8 +79,8 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="132"/>
-        <CursorPos X="31" Y="149"/>
+        <TopLine Value="787"/>
+        <CursorPos X="36" Y="796"/>
         <UsageCount Value="233"/>
         <Loaded Value="True"/>
       </Unit6>
@@ -88,8 +88,8 @@
         <Filename Value="MassWedge.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="9"/>
-        <TopLine Value="546"/>
-        <CursorPos X="34" Y="575"/>
+        <TopLine Value="4"/>
+        <CursorPos Y="13"/>
         <ExtraEditorCount Value="1"/>
         <ExtraEditor1>
           <EditorIndex Value="-1"/>
@@ -103,8 +103,8 @@
         <Filename Value="MassGeneral.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="8"/>
-        <TopLine Value="63"/>
-        <CursorPos X="20" Y="92"/>
+        <TopLine Value="158"/>
+        <CursorPos X="35" Y="159"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -112,17 +112,18 @@
         <Filename Value="MassFlow.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="44"/>
-        <CursorPos X="51" Y="73"/>
+        <TopLine Value="60"/>
+        <CursorPos X="12" Y="82"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit9>
       <Unit10>
         <Filename Value="..\Dry\Measurements.pas"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="58" Y="124"/>
+        <EditorIndex Value="11"/>
+        <CursorPos X="16" Y="34"/>
         <UsageCount Value="202"/>
+        <Loaded Value="True"/>
       </Unit10>
       <Unit11>
         <Filename Value="..\Dry\Nullable.pas"/>
@@ -193,108 +194,108 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="2"/>
         <TopLine Value="41"/>
-        <CursorPos X="17" Y="56"/>
-        <UsageCount Value="85"/>
+        <CursorPos Y="56"/>
+        <UsageCount Value="118"/>
         <Loaded Value="True"/>
       </Unit19>
       <Unit20>
+        <Filename Value="MassDeepEmpiric.pas"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="3" Y="16"/>
+        <UsageCount Value="29"/>
+      </Unit20>
+      <Unit21>
         <Filename Value="Measurements.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2"/>
         <CursorPos X="15" Y="18"/>
-        <UsageCount Value="184"/>
-      </Unit20>
-      <Unit21>
+        <UsageCount Value="181"/>
+      </Unit21>
+      <Unit22>
         <Filename Value="..\CliTools\Nullable.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="4"/>
         <CursorPos X="28" Y="17"/>
-        <UsageCount Value="183"/>
-      </Unit21>
-      <Unit22>
+        <UsageCount Value="180"/>
+      </Unit22>
+      <Unit23>
         <Filename Value="..\CliTools\StrConvert.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos X="67" Y="25"/>
-        <UsageCount Value="183"/>
-      </Unit22>
-      <Unit23>
+        <UsageCount Value="180"/>
+      </Unit23>
+      <Unit24>
         <Filename Value="..\CliTools\GuiHelper.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="444"/>
         <CursorPos X="46" Y="472"/>
-        <UsageCount Value="175"/>
-      </Unit23>
-      <Unit24>
+        <UsageCount Value="172"/>
+      </Unit24>
+      <Unit25>
         <Filename Value="..\CliTools\MathUtils.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="5" Y="46"/>
-        <UsageCount Value="131"/>
-      </Unit24>
-      <Unit25>
+        <UsageCount Value="128"/>
+      </Unit25>
+      <Unit26>
         <Filename Value="Mass.pas"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="26" Y="25"/>
-        <UsageCount Value="5"/>
-      </Unit25>
-      <Unit26>
+        <UsageCount Value="2"/>
+      </Unit26>
+      <Unit27>
         <Filename Value="Errors.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="36" Y="8"/>
-        <UsageCount Value="10"/>
-      </Unit26>
-      <Unit27>
+        <UsageCount Value="7"/>
+      </Unit27>
+      <Unit28>
         <Filename Value="Output.pas"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="13"/>
         <CursorPos Y="3"/>
-        <UsageCount Value="3"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="..\CliTools\CollectionUtils.pas"/>
-        <EditorIndex Value="-1"/>
-        <CursorPos X="70" Y="11"/>
-        <UsageCount Value="1"/>
+        <UsageCount Value="10"/>
       </Unit28>
       <Unit29>
         <Filename Value="WedgedDesign.pas"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="4"/>
       </Unit29>
       <Unit30>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\fgl.pp"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="1"/>
         <CursorPos X="20" Y="17"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="4"/>
       </Unit30>
       <Unit31>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\sysutils\syshelph.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="138"/>
         <CursorPos X="14" Y="155"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit31>
       <Unit32>
         <Filename Value="C:\lazarus\fpc\3.2.0\source\rtl\objpas\sysutils\syshelp.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="371"/>
         <CursorPos X="14" Y="1100"/>
-        <UsageCount Value="6"/>
+        <UsageCount Value="3"/>
       </Unit32>
       <Unit33>
         <Filename Value="C:\lazarus\fpc\3.2.2\source\rtl\inc\systemh.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="730"/>
         <CursorPos X="3" Y="747"/>
-        <UsageCount Value="2"/>
+        <UsageCount Value="7"/>
       </Unit33>
       <Unit34>
         <Filename Value="..\Dry\IniFileUtils.pas"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="20"/>
-        <UsageCount Value="15"/>
+        <UsageCount Value="12"/>
       </Unit34>
       <Unit35>
         <Filename Value="C:\lazarus\fpc\3.2.2\source\packages\fcl-base\src\contnrs.pp"/>
@@ -302,129 +303,137 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="209"/>
         <CursorPos X="70" Y="225"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="2"/>
       </Unit35>
       <Unit36>
         <Filename Value="C:\lazarus\fpc\3.2.2\source\rtl\objpas\fgl.pp"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1470"/>
         <CursorPos X="3" Y="1473"/>
-        <UsageCount Value="5"/>
+        <UsageCount Value="2"/>
       </Unit36>
     </Units>
-    <JumpHistory Count="28" HistoryIndex="27">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="250" Column="28" TopLine="221"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="610" Column="38" TopLine="581"/>
       </Position1>
       <Position2>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="254" Column="28" TopLine="241"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="617" Column="53" TopLine="588"/>
       </Position2>
       <Position3>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="258" Column="28" TopLine="241"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="622" Column="55" TopLine="593"/>
       </Position3>
       <Position4>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="262" Column="28" TopLine="241"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="629" Column="85" TopLine="600"/>
       </Position4>
       <Position5>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="264" Column="42" TopLine="241"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="630" Column="85" TopLine="601"/>
       </Position5>
       <Position6>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="265" Column="66" TopLine="241"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="280" Column="38" TopLine="262"/>
       </Position6>
       <Position7>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="531" Column="33" TopLine="509"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="281" Column="38" TopLine="262"/>
       </Position7>
       <Position8>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="240" Column="21" TopLine="219"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="368" Column="43" TopLine="339"/>
       </Position8>
       <Position9>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="248" Column="16" TopLine="230"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="369" Column="43" TopLine="340"/>
       </Position9>
       <Position10>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="297" Column="4" TopLine="255"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="609" Column="38" TopLine="580"/>
       </Position10>
       <Position11>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="270" Column="55" TopLine="260"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="610" Column="38" TopLine="581"/>
       </Position11>
       <Position12>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="262" Column="34" TopLine="238"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="617" Column="53" TopLine="588"/>
       </Position12>
       <Position13>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="332" TopLine="311"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="622" Column="55" TopLine="593"/>
       </Position13>
       <Position14>
-        <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="721" Column="50" TopLine="646"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="629" Column="85" TopLine="600"/>
       </Position14>
       <Position15>
-        <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="727" Column="46" TopLine="706"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="630" Column="85" TopLine="601"/>
       </Position15>
       <Position16>
-        <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="713" Column="27" TopLine="698"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="280" Column="38" TopLine="280"/>
       </Position16>
       <Position17>
-        <Filename Value="StrengthCalculations.pas"/>
-        <Caret Line="711" Column="27" TopLine="703"/>
+        <Filename Value="Localization.pas"/>
+        <Caret Line="281" Column="38" TopLine="274"/>
       </Position17>
       <Position18>
-        <Filename Value="IniFileUtils.pas"/>
-        <Caret Line="56" Column="33" TopLine="27"/>
+        <Filename Value="MassGeneral.pas"/>
+        <Caret Line="167" Column="31" TopLine="160"/>
       </Position18>
       <Position19>
-        <Filename Value="GuiMainForm.pas"/>
-        <Caret Line="161" Column="11" TopLine="129"/>
+        <Filename Value="MassGeneral.pas"/>
+        <Caret Line="192" Column="17" TopLine="161"/>
       </Position19>
       <Position20>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="19" Column="11"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="647" Column="12" TopLine="616"/>
       </Position20>
       <Position21>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="1075" Column="25" TopLine="1053"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="546" Column="8" TopLine="533"/>
       </Position21>
       <Position22>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="19" Column="25"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="648" Column="13" TopLine="617"/>
       </Position22>
       <Position23>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="1075" Column="25" TopLine="1046"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="549" Column="14" TopLine="530"/>
       </Position23>
       <Position24>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="19" Column="25"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="539" Column="57" TopLine="521"/>
       </Position24>
       <Position25>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="1075" Column="25" TopLine="1046"/>
+        <Filename Value="MassGeneral.pas"/>
+        <Caret Line="170" Column="48" TopLine="155"/>
       </Position25>
       <Position26>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="19" Column="25"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="650" Column="45" TopLine="619"/>
       </Position26>
       <Position27>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="1077" Column="11" TopLine="1049"/>
+        <Filename Value="MassGeneral.pas"/>
+        <Caret Line="172" Column="66" TopLine="156"/>
       </Position27>
       <Position28>
-        <Filename Value="Controller.pas"/>
-        <Caret Line="1058" TopLine="1049"/>
+        <Filename Value="MassWedge.pas"/>
+        <Caret Line="579" Column="44" TopLine="563"/>
       </Position28>
+      <Position29>
+        <Filename Value="Controller.pas"/>
+        <Caret Line="807" Column="19" TopLine="781"/>
+      </Position29>
+      <Position30>
+        <Filename Value="StrengthCalculations.pas"/>
+        <Caret Line="98" Column="25" TopLine="81"/>
+      </Position30>
     </JumpHistory>
     <RunParams>
       <FormatVersion Value="2"/>

@@ -31,6 +31,7 @@ function ToKw(const Watt: ValReal): ValReal;
 function ToRpm(const RevPerSec: ValReal): ValReal;
 function ToMin(const Second: ValReal): ValReal;
 function ToKgf(const Newton: ValReal): ValReal;
+function ToTonf(const Newton: ValReal): ValReal;
 function ToDeg(const Radians: ValReal): ValReal;
 function ToPct(const Value: ValReal): ValReal;
 function ToMPa(const Pascals: ValReal): ValReal;
@@ -128,6 +129,11 @@ end;
 function ToKgf(const Newton: ValReal): ValReal;
 begin
   Result := Newton / GravAcc;
+end;
+
+function ToTonf(const Newton: ValReal): ValReal;
+begin
+  Result := Newton / GravAcc / 1e3;
 end;
 
 function ToDeg(const Radians: ValReal): ValReal;

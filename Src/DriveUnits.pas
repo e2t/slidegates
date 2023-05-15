@@ -94,6 +94,19 @@ const
   SAM = ' + AM (АUMA МATIC)';
   SAC = ' + AC (АUMATIC)';
 
+  F07 = 'F07';
+  F10 = 'F10';
+  F14 = 'F14';
+  F16 = 'F16';
+  F25 = 'F25';
+  F30 = 'F30';
+  F35 = 'F35';
+  F40 = 'F40';
+  F48 = 'F48';
+
+  WeightAM = 7.0;
+  WeightAC = 7.0;
+
   SAuma = 'AUMA';
   SAumaSAS215 = 'AUMA SA (S2-15min)';
   SAumaSAS215AM = 'AUMA SA (S2-15min)' + SAM;
@@ -257,16 +270,6 @@ const
   RZAM1000 = 'РЗАМ-С-1000';
   RZAM2500 = 'РЗАМ-С-2500';
   RZAMS210000 = 'РЗАМ-С2-10000';
-
-  F07 = 'F07';
-  F10 = 'F10';
-  F14 = 'F14';
-  F16 = 'F16';
-  F25 = 'F25';
-  F30 = 'F30';
-  F35 = 'F35';
-  F40 = 'F40';
-  F48 = 'F48';
 
   AM011 = 'AM 01.1';
   AM021 = 'AM 02.1';

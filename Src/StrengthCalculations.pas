@@ -921,25 +921,6 @@ begin
       Error := @ErrorCantChooseScrew;
       Exit;
     end;
-
-    (* if ((Slg.DriveKind = OpenCloseActuator) or (Slg.DriveKind = RegulActuator)) and
-      (InputData.Actuator <> nil) then
-    begin
-      if not ChooseScrewByPitchDiam(Slg.Screw, Slg.Nut, Slg.Gearbox,
-        Slg.AxialForce, InputData.Actuator.MinTorque, InputData.Actuator.MaxTorque,
-        Slg.ScrewLength, Slg.IsScrewPullout, Slg.ScrewsNumber,
-        InputData.ModelGearbox, Slg.GearboxNeed2InputShaft) then
-        Exit(@ErrorCantChooseScrew);
-    end
-    else if ((Slg.DriveKind = BevelGearbox) or (Slg.DriveKind = SpurGearbox)) and
-      (InputData.Gearbox <> nil) then
-    begin
-      if not ChooseScrewByPitchDiam(Slg.Screw, Slg.Nut, Slg.Gearbox,
-        Slg.AxialForce, 0, InputData.Gearbox.MaxTorque, Slg.ScrewLength,
-        Slg.IsScrewPullout, Slg.ScrewsNumber, InputData.ModelGearbox,
-        Slg.GearboxNeed2InputShaft) then
-        Exit(@ErrorCantChooseScrew);
-    end; *)
   end;
 
   Raw := Slg;

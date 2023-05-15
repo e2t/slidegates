@@ -15,7 +15,7 @@ type
 
   TWeights = record
     Sheet: TSheetWeights;
-    Total, Frame, Gate: ValReal;
+    Total, Slidegate, Frame, Gate, PipeFlanges: ValReal;
   end;
 
   TSheetMetal = record
@@ -39,7 +39,7 @@ procedure SetSheetMetal(out SheetMetal: TSheetMetal; const S: ValReal);
 
 implementation
 
-uses MassWedge, MassFlow, MathUtils, CheckNum;
+uses MassWedge, MassFlow, MathUtils, CheckNum, DriveUnits, Measurements;
 
 function CalcPipeMass(const MajorDiam, Thickness, Length: ValReal): ValReal;
 begin
@@ -79,36 +79,113 @@ begin
     SheetWeights.Add(S, Weight);
 end;
 
+procedure CalcRackAndBracketWeight(out Rack, Bracket: ValReal; const Slg: TSlidegate);
+const
+  StdRackWeight = 9;      { Вес стойки для F16 и ниже }
+  F25RackWeight = 22;     { Вес стойки для F25 }
+  StdBracketWeight = 11;  { Вес кронштейна для F16 и ниже }
+  F25BracketWeight = 30;  { Вес кронштейна для F25 }
+begin
+  Rack := StdRackWeight;
+  Bracket := StdBracketWeight;
+
+  if Slg.Gearbox <> nil then
+  begin
+    case Slg.Gearbox.Flange of
+      F07, F10, F14, F16:
+      else
+      begin
+        Rack := F25RackWeight;
+        Bracket := F25BracketWeight;
+      end;
+    end;
+  end
+  else if Slg.Actuator <> nil then
+  begin
+    case Slg.Actuator.Flange of
+      F07, F10, F14, F16:
+      else
+      begin
+        Rack := F25RackWeight;
+        Bracket := F25BracketWeight;
+      end
+    end;
+  end;
+end;
+
+procedure CalcPipe(out PipeDiam, PipeS: ValReal; const Slg: TSlidegate);
+const
+  MaxStress = 80e6;
+var
+  InnerDiam, TorsionStress, MaxTorque: ValReal;
+begin
+  PipeDiam := Slg.Screw.MajorDiam;
+  PipeS := Mm(3);
+
+  if Slg.Actuator = nil then
+  begin
+    MaxTorque := Slg.MaxScrewTorque;
+  end
+  else if Slg.ScrewsNumber = 1 then
+  begin
+    MaxTorque := Slg.Actuator.MaxTorque;
+  end
+  else
+  begin
+    MaxTorque := Slg.Actuator.MaxTorque * Slg.Gearbox.Ratio / Slg.ScrewsNumber;
+  end;
+  InnerDiam := PipeDiam - 2 * PipeS;
+  TorsionStress := MaxTorque / RingTorsionResistanceMoment(PipeDiam, InnerDiam);
+  if IsMore(TorsionStress, MaxStress) then
+    PipeS := Mm(4);
+end;
+
+function CalcSupportsWeight(const Slg: TSlidegate): ValReal;
+const
+  ApproxPitch = 2.0; {m}
+  SupportWeight = 4.26;
+var
+  SupportCount: Integer;
+begin
+  SupportCount := Round(Slg.BtwFrameTopAndDriveUnit / ApproxPitch) - 1;
+  if SupportCount < 0 then
+    SupportCount := 0;
+  Result := SupportCount * SupportWeight;
+end;
+
 procedure CalcMass(var Mass: TWeights; const Slg: TSlidegate; const InputData: TInputData);
 const
-  RackThickness = 0.004;
-  BracketThickness = 0.005;
-
-  { промежуточная труба: диаметр винта х 3 мм }
-  PipeThickness = 0.003;
-  MassRack = 9;  { kg }
-  BracketMass = 4;  { kg }
+  Tails = 11; { общий вес приварной муфты и хвостовика }
 var
-  PipeMass: ValReal;
+  Rack, Bracket, PipeDiam, PipeThickness, PipeMass: ValReal;
 begin
   ClearWeights(Mass);
   if Slg.SlgKind = Flow then
     CalcMassFlow(Mass, Slg, InputData)
   else
     CalcMassWedged(Mass, Slg, InputData);
+  Mass.Total := Mass.Slidegate;
+
+  if Slg.HaveCounterFlange then
+  begin
+    Mass.Total := Mass.Total + Mass.PipeFlanges;
+    UpdateSheetWeight(Mass.Sheet, PipeFlangeS, Mass.PipeFlanges);
+  end;
+
   if Slg.DriveLocation <> OnFrame then
   begin
-    PipeMass := CalcPipeMass(Slg.Screw.MajorDiam, PipeThickness,
-      Slg.BtwFrameTopAndDriveUnit);
+    CalcPipe(PipeDiam, PipeThickness, Slg);
+    PipeMass := Tails + CalcPipeMass(PipeDiam, PipeThickness, Slg.BtwFrameTopAndDriveUnit);
+    Mass.Total := Mass.Total + CalcSupportsWeight(Slg) + PipeMass;
+
+    CalcRackAndBracketWeight(Rack, Bracket, Slg);
     if Slg.DriveLocation = OnRack then
     begin
-      Mass.Total := Mass.Total + PipeMass + MassRack;
-      UpdateSheetWeight(Mass.Sheet, RackThickness, MassRack);
+      Mass.Total := Mass.Total + (Rack + Bracket) * Slg.ScrewsNumber;
     end
     else if Slg.DriveLocation = OnBracket then
     begin
-      Mass.Total := Mass.Total + PipeMass + BracketMass;
-      UpdateSheetWeight(Mass.Sheet, BracketThickness, BracketMass);
+      Mass.Total := Mass.Total + Bracket * Slg.ScrewsNumber;
     end;
   end;
 end;
@@ -116,8 +193,10 @@ end;
 procedure ClearWeights(var Mass: TWeights);
 begin
   Mass.Sheet.Clear;
+  Mass.PipeFlanges := 0;
   Mass.Frame := 0;
   Mass.Gate := 0;
+  Mass.Slidegate := 0;
   Mass.Total := 0;
 end;
 
