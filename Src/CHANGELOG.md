@@ -3,7 +3,7 @@
 [//]: # "YYYY-MM-DD"
 [//]: # "Added, Changed, Fixed, Deprecated, Removed, Security"
 
-## [2.8.0] - 2023-05-
+## [2.8.0] - 2023-05-15
 
 ### Changed
 
