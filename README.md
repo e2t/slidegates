@@ -2,7 +2,7 @@
 
 Графічний додаток для розрахунку щитових затворів.
 
-![image](https://user-images.githubusercontent.com/28775275/235110617-f3a1d126-acb1-4675-8daf-141d564bc268.png)
+![image](https://github.com/e2t/slidegates/assets/28775275/4342b06c-2a89-4c5a-89f9-6f2e55288af0)
 
 
 ## Авторские права
