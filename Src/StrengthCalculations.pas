@@ -9,7 +9,10 @@ unit StrengthCalculations;
 interface
 
 uses
-  Nullable, DriveUnits, Screws, Localization;
+  DriveUnits,
+  Localization,
+  Nullable,
+  Screws;
 
 type
   TSlgKind = (Surf, Deep, Flow);
@@ -91,7 +94,7 @@ type
     MinScrewInertiaMoment: ValReal;
     MinScrewMinorDiam: ValReal;
     Nut: TNut;
-    Sleeve: string;
+    Sleeve: String;
     NutAxe: ValReal;
     ScrewSlenderness: ValReal;
     BronzePadCount: ValReal;
@@ -108,9 +111,10 @@ type
     Anchor16Numbers: Integer;
     AxialForce: ValReal;
     MaxAxialForce: ValReal;
+    IsClosingUp: Boolean;
   end;
 
-  TFuncSlidegateError = function(const Slg: TSlidegate; const Lang: TLang): string;
+  TFuncSlidegateError = function(const Slg: TSlidegate; const Lang: TLang): String;
 
 procedure CalcSlidegate(out Slg: TSlidegate; const InputData: TInputData;
   out Error: TFuncSlidegateError);
@@ -134,7 +138,12 @@ const
 implementation
 
 uses
-  SysUtils, Math, Measurements, CheckNum, Anchors, MathUtils;
+  Anchors,
+  CheckNum,
+  Math,
+  MathUtils,
+  Measurements,
+  SysUtils;
 
 const
   TopBalkHeight = 0.2;  { Metre }
@@ -344,10 +353,8 @@ var
 begin
   Result := NotFound;
   I := 0;
-  while (I <= High(StdScrews)) and (Result = NotFound) do
-  begin
-    if StdScrews[I].Screw.MinorDiam >= MinRod then
-    begin
+  while (I <= High(StdScrews)) and (Result = NotFound) do begin
+    if StdScrews[I].Screw.MinorDiam >= MinRod then begin
       SetScrewAndNut(Screw, Nut, I, IsScrewPullout);
       Result := I;
     end;
@@ -363,16 +370,13 @@ var
 begin
   Result := False;
   I := 0;
-  while (I <= High(ModelGearbox)) and (not Result) do
-  begin
+  while (I <= High(ModelGearbox)) and (not Result) do begin
     J := 0;
-    while (J <= High(ModelGearbox[I])) and (not Result) do
-    begin
+    while (J <= High(ModelGearbox[I])) and (not Result) do begin
       if (ModelGearbox[I, J].MaxTorque >= RequiredTorque) and
         ((not IsScrewPullout) or
         (CompareValue(ModelGearbox[I, J].MaxScrew, Screw.MajorDiam, CompAccuracy) >=
-        0)) and ((not Need2InputShaft) or ModelGearbox[I, J].CanHave2InputShaft) then
-      begin
+        0)) and ((not Need2InputShaft) or ModelGearbox[I, J].CanHave2InputShaft) then begin
         Gearbox := ModelGearbox[I, J];
         Result := True;
       end;
@@ -390,19 +394,16 @@ var
 begin
   IsStdFound := False;
   I := 0;
-  while (I <= High(StdScrews)) and (not IsStdFound) do
-  begin
+  while (I <= High(StdScrews)) and (not IsStdFound) do begin
     if (StdScrews[I].Screw.MajorDiam = MajorDiam) and
-      (StdScrews[I].Screw.Pitch = Pitch) then
-    begin
+      (StdScrews[I].Screw.Pitch = Pitch) then begin
       Screw := StdScrews[I].Screw;
       Nut := GetNut(StdScrews[I], IsScrewPullout);
       IsStdFound := True;
     end;
     Inc(I);
   end;
-  if not IsStdFound then
-  begin
+  if not IsStdFound then begin
     Screw := ScrewTr(MajorDiam, Pitch);
     Nut := SelfMadeNut(MajorDiam);
   end;
@@ -413,49 +414,39 @@ procedure CalcActuatorTemperatureRange(var MinTemperature, MaxTemperature: ValRe
 begin
   case Actuator.ActuatorType of
     AumaSA:
-    begin
-      if ControlBlock = NoBlock then
-      begin
+      if ControlBlock = NoBlock then begin
         MinTemperature := -40;
         MaxTemperature := 80;
       end
-      else if ControlBlock = AumaAM then
-      begin
+      else if ControlBlock = AumaAM then begin
         MinTemperature := -40;
         MaxTemperature := 70;
       end
-      else if ControlBlock = AumaAC then
-      begin
+      else if ControlBlock = AumaAC then begin
         MinTemperature := -25;
         MaxTemperature := 70;
       end;
-    end;
 
     AumaSAR:
-    begin
-      if ControlBlock = NoBlock then
-      begin
+      if ControlBlock = NoBlock then begin
         MinTemperature := -40;
         MaxTemperature := 60;
       end
-      else if ControlBlock = AumaAM then
-      begin
+      else if ControlBlock = AumaAM then begin
         MinTemperature := -40;
         MaxTemperature := 60;
       end
-      else if ControlBlock = AumaAC then
-      begin
+      else if ControlBlock = AumaAC then begin
         MinTemperature := -25;
         MaxTemperature := 60;
       end;
-    end;
 
     else
       Assert(False, 'Неизвестный тип привода');
   end;
 end;
 
-function CalcMinSpeed(const Revs: ValReal; const Duty: string;
+function CalcMinSpeed(const Revs: ValReal; const Duty: String;
   const FullWays: ValReal): ValReal;
 var
   OpenTimeForFullWays: ValReal;
@@ -486,16 +477,13 @@ begin
   else
     { from 07.6 }
     I := 1;
-  while (I <= High(ModelActuator)) and (not Result) do
-  begin
+  while (I <= High(ModelActuator)) and (not Result) do begin
     J := 0;
     IsSpeedNormal := False;
-    while (J <= High(ModelActuator[I])) and (not IsSpeedNormal) do
-    begin
+    while (J <= High(ModelActuator[I])) and (not IsSpeedNormal) do begin
       if (ModelActuator[I, J].Speed >= MinSpeed) and
         (ModelActuator[I, J].MaxTorque >= RequiredTorque) then
-        if (not IsScrewPullout) or (ModelActuator[I, J].MaxScrew >= Screw.MajorDiam) then
-        begin
+        if (not IsScrewPullout) or (ModelActuator[I, J].MaxScrew >= Screw.MajorDiam) then begin
           Actuator := ModelActuator[I, J];
           Result := True;
           if Actuator.Speed >= RecommendMinSpeed then
@@ -522,8 +510,7 @@ begin
   Result := nil;
   IsThroughWheel := IsScrewPullout and (DriveKind = HandWheel) and (ScrewsNumber = 1);
   I := 0;
-  while (I <= High(HandWheels)) and (Result = nil) do
-  begin
+  while (I <= High(HandWheels)) and (Result = nil) do begin
     if (CompareValue(Diam, HandWheels[I].Diameter, CompAccuracy) <= 0) then
       if (not IsThroughWheel) or
         (CompareValue(ScrewDiam, HandWheels[I].MaxScrew, CompAccuracy) <= 0) then
@@ -546,7 +533,7 @@ begin
     HandWheel := THandWheel.Create('', '', MinDiam, Nm(0), 1, Kg(0), Mm(0));
 end;
 
-function CalcSleeve(const IsScrewPullout: Boolean): string;
+function CalcSleeve(const IsScrewPullout: Boolean): String;
 begin
   if IsScrewPullout then
     Result := A
@@ -592,7 +579,7 @@ begin
   Result := SpecificLeakage * SealingLength * 60;  { l/min }
 end;
 
-function ErrorCantChooseScrew(const Slg: TSlidegate; const Lang: TLang): string;
+function ErrorCantChooseScrew(const Slg: TSlidegate; const Lang: TLang): String;
 begin
   if Slg.MinScrewMinorDiam > 0 then
     Result := L10nOut[20, Lang] + ' ' + Format(L10nOut[26, Lang],
@@ -601,12 +588,12 @@ begin
     Result := L10nOut[20, Lang];
 end;
 
-function ErrorCantChooseGearbox(const Slg: TSlidegate; const Lang: TLang): string;
+function ErrorCantChooseGearbox(const Slg: TSlidegate; const Lang: TLang): String;
 begin
   Result := Format(L10nOut[27, Lang], [Slg.MinScrewTorque]);
 end;
 
-function ErrorCantChooseActuator(const Slg: TSlidegate; const Lang: TLang): string;
+function ErrorCantChooseActuator(const Slg: TSlidegate; const Lang: TLang): String;
 begin
   Result := Format(L10nOut[28, Lang], [Slg.MinScrewTorque, ToRpm(Slg.MinSpeed)]);
 end;
@@ -663,14 +650,12 @@ begin
     BearingDiam, SlidingCoeff);
   Slg.Revs := Slg.Way / Slg.Screw.Pitch;
 
-  if Slg.ScrewsNumber > 1 then
-  begin
+  if Slg.ScrewsNumber > 1 then begin
     if (Slg.Gearbox = nil) and not ChooseGearbox(Slg.Gearbox,
       Slg.MinScrewTorque, Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox,
-      Slg.GearboxNeed2InputShaft) then
-    begin
+      Slg.GearboxNeed2InputShaft) then begin
       Error := @ErrorCantChooseGearbox;
-      Exit;
+      exit;
     end;
     Slg.Revs := Slg.Revs * Slg.GearBox.Ratio;
   end;
@@ -680,16 +665,14 @@ begin
     begin
       if (Slg.Gearbox = nil) and not ChooseGearbox(Slg.Gearbox,
         Slg.MinScrewTorque, Slg.IsScrewPullout, Slg.Screw, InputData.ModelGearbox,
-        Slg.GearboxNeed2InputShaft) then
-      begin
+        Slg.GearboxNeed2InputShaft) then begin
         Error := @ErrorCantChooseGearbox;
-        Exit;
+        exit;
       end;
       Slg.CloseTorque := Slg.MinScrewTorque / Slg.Gearbox.Ratio * Slg.ScrewsNumber;
       Slg.OpenTorque := Slg.CloseTorque;
 
-      if (Slg.ScrewsNumber > 1) or (Slg.Gearbox.HandWheelDiam <= 0) then
-      begin
+      if (Slg.ScrewsNumber > 1) or (Slg.Gearbox.HandWheelDiam <= 0) then begin
         ChooseHandWheel(Slg.HandWheel, Slg.CloseTorque, Slg.IsScrewPullout,
           Slg.Screw.MajorDiam, Slg.DriveKind, Slg.ScrewsNumber);
         Slg.MaxScrewTorque := CalcMaxScrewTorqueByHand(Slg.HandWheel.Diameter,
@@ -706,23 +689,20 @@ begin
       if Slg.ScrewsNumber > 1 then
         MinActuatorTorque := MinActuatorTorque / Slg.Gearbox.Ratio * Slg.ScrewsNumber;
 
-      if InputData.Actuator <> nil then
-      begin
+      if InputData.Actuator <> nil then begin
         Slg.MinSpeed := CalcMinSpeed(Slg.Revs, InputData.Actuator.Duty,
           InputData.FullWays);
         Slg.Actuator := InputData.Actuator;
       end
-      else
-      begin
+      else begin
         Slg.MinSpeed := CalcMinSpeed(Slg.Revs, InputData.ModelActuator[0, 0].Duty,
           InputData.FullWays);
 
         if not ChooseActuator(Slg.Actuator, MinActuatorTorque +
           DeltaOpen, Slg.IsScrewPullout, Slg.Screw, InputData.ModelActuator,
-          Slg.SlgKind, Slg.MinSpeed, InputData.RecommendMinSpeed) then
-        begin
+          Slg.SlgKind, Slg.MinSpeed, InputData.RecommendMinSpeed) then begin
           Error := @ErrorCantChooseActuator;
-          Exit;
+          exit;
         end;
       end;
       Slg.OpenTime := Slg.Revs / Slg.Actuator.Speed;
@@ -741,16 +721,14 @@ begin
 
     else { штурвалы }
     begin
-      if Slg.ScrewsNumber > 1 then
-      begin
+      if Slg.ScrewsNumber > 1 then begin
         ChooseHandWheel(Slg.HandWheel, Slg.MinScrewTorque, False,
           Slg.Screw.MajorDiam, Slg.DriveKind, Slg.ScrewsNumber);
         Slg.CloseTorque := Slg.MinScrewTorque / Slg.Gearbox.Ratio * Slg.ScrewsNumber;
         Slg.MaxScrewTorque := CalcMaxScrewTorqueByHand(Slg.HandWheel.Diameter,
           Slg.Gearbox.Ratio, MaxHandForce, Slg.ScrewsNumber);
       end
-      else
-      begin
+      else begin
         ChooseHandWheel(Slg.HandWheel, Slg.MinScrewTorque, Slg.IsScrewPullout,
           Slg.Screw.MajorDiam, Slg.DriveKind, Slg.ScrewsNumber);
         Slg.CloseTorque := Slg.MinScrewTorque;
@@ -776,8 +754,7 @@ var
 begin
   repeat
     IsFounded := False;
-    if StdScrewIndex < High(StdScrews) then
-    begin
+    if StdScrewIndex < High(StdScrews) then begin
       Tmp := Raw;
       Inc(StdScrewIndex);
       SetScrewAndNut(Tmp.Screw, Tmp.Nut, StdScrewIndex, Tmp.IsScrewPullout);
@@ -799,8 +776,7 @@ var
 begin
   repeat
     IsFounded := False;
-    if StdScrewIndex > 0 then
-    begin
+    if StdScrewIndex > 0 then begin
       Tmp := Raw;
       Dec(StdScrewIndex);
       SetScrewAndNut(Tmp.Screw, Tmp.Nut, StdScrewIndex, Tmp.IsScrewPullout);
@@ -868,13 +844,13 @@ begin
     Slg.WedgePairsCount := CalcWedgePairsCount(Slg.HydrHead, Slg.FrameWidth,
       Slg.GateHeight);
 
+  Slg.IsClosingUp := Slg.SlgKind = Flow;
   Slg.IsRightHandedScrew := Slg.SlgKind = Flow;
   { TODO: if Tramec then 1 = 2 }
   if Slg.ScrewsNumber > 1 then
     Slg.IsRightHandedScrew2 := not Slg.IsRightHandedScrew;
 
-  if InputData.Way.HasValue then
-  begin
+  if InputData.Way.HasValue then begin
     Slg.Way := InputData.Way.Value;
     Assert(CompareValue(Slg.Way, MaxWay(Slg.FrameHeight, Slg.GateHeight),
       CompAccuracy) <= 0, 'Слишком большой ход щита');
@@ -909,44 +885,38 @@ begin
   if InputData.ScrewDiam.HasValue and InputData.ScrewPitch.HasValue then
     ChooseScrewByMatch(Slg.Screw, Slg.Nut, InputData.ScrewDiam.Value,
       InputData.ScrewPitch.Value, Slg.IsScrewPullout)
-  else
-  begin
+  else begin
     Slg.MinScrewInertiaMoment :=
       CalcMinInertiaMoment(Slg.AxialForce, RecommendFoS, Slg.ScrewLength);
     Slg.MinScrewMinorDiam := CalcDiamByInertiaMoment(Slg.MinScrewInertiaMoment);
     StdScrewIndex := ChooseScrewByMinDiam(Slg.Screw, Slg.Nut,
       Slg.MinScrewMinorDiam, Slg.IsScrewPullout);
-    if StdScrewIndex < 0 then
-    begin
+    if StdScrewIndex < 0 then begin
       Error := @ErrorCantChooseScrew;
-      Exit;
+      exit;
     end;
   end;
 
   Raw := Slg;
   CalcScrewAndDrive(Slg, InputData, Error);
   if Error <> nil then
-    Exit;
+    exit;
   if not (InputData.ScrewDiam.HasValue and InputData.ScrewPitch.HasValue) then
-  begin
     if Slg.ScrewFoS > RecommendFoS then
       CheckReducedScrew(Slg, Raw, InputData, StdScrewIndex)
     else if Slg.ScrewFoS < RecommendFoS then
       CheckEnlargedScrew(Slg, Raw, InputData, StdScrewIndex);
-  end;
 
   if (Slg.SlgKind <> Flow) and (not Slg.IsSmall) then
     Slg.BronzePadCount := Slg.WedgePairsCount * 2;
 
   Slg.NutAxe := CalcNutAxe(Slg.MaxAxialForce, Slg.MaxScrewTorque, Slg.Screw.MinorDiam);
   Slg.ScrewSlenderness := CalcSlendernessRatio(Slg.ScrewLength, Slg.Screw.MinorDiam);
-  if Slg.InstallKind = Wall then
-  begin
+  if Slg.InstallKind = Wall then begin
     Slg.Anchor12Numbers := CalcAnchorsNumberByTension(Slg.HydrForce, Mungo[0]);
     Slg.Anchor16Numbers := CalcAnchorsNumberByTension(Slg.HydrForce, Mungo[1]);
   end
-  else if Slg.InstallKind = Channel then
-  begin
+  else if Slg.InstallKind = Channel then begin
     Slg.Anchor12Numbers := CalcAnchorsNumberByShear(Slg.HydrForce, Mungo[0]);
     Slg.Anchor16Numbers := CalcAnchorsNumberByShear(Slg.HydrForce, Mungo[1]);
   end;

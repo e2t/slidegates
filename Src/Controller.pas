@@ -781,6 +781,10 @@ begin
   Put.Append(Format(L10nOut[34, Lang], [Slg.Actuator.Flange]));
   Put.Append(Format(L10nOut[35, Lang], [Slg.Sleeve]));
   Put.Append(L10nOut[37, Lang]);
+  if Slg.IsClosingUp then
+    Put.Append(L10nOut[95, Lang])
+  else
+    Put.Append(L10nOut[94, Lang]);
   if Slg.SlgKind = Flow then
     Put.Append(Format(L10nOut[64, Lang], [Slg.OpenTorque]))
   else

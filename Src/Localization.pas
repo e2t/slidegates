@@ -12,7 +12,7 @@ type
   TLang = (Eng, Ukr, Rus);
 
 var
-  L10nOut: array [0..93, TLang] of string;
+  L10nOut: array [0..95, TLang] of string;
   L10nGui: array [0..55, TLang] of string;
 
 implementation
@@ -407,6 +407,14 @@ initialization
   L10nOut[93, Eng] := 'Actuator weight is %.0F kg, weight of the control is %.0F kg';
   L10nOut[93, Ukr] := 'Вага приводу %.0F кг, блока керування %.0F кг';
   L10nOut[93, Rus] := 'Вес привода %.0F кг, блока управления %.0F кг';
+
+  L10nOut[94, Eng] := 'Closing down, opening up';
+  L10nOut[94, Ukr] := 'Закриття вниз, відкриття вгору';
+  L10nOut[94, Rus] := 'Закрытие вниз, открытие вверх';
+
+  L10nOut[95, Eng] := 'Closing up, opening down';
+  L10nOut[95, Ukr] := 'Закриття вгору, відкриття вниз';
+  L10nOut[95, Rus] := 'Закрытие вверх, открытие вниз';
 
   (*
   L10nOut[, Eng] := '';

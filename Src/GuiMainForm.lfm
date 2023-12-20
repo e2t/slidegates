@@ -9,7 +9,7 @@ object MainForm: TMainForm
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   Position = poDefaultPosOnly
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.0.0.2'
   Visible = True
   object PageControlDriveKind: TPageControl
     Left = 8
@@ -29,7 +29,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 19
         Top = 12
-        Width = 152
+        Width = 150
         Caption = 'Для открытия-закрытия'
         Checked = True
         TabOrder = 0
@@ -59,7 +59,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 19
         Top = 42
-        Width = 128
+        Width = 126
         Caption = 'Для регулирования'
         TabOrder = 2
       end
@@ -105,9 +105,9 @@ object MainForm: TMainForm
         Top = 102
         Width = 100
         ItemHeight = 15
-        OnChange = ComboBoxNetworkChange
         Style = csDropDownList
         TabOrder = 6
+        OnChange = ComboBoxNetworkChange
       end
     end
     object TabSheetGearbox: TTabSheet
@@ -120,7 +120,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 19
         Top = 12
-        Width = 66
+        Width = 64
         Caption = 'Угловой'
         Checked = True
         TabOrder = 0
@@ -132,7 +132,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 19
         Top = 42
-        Width = 116
+        Width = 114
         Caption = 'Цилиндрический'
         TabOrder = 2
       end
@@ -240,7 +240,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 8
-          Width = 75
+          Width = 73
           Caption = 'Штрабная'
           Checked = True
           TabOrder = 0
@@ -250,7 +250,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 32
-          Width = 94
+          Width = 92
           Caption = 'Бесштрабная'
           TabOrder = 1
         end
@@ -258,7 +258,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 56
-          Width = 78
+          Width = 76
           Caption = 'Настенная'
           TabOrder = 2
         end
@@ -306,7 +306,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 8
-          Width = 78
+          Width = 76
           Caption = 'Настенная'
           Checked = True
           TabOrder = 0
@@ -316,7 +316,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 32
-          Width = 155
+          Width = 153
           Caption = 'Штрабная (с обечайкой)'
           TabOrder = 1
         end
@@ -324,7 +324,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 56
-          Width = 80
+          Width = 78
           Caption = 'На фланце'
           TabOrder = 2
         end
@@ -332,7 +332,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 80
-          Width = 245
+          Width = 243
           Caption = 'На двух фланцах (с герметичной рамой)'
           TabOrder = 4
         end
@@ -340,7 +340,7 @@ object MainForm: TMainForm
           Left = 96
           Height = 19
           Top = 56
-          Width = 189
+          Width = 187
           Caption = 'С ответным(и) фланцем(-ами)'
           TabOrder = 3
         end
@@ -396,7 +396,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 8
-          Width = 217
+          Width = 215
           Caption = 'Штрабная (с неподвижным щитом)'
           Checked = True
           TabOrder = 0
@@ -406,7 +406,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 32
-          Width = 236
+          Width = 234
           Caption = 'Бесштрабная (с неподвижным щитом)'
           TabOrder = 1
         end
@@ -414,7 +414,7 @@ object MainForm: TMainForm
           Left = 8
           Height = 19
           Top = 56
-          Width = 78
+          Width = 76
           Caption = 'Настенная'
           TabOrder = 2
         end
@@ -434,7 +434,7 @@ object MainForm: TMainForm
       Left = 8
       Height = 19
       Top = 8
-      Width = 99
+      Width = 97
       Caption = 'Невыдвижной'
       Checked = True
       TabOrder = 0
@@ -445,7 +445,7 @@ object MainForm: TMainForm
       Height = 19
       Hint = 'Не допускает затопления привода'
       Top = 32
-      Width = 85
+      Width = 83
       Caption = 'Выдвижной'
       ParentShowHint = False
       ShowHint = True
@@ -455,7 +455,7 @@ object MainForm: TMainForm
       Left = 176
       Height = 19
       Top = 8
-      Width = 74
+      Width = 72
       Caption = 'Два винта'
       TabOrder = 2
     end
@@ -479,8 +479,8 @@ object MainForm: TMainForm
     Width = 75
     Anchors = [akRight, akBottom]
     Caption = 'Расчет'
-    OnClick = ButtonRunClick
     TabOrder = 9
+    OnClick = ButtonRunClick
   end
   object GroupBox7: TGroupBox
     Left = 336
@@ -530,7 +530,7 @@ object MainForm: TMainForm
       Left = 8
       Height = 19
       Top = 120
-      Width = 204
+      Width = 202
       Caption = 'Без промежуточных опор в раме'
       TabOrder = 2
     end
@@ -538,7 +538,7 @@ object MainForm: TMainForm
       Left = 8
       Height = 19
       Top = 144
-      Width = 120
+      Width = 118
       Caption = 'Три пары клиньев'
       TabOrder = 3
     end
@@ -711,7 +711,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 19
         Top = 64
-        Width = 214
+        Width = 212
         Caption = 'Без промежуточных опор на трубе'
         TabOrder = 1
       end
@@ -749,7 +749,7 @@ object MainForm: TMainForm
         Left = 8
         Height = 19
         Top = 64
-        Width = 214
+        Width = 212
         Caption = 'Без промежуточных опор на трубе'
         TabOrder = 1
       end
@@ -779,9 +779,9 @@ object MainForm: TMainForm
     Width = 100
     Anchors = [akLeft, akBottom]
     ItemHeight = 15
-    OnChange = ComboBoxGuiLangChange
     Style = csDropDownList
     TabOrder = 10
+    OnChange = ComboBoxGuiLangChange
   end
   object ComboBoxOutLang: TComboBox
     AnchorSideBottom.Side = asrBottom
@@ -791,8 +791,8 @@ object MainForm: TMainForm
     Width = 100
     Anchors = [akLeft, akBottom]
     ItemHeight = 15
-    OnChange = ComboBoxOutLangChange
     Style = csDropDownList
     TabOrder = 11
+    OnChange = ComboBoxOutLangChange
   end
 end
