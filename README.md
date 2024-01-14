@@ -1,3 +1,5 @@
+This project has been moved to https://codeberg.org/e2t/slidegates
+
 # Slidegate
 
 Графічний додаток для розрахунку щитових затворів.
